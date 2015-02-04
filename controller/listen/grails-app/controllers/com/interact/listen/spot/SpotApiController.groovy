@@ -1979,7 +1979,8 @@ class SpotApiController {
 
     def updatePhoneNumber = {
         log.debug "updatePhoneNumber request[${request}] with params [${params}]"
-        def phoneNumber = PhoneNumber.get(params.id)
+	def phoneNumber = PhoneNumber.get(params.id)
+
         if(!phoneNumber) {
             response.sendError(HSR.SC_NOT_FOUND)
             return
@@ -2003,18 +2004,20 @@ class SpotApiController {
             }
 
             if((phoneNumber.instanceOf(Extension) || phoneNumber.instanceOf(DirectInwardDialNumber) || phoneNumber.instanceOf(DirectMessageNumber)) && json.greetingLocation) {
-                if(!phoneNumber.greeting) {
-                    log.debug "Phone number doesn't have greeting, create one"
-                    phoneNumber.greeting = new Audio(duration: new Duration(0))
-                }
-                phoneNumber.greeting.file = new File(new URI(json.greetingLocation))
-                log.debug "phone number greeting [${phoneNumber.greeting.file}]"
+		// Always use new greeting since grails doesn't seem to detect updates as a change to the greeting and won't save
+		// TP 66683 - DWW - 2/4/15
+		// hold on to this - we can't delete it until the phoneNumber has been saved
+		//def oldGreeting = phoneNumber.greeting
+		def greeting = new Audio(duration: new Duration(0))
+                greeting.file = new File(new URI(json.greetingLocation))
+                log.debug "phone number greeting [${greeting.file}]"
                     
-                if(!(phoneNumber.greeting.validate() && phoneNumber.greeting.save())) {
+                if(!(greeting.validate() && greeting.save(flush:true))) {
                     status.setRollbackOnly()
-                    response.sendError(HSR.SC_BAD_REQUEST, beanErrors(phoneNumber.greeting))
+                    response.sendError(HSR.SC_BAD_REQUEST, beanErrors(greeting))
                     return
                 }
+		phoneNumber.greeting = greeting
                 log.debug "We've saved greeting for user [${phoneNumber.owner}]"
             }
 
@@ -2030,8 +2033,12 @@ class SpotApiController {
                 phoneNumber.extLength = phoneNumber.owner.organization.extLength
             }
 
-            if(phoneNumber.validate() && phoneNumber.save()) {
+            if(phoneNumber.validate() && phoneNumber.save(failonerror:true, flush:true)) {
                 log.debug "We've saved the entire phone number record"
+		// I can't seem to get deleting to work - it runs into some taglib issue
+		// which I'm not sure how it is related - will work as a bug later - DWW
+		// TP 66702
+		//oldGreeting.delete()
                 response.status = HSR.SC_OK
                 response.flushBuffer()
             } else {
@@ -2039,6 +2046,7 @@ class SpotApiController {
                 status.setRollbackOnly()
                 response.sendError(HSR.SC_BAD_REQUEST, beanErrors(phoneNumber))
             }
+
             log.debug "We've completed the update phone number method"
         }
     }
