@@ -215,31 +215,31 @@ class ExtensionService {
         return result
     }
 
-    RegResponse sipRegistration(Extension extIn) {
+    RegResponse sipRequest(Extension extIn) {
 
         def regResponse = new RegResponse()
-        log.debug("sipRegistration for extension [${extIn?.number}] with username [${extIn.sipPhone?.username}]")
-        log.debug("sipRegistration request for [${extIn?.number}]         from IP [${extIn?.sipPhone.ip}]")
-        log.debug("sipRegistration request for [${extIn?.number}]       with CSeq [${extIn?.sipPhone.cseq}]")
+        log.debug("sipRequest for extension [${extIn?.number}] with username [${extIn.sipPhone?.username}]")
+        log.debug("sipRequest request for [${extIn?.number}]         from IP [${extIn?.sipPhone.ip}]")
+        log.debug("sipRequest request for [${extIn?.number}]       with CSeq [${extIn?.sipPhone.cseq}]")
 
         def extension = Extension.findByNumber(extIn?.number)
 
         if (!extension) {
-            log.debug("sipRegistration failed to find extension number [${extIn?.number}]")
+            log.debug("sipRequest failed to find extension number [${extIn?.number}]")
             regResponse.extension = extIn
             regResponse.returnCode = HSR.SC_NOT_FOUND
             return regResponse
         }
 
         if (!extension?.sipPhone) {
-            log.error("sipRegistration extension [${extension.number}] does not have sipPhone entry")
+            log.error("sipRequest extension [${extension.number}] does not have sipPhone entry")
             regResponse.returnCode = HSR.SC_INTERNAL_SERVER_ERROR
             regResponse.extension = extension
             return regResponse
         }
 
         if (!extension.owner.enabled()) {
-            log.debug("sipRegistration username [${extension.sipPhone.username}] is not enabled")
+            log.debug("sipRequest username [${extension.sipPhone.username}] is not enabled")
             regResponse.returnCode = HSR.SC_UNAUTHORIZED
             regResponse.extension = extension
             return regResponse
@@ -253,21 +253,21 @@ class ExtensionService {
             return regResponse
         }
 
-        log.debug("sipRegistration username validation [${extension?.sipPhone?.username}]?=[${extIn?.sipPhone?.username}]")
+        log.debug("sipRequest username validation [${extension?.sipPhone?.username}]?=[${extIn?.sipPhone?.username}]")
         // we have a valid extension, lets see if the usernames match
         if(extension.sipPhone.username != extIn?.sipPhone?.username){
-            log.debug("sipRegistration username provided does not match username of extension [${extension.sipPhone.username}]!=[${extIn.sipPhone?.username}]")
+            log.debug("sipRequest username provided does not match username of extension [${extension.sipPhone.username}]!=[${extIn.sipPhone?.username}]")
             regResponse.extension = extension
             regResponse.returnCode = HSR.SC_NOT_FOUND
             return regResponse
         } else {
             // We have a match for usernames
-            log.debug("sipRegistration username provided matches username of extension [${extension.sipPhone.username}]")
+            log.debug("sipRequest username provided matches username of extension [${extension.sipPhone.username}]")
         }
 
         if(extension.sipPhone.cseq > extIn?.sipPhone?.cseq) {
             // the CSeq we're given seems to be old compared to the one we have
-            log.debug("sipRegistration CSeq provided is less than what we have in our db, ignore at this time.")
+            log.debug("sipRequest CSeq provided is less than what we have in our db, ignore at this time.")
             // TODO maybe do something different if the cseq number in is less than what we have in the db
         }
 
@@ -275,25 +275,25 @@ class ExtensionService {
         if(extIn.sipPhone?.ip) {
             origIp = extension.sipPhone.ip
             extension.sipPhone.ip = extIn.sipPhone.ip
-            log.debug("sipRegistration request for [${extension?.number}] to update IP [${extension.sipPhone.ip}]")
+            log.debug("sipRequest request for [${extension?.number}] to update IP [${extension.sipPhone.ip}]")
         }
 
         if(extIn.sipPhone?.cseq) {
             extension.sipPhone.cseq = extIn.sipPhone.cseq
-            log.debug("sipRegistration request for [${extension?.number}] to update CSeq [${extension.sipPhone.cseq}]")
+            log.debug("sipRequest request for [${extension?.number}] to update CSeq [${extension.sipPhone.cseq}]")
         }
 
         if(extIn.sipPhone?.realName) {
             extension.sipPhone.realName = extIn.sipPhone.realName
-            log.debug("sipRegistration request for [${extension?.number}] to update realname [${extension.sipPhone.realName}]")
+            log.debug("sipRequest request for [${extension?.number}] to update realname [${extension.sipPhone.realName}]")
         }
 
         extension.sipPhone.dateRegistered = new DateTime()
-        log.debug("sipRegistration request for [${extension?.number}] to update dateReg [${extension.sipPhone.dateRegistered}]")
+        log.debug("sipRequest request for [${extension?.number}] to update dateReg [${extension.sipPhone.dateRegistered}]")
 
-        log.debug("sipRegistration request for [${extension?.number}] to expire [${extIn.sipPhone?.expires}] from now")
+        log.debug("sipRequest request for [${extension?.number}] to expire [${extIn.sipPhone?.expires}] from now")
         extension.sipPhone.dateExpires = new DateTime().plusSeconds(extIn.sipPhone.expires)
-        log.debug("sipRegistration request for [${extension?.number}] to set expire date [${extension.sipPhone.dateExpires}]")
+        log.debug("sipRequest request for [${extension?.number}] to set expire date [${extension.sipPhone.dateExpires}]")
 
         extension.sipPhone.registered = false
 
@@ -301,10 +301,10 @@ class ExtensionService {
         extension.sipPhone.passwordConfirm = extension.sipPhone.password
 
         if(extension.sipPhone.validate() && extension.sipPhone.save(flush: true)) {
-            log.debug("sipDeregistration of extension [${extension?.number}] successfully updated in db")
+            log.debug("sipRequest of extension [${extension?.number}] successfully updated in db")
             regResponse.returnCode = HSR.SC_OK
             if (extension.sipPhone.ip != origIp) {
-                log.debug "sipRegistration, we have a different IP lets notifiy of message light at [${extension.sipPhone.ip}]"
+                log.debug "sipRequest, we have a different IP lets notifiy of message light at [${extension.sipPhone.ip}]"
                 messageLightService.toggle(extension)
             }
         } else {

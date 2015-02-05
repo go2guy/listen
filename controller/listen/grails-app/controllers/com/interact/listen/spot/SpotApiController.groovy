@@ -1649,9 +1649,14 @@ class SpotApiController {
         response.flushBuffer()
     }
 
-    // Supports phone SIP registration requests
+    // Supports phone SIP registration and invite requests
     def sipRegister = {
-        log.debug "sipRegister request with params [${params}]"
+        log.debug "sipRegister request with params"
+        //log.debug "sipRegister request with params [${params}]"
+        def deregister = false
+        def register = false
+        def invite = false
+
         if (!params.args) {
             log.debug "sipRegister request missing param [args]"
             response.sendError(HSR.SC_BAD_REQUEST, 'Missing required parameter [args]')
@@ -1664,20 +1669,58 @@ class SpotApiController {
             return
         }
 
+        if(!json.From) {
+            log.debug "sipRegister request missing param [args.From]"
+            response.sendError(HSR.SC_BAD_REQUEST, 'Missing required parameter [args.From]')
+            return
+        }
+
         if(!json.Contact) {
             log.debug "sipRegister request missing param [args.Contact]"
             response.sendError(HSR.SC_BAD_REQUEST, 'Missing required parameter [args.Contact]')
             return
         }
 
+        if(!json.'Request-Line') {
+            log.debug "sipRegister request missing param [args.Request-Line]"
+            response.sendError(HSR.SC_BAD_REQUEST, 'Missing required parameter [args.Request-Line]')
+            return
+        } else {
+            def requestLine = URLDecoder.decode(json?.'Request-Line', 'UTF-8')
+            requestLine = requestLine.split(' ')[0]
+            if(requestLine == 'REGISTER'){
+                register = true
+                log.debug "sipRegister has received a REGISTER request"
+            } else if(requestLine == 'INVITE'){
+                invite = true
+                log.debug "sipRegister has received an INVITE request"
+            } else {
+                log.error "sipRegister request param [args.Request-Line] passed unexpected value [${requestLine}]"
+                response.sendError(HSR.SC_BAD_REQUEST, 'Unexpected value for [args.Request-Line]')
+                return
+            }
+        }
+
         def extension = new Extension()
         extension.sipPhone = new SipPhone()
-        def deregister = false
+
         def To = URLDecoder.decode(json?.To, 'UTF-8')
         log.debug("sipRegister To [${To}]")
 
-        extension.sipPhone.realName = To.split("<")[0].replace("\"", "")
+        def From = URLDecoder.decode(json?.From, 'UTF-8')
+        log.debug("sipRegister From [${From}]")
+
+        if (register) {
+            extension.sipPhone.realName = To.split("<")[0].replace("\"", "")
+        } else if (invite) {
+            extension.sipPhone.realName = From.split("<")[0].replace("\"", "")
+        }
+
+        if (extension.sipPhone.realName[extension.sipPhone.realName.length() - 1] == ' '){
+            extension.sipPhone.realName = extension.sipPhone.realName.substring(0, extension.sipPhone.realName.length() - 1)
+        }
         log.debug("sipRegister real name [${extension.sipPhone.realName}]")
+
         def extNumber = To.split("sip:")[1].split("@")[0]
         log.debug("sipRegister extNumber [${extNumber}]")
 
@@ -1688,9 +1731,10 @@ class SpotApiController {
         }
 
         def Contact = URLDecoder.decode(json?.Contact, 'UTF-8')
-        if (Contact.contains(";")){
+        if (Contact.contains(";") || Contact.contains("@")) {
             log.debug("sipRegister Contact [${Contact}]")
             def contactList = Contact.tokenize(';')
+
             for ( int i = 0; i < contactList.size(); i++ ){
                 def tmpval = contactList[i]
                 log.debug("sipRegister contact list [${i}][${tmpval}]")
@@ -1698,6 +1742,11 @@ class SpotApiController {
                     extension.sipPhone.expires = tmpval.split("expires=")[1].toInteger()
                     log.debug("sipRegister expires from contact header [${extension.sipPhone.expires}]")
                 } else if (tmpval.contains('sip:') && (tmpval.contains('@'))){
+                    if (invite) {
+                        // for INVITE requests, we want to take the info from contact and use it as the originating extenstion number
+                        extension.number = tmpval.split("@")[0]?.split("sip:")[1]
+                        log.debug("sipRegister number from conact header [${extension.number}]")
+                    }
                     extension.sipPhone.ip = tmpval.split("@")[1]?.split(":")[0]
                     log.debug("sipRegister ip address from conact header [${extension.sipPhone.ip}]")
                 }
@@ -1736,12 +1785,15 @@ class SpotApiController {
 
         if (extension.sipPhone.expires == "0") {
             deregister = true
+            register = false
             log.debug("sipRegister need to deregister [${extNumber}] [${extension.sipPhone.expires}]")
         }
 
         if(json?.id) {
-            extension.number = URLDecoder.decode(json?.id, 'UTF-8')
-            log.debug("sipRegister id [${extension.number}]")
+            if (deregister || register) {
+                extension.number = URLDecoder.decode(json?.id, 'UTF-8')
+                log.debug("sipRegister id [${extension.number}]")
+            }
         } else {
             log.error "sipRegister request param [args.id] missing"
             response.sendError(HSR.SC_BAD_REQUEST, 'sipRegister missing params [args.id]')
@@ -1761,23 +1813,30 @@ class SpotApiController {
 
         def expireSeconds = grailsApplication.config.com.interact.listen.sip.expires.toInteger()
         if ((extension.sipPhone.expires < expireSeconds) && (extension.sipPhone.expires > 0 )) {
+            log.debug "sipRegister - setting expiration based upon network input [${expireSeconds}] over file config [${expireSeconds}]"
             expireSeconds = extension.sipPhone.expires
-            log.debug "sipRegister - setting expiration based upon network input [${expireSeconds}] over config [${grailsApplication.config.com.interact.listen.sip.expires.toInteger()}]"
         } else {
+            log.debug "sipRegister - setting expiration based upon config file [${expireSeconds}] over network input [${extension.sipPhone.expires}]"
             extension.sipPhone.expires = expireSeconds
-            log.debug "sipRegister - setting expiration based upon config input [${expireSeconds}] over config [${extension.sipPhone.expires}]"
         }
 
         def regResponse = new RegResponse()
         if (deregister) {
-            log.debug("Call sipDeregistration service")
+            log.debug("Call sipDeregistration REGISTER")
             regResponse = extensionService.sipDeregistration(extension)
             log.debug "sipDeregistration request [${regResponse.returnCode}]"
-        } else {
-
-            log.debug("Call sipRegistration service")
-            regResponse = extensionService.sipRegistration(extension)
+        } else if (register) {
+            log.debug("Call sipRegistration REGISTER")
+            regResponse = extensionService.sipRequest(extension)
             log.debug "sipRegister request [${regResponse.returnCode}]"
+        } else if (invite) {
+            log.debug "sipRegister request INVITE"
+            regResponse = extensionService.sipRequest(extension)
+            log.debug "sipRegister request [${regResponse.returnCode}]"
+        } else {
+            log.error "sipRegister request encountered unexpected error"
+            response.sendError(HSR.SC_BAD_REQUEST, 'sipRegister failed to process request')
+            return
         }
 
         def xmlResponse

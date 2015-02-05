@@ -36,7 +36,7 @@ class SpotCommunicationService {
     def outdial(def numbers, def conference, def requestingNumber) throws IOException, SpotCommunicationException {
         Map<String, Object> importedValue = new TreeMap<String, Object>();
         importedValue.put("application", "AUTO_DIAL");
-        importedValue.put("customEvent", "DIAL");
+        importedValue.put("customEvent", "LISTEN_CONF_DIAL");
         importedValue.put("sessionId", conference.firstAdminSessionId());
         importedValue.put("conferenceId", conference.id);
         importedValue.put("destination", numbers);
@@ -50,7 +50,7 @@ class SpotCommunicationService {
     {
         Map<String, Object> importedValue = new TreeMap<String, Object>();
         importedValue.put("application", "CONF_EVENT");
-        importedValue.put("customEvent", "INTERACTIVE_DIAL");
+        importedValue.put("customEvent", "LISTEN_CONF_INTERACTIVE_DIAL");
         importedValue.put("sessionId", conference.firstAdminSessionId());
         importedValue.put("destination", numbers);
         importedValue.put("ani", requestingNumber);
@@ -60,12 +60,12 @@ class SpotCommunicationService {
     }
 
     def startRecording(def conference) throws IOException, SpotCommunicationException {
-        sendConferenceRecordingEvent("LISTEN_CONF_START", conference);
+        sendConferenceRecordingEvent("LISTEN_CONF_RECORD_START", conference);
         statWriterService.send(Stat.SPOT_RECORD_START)
     }
 
     def stopRecording(def conference) throws IOException, SpotCommunicationException {
-        sendConferenceRecordingEvent("LISTEN_CONF_STOP", conference);
+        sendConferenceRecordingEvent("LISTEN_CONF_RECORD_STOP", conference);
         statWriterService.send(Stat.SPOT_RECORD_STOP)
     }
 
