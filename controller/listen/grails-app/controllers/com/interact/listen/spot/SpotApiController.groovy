@@ -1716,7 +1716,7 @@ class SpotApiController {
             extension.sipPhone.realName = From.split("<")[0].replace("\"", "")
         }
 
-        if (extension.sipPhone.realName[extension.sipPhone.realName.length() - 1] == ' '){
+        if (extension.sipPhone.realName.length() > 0 && extension.sipPhone.realName[extension.sipPhone.realName.length() - 1] == ' '){
             extension.sipPhone.realName = extension.sipPhone.realName.substring(0, extension.sipPhone.realName.length() - 1)
         }
         log.debug("sipRegister real name [${extension.sipPhone.realName}]")
