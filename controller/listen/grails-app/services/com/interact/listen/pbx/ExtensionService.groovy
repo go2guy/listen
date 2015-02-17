@@ -288,6 +288,11 @@ class ExtensionService {
             log.debug("sipRequest request for [${extension?.number}] to update realname [${extension.sipPhone.realName}]")
         }
 
+        if(extIn.sipPhone?.userAgent) {
+            extension.sipPhone.userAgent = extIn.sipPhone.userAgent
+            log.debug("sipRequest request for [${extension?.number}] to update user-agent [${extension.sipPhone.userAgent}]")
+        }
+
         extension.sipPhone.dateRegistered = new DateTime()
         log.debug("sipRequest request for [${extension?.number}] to update dateReg [${extension.sipPhone.dateRegistered}]")
 

@@ -69,7 +69,7 @@ tbody .col-light { text-align: center; }
               <tr class="${i % 2 == 0 ? 'even' : 'odd'}">
                   <g:form controller="administration" action="editExtension" method="post">
                       <g:if test="${extension.sipPhone}">
-                            <td class="col-number">${fieldValue(bean: extension, field: 'number')}</td>
+                            <td class="col-number"onmouseover="tooltip.show('${extension.sipPhone?.userAgent}');" onmouseout="tooltip.hide();">${fieldValue(bean: extension, field: 'number')}</td>
                             <td class="col-owner" onmouseover="tooltip.show('${extension.sipPhone?.realName}');" onmouseout="tooltip.hide();">${extension.owner.realName}</td>
                             <td class="col-ip">${extension.sipPhone.ip}</td>
                             <g:if test="${extension.sipPhone.dateRegistered}">

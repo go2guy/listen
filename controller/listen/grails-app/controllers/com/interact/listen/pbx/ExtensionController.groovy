@@ -17,6 +17,8 @@ class ExtensionController {
     def hrefParserService
 
     def getExtensionsByOrganization = {
+        log.debug("getExtensionsByOrganization called with params [${params}]")
+
         if(!params.organization) {
             response.sendError(HSR.SC_BAD_REQUEST, 'Missing required parameter [organization]')
             return
@@ -37,9 +39,14 @@ class ExtensionController {
         }
 
         def results = list.collect {
+            def phoneType = ""
+            if(it?.sipPhone?.userAgent) {
+                phoneType = it?.sipPhone?.userAgent.split(' ')[0]
+            }
             return [
                 'number': it.number,
-                'ip': it.ip
+                'ip': it?.sipPhone.ip,
+                'phoneType': phoneType
             ]
         }
 

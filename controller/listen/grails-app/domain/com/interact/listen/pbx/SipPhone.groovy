@@ -14,6 +14,7 @@ class SipPhone {
     String passwordConfirm
     String ip
     Integer cseq
+    String userAgent
     DateTime dateRegistered = null
     DateTime dateExpires = null
 

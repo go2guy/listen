@@ -1716,7 +1716,7 @@ class SpotApiController {
             extension.sipPhone.realName = From.split("<")[0].replace("\"", "")
         }
 
-        if (extension.sipPhone.realName.length() > 0 && extension.sipPhone.realName[extension.sipPhone.realName.length() - 1] == ' '){
+        if ((extension.sipPhone.realName.length() > 0) && (extension.sipPhone.realName[extension.sipPhone.realName.length() - 1] == ' ')){
             extension.sipPhone.realName = extension.sipPhone.realName.substring(0, extension.sipPhone.realName.length() - 1)
         }
         log.debug("sipRegister real name [${extension.sipPhone.realName}]")
@@ -1728,6 +1728,11 @@ class SpotApiController {
         if (json?.Expires){
             extension.sipPhone.expires = json.Expires.toInteger()
             log.debug("sipRegister expires from main header [${extension.sipPhone.expires}]")
+        }
+
+        if (json?.'User-Agent') {
+            extension.sipPhone.userAgent = URLDecoder.decode(json?.'User-Agent', 'UTF-8')
+            log.debug("sipRegister user-agent from main header [${extension.sipPhone.userAgent}]")
         }
 
         def Contact = URLDecoder.decode(json?.Contact, 'UTF-8')
@@ -1820,7 +1825,7 @@ class SpotApiController {
             extension.sipPhone.expires = expireSeconds
         }
 
-        def regResponse = new RegResponse()
+        def regResponse
         if (deregister) {
             log.debug("Call sipDeregistration REGISTER")
             regResponse = extensionService.sipDeregistration(extension)

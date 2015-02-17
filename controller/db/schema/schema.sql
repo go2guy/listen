@@ -768,6 +768,7 @@ CREATE TABLE `sip_phone` (
   `password` varchar(255) NOT NULL,
   `ip` varchar(50) default NULL,
   `cseq` bigint(20) default NULL,
+  `user_agent` varchar(50) DEFAULT NULL,
   `date_registered` datetime default NULL,
   `date_expires` datetime default NULL,
   PRIMARY KEY  (`id`),

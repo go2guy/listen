@@ -85,6 +85,10 @@
                 <td class="col-ip"><g:message code="page.administration.phones.column.ip"/></td>
                 <td class="col-ip">${sipPhone?.ip}</td>
             </tr>
+            <tr>
+                <td class="col-useragent"><g:message code="page.administration.phones.column.userAgent"/></td>
+                <td class="col-useragent">${sipPhone?.userAgent}</td>
+            </tr>
             </tbody>
         </table>
 
