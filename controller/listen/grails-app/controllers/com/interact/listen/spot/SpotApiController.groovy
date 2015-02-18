@@ -1752,7 +1752,7 @@ class SpotApiController {
                         extension.number = tmpval.split("@")[0]?.split("sip:")[1]
                         log.debug("sipRegister number from conact header [${extension.number}]")
                     }
-                    extension.sipPhone.ip = tmpval.split("@")[1]?.split(":")[0]
+                    extension.sipPhone.ip = tmpval.split("@")[1]?.split(":")[0].replaceAll(/\>/, '')
                     log.debug("sipRegister ip address from conact header [${extension.sipPhone.ip}]")
                 }
             }
