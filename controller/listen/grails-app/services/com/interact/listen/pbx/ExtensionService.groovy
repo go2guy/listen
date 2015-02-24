@@ -66,6 +66,7 @@ class ExtensionService {
             result.sipPhone.ip = null
             result.sipPhone.dateRegistered = null
             result.sipPhone.dateExpires = null
+            result.sipPhone.userAgent = null
 
             log.debug "Now actually create the sipPhone extension for [${params}]"
             log.debug("sipPhone info Ext Test        [${result.extension.sipPhone?.username}]")
@@ -140,6 +141,7 @@ class ExtensionService {
                 result.sipPhone.passwordConfirm = params?.passwordConfirm
                 result.sipPhone.dateRegistered = null
                 result.sipPhone.dateExpires = null
+                result.sipPhone.userAgent = null
             } else {
                 if ((params?.password && params?.passwordConfirm) || (params?.password != result.sipPhone.password) ) {
                     log.debug("updateExtension, set password")
