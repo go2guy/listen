@@ -99,6 +99,7 @@ class SpotApiController {
     def voicemailNotificationService
     def callRoutingService
     def extensionService
+    def springSecurityService
 
     /**
      * Add an acd call to the queue.
@@ -434,7 +435,7 @@ class SpotApiController {
     }
 
     def androidEmailContact = {
-        def user = authenticatedUser
+        def user = springSecurityService.currentUser
         def contact = User.get(params.id)
 
         if(!contact || contact.organization != user.organization || !contact.enabled()) {
@@ -453,7 +454,7 @@ class SpotApiController {
     }
 
     def androidEmailContacts = {
-        def user = authenticatedUser
+        def user = springSecurityService.currentUser
 
         params.offset = params['_first'] ?: 0
         params.max = params['_max'] ?: 100
@@ -485,7 +486,7 @@ class SpotApiController {
     }
 
     def androidGetDeviceRegistration = {
-        def user = authenticatedUser
+        def user = springSecurityService.currentUser
         def deviceType = DeviceRegistration.DeviceType.valueOf(params.deviceType)
 
         def device = DeviceRegistration.findWhere(user: user, deviceType: deviceType, deviceId: params.deviceId)
@@ -506,7 +507,7 @@ class SpotApiController {
     }
 
     def androidNumberContact = {
-        def user = authenticatedUser
+        def user = springSecurityService.currentUser
         def number = PhoneNumber.get(params.id)
 
         if(!number || number.owner.organization != user.organization || !number.owner.enabled()) {
@@ -526,7 +527,7 @@ class SpotApiController {
     }
 
     def androidNumberContacts = {
-        def user = authenticatedUser
+        def user = springSecurityService.currentUser
 
         params.offset = params['_first'] ?: 0
         params.max = params['_max'] ?: 100
@@ -577,7 +578,7 @@ class SpotApiController {
     }
 
     def androidUpdateDeviceRegistration = {
-        def user = authenticatedUser
+        def user = springSecurityService.currentUser
 
         def json = JSON.parse(request)
 
@@ -648,7 +649,7 @@ class SpotApiController {
             return
         }
 
-        def user = authenticatedUser
+        def user = springSecurityService.currentUser
         if(voicemail.owner != user) {
             response.sendError(HSR.SC_UNAUTHORIZED)
             return
@@ -751,7 +752,7 @@ class SpotApiController {
 
         try {
             // if this is an Android user, make sure that they are only accessing their own voicemails
-            def current = authenticatedUser
+            def current = springSecurityService.currentUser
             if(current && !current.hasRole('ROLE_SPOT_API') && current.id != user.id) {
                 response.sendError(HSR.SC_UNAUTHORIZED)
                 return
@@ -1324,7 +1325,7 @@ class SpotApiController {
         def organization = Organization.get(getIdFromHref(params.organization))
 
         if(!organization) {
-            def user = authenticatedUser
+            def user = springSecurityService.currentUser
             if(!params.username || user.username != params.username) {
                 response.sendError(HSR.SC_UNAUTHORIZED)
                 return
@@ -1390,7 +1391,7 @@ class SpotApiController {
 
         try {
             // if this is an Android user, make sure that they are only accessing their own voicemails
-            def current = authenticatedUser
+            def current = springSecurityService.currentUser
             if(current && !current.hasRole('ROLE_SPOT_API') && current.id != user.id) {
                 log.warn "Android user is unauthorized; current.id [${current.id}], user.id [${user.id}], hasRole [${user.hasRole('ROLE_SPOT_API')}]"
                 response.sendError(HSR.SC_UNAUTHORIZED)
@@ -2117,7 +2118,7 @@ class SpotApiController {
 
         try {
             // if this is an Android user, make sure that they are only accessing their own voicemails
-            def current = authenticatedUser
+            def current = springSecurityService.currentUser
             if(current && !current.hasRole('ROLE_SPOT_API') && current.id != user.id) {
                 response.sendError(HSR.SC_UNAUTHORIZED)
                 return

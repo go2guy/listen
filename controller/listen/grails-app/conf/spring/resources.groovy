@@ -40,6 +40,7 @@ beans = {
     activeDirectoryAuthenticationProvider(com.interact.listen.authentication.ActiveDirectoryAuthenticationProvider) {
         grailsApplication = ref('grailsApplication')
         userDetailsService = ref('gormUserDetailsService')
+        organizationUserDetailsService = ref('organizationUserDetailsService')
     }
 
     //MAILOVERIDE
@@ -61,4 +62,19 @@ beans = {
         it.autowire = true
     }
 
+    tenantResolver(com.interact.listen.DomainTenantResolver)
+    tenantRepository(com.interact.listen.ListenTenantRepository)
+
+    sessionFactory()
 }
+
+
+// Activate these bean definitions
+// Documentation http://grails.org/doc/latest/guide/single.html#14.2%20Configuring%20Additional%20Beans
+
+
+
+// Activate these bean definitions
+// Documentation http://grails.org/doc/latest/guide/single.html#14.2%20Configuring%20Additional%20Beans
+// tenantResolver(com.interact.listen.DomainTenantResolver)
+// tenantRepository(com.interact.listen.ListenTenantRepository)

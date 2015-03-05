@@ -383,6 +383,7 @@ ul.messages.error {
       <div id="header">
         <img src="${resource(dir: 'resources/app/images', file: 'listen_logo_50x24.png')}"/>
         <ul id="user-info">
+          <li><listen:userOrg/></li>
           <li><listen:realName/></li>
           <li>[ <g:link controller="logout">Logout</g:link> ]</li>
         </ul>

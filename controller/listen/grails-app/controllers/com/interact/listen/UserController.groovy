@@ -45,7 +45,7 @@ class UserController {
             return
         }
 
-        def currentUser = authenticatedUser
+        def currentUser = springSecurityService.currentUser;
         if(user.id == currentUser.id) {
             flash.errorMessage = 'You cannot disable your own account'
             redirect(action: 'list')
@@ -69,7 +69,7 @@ class UserController {
             return
         }
 
-        def currentUser = authenticatedUser
+        def currentUser = springSecurityService.currentUser;
         if(user.id == currentUser.id) {
             flash.errorMessage = 'You cannot delete your own account'
             redirect(action: 'list')
@@ -164,7 +164,7 @@ class UserController {
         params.max = Math.min(params.max ? params.int('max') : 100, 100)
         params.sort = params.sort ?: 'username'
         params.order = params.order ?: 'asc'
-        def organization = authenticatedUser?.organization
+        def organization = springSecurityService.currentUser?.organization
         def userList = User.createCriteria().list(params) {
             eq('organization', organization)
             if(!licenseService.isLicensed(ListenFeature.ACTIVE_DIRECTORY)) {
@@ -188,7 +188,7 @@ class UserController {
         params.max = Math.min(params.max ? params.int('max') : 100, 100)
         params.sort = params.sort ?: 'username'
         params.order = params.order ?: 'asc'
-        def organization = authenticatedUser?.organization
+        def organization = springSecurityService.currentUser?.organization
         def userList = User.createCriteria().list(params) {
             eq('organization', organization)
             if(!licenseService.isLicensed(ListenFeature.ACTIVE_DIRECTORY)) {
@@ -210,7 +210,7 @@ class UserController {
 
     def save = {
         log.debug "Save User params [${params}]"
-        def user = userCreationService.createUser(params, authenticatedUser.organization)
+        def user = userCreationService.createUser(params, springSecurityService.currentUser.organization)
         if(user.hasErrors()) {
             render(view: 'create', model: [user: user])
         } else {
@@ -238,7 +238,7 @@ class UserController {
             return
         }
 
-        if(authenticatedUser == user) {
+        if(springSecurityService.currentUser == user) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN)
             return
         }

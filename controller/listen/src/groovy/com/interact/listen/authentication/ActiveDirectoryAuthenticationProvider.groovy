@@ -25,6 +25,8 @@ class ActiveDirectoryAuthenticationProvider implements AuthenticationProvider, A
     def grailsApplication
     def userCreationService // not injected or wired - lazily initialized (below) using ApplicationContext
     def userDetailsService
+    def springSecurityService
+    def organizationUserDetailsService
 
     @Override
     public Authentication authenticate(Authentication auth) {
@@ -40,7 +42,7 @@ class ActiveDirectoryAuthenticationProvider implements AuthenticationProvider, A
 
         def ad = null
         try {
-            ad = validateActiveDirectoryUser(principal, auth.credentials)
+            ad = validateActiveDirectoryUser(principal, auth.credentials, orgId)
         } catch (Exception e) {
             log.info "User [${principal}] resulted in exception [${e}] "
         }
@@ -56,10 +58,15 @@ class ActiveDirectoryAuthenticationProvider implements AuthenticationProvider, A
             log.debug "got past create user if not exists"
         } catch (Exception e) {
             log.error("Exception caught while attempting to create user [${e}]")
+            e.printStackTrace();
         }
         
-        try {
-            def userDetails = userDetailsService.loadUserByUsername(principal)
+        try
+        {
+            if(!organizationUserDetailsService) {
+                organizationUserDetailsService = applicationContext.getBean('organizationUserDetailsService')
+            }
+            def userDetails = organizationUserDetailsService.loadUserByUsername(auth.principal, true, true);
 
             if(!userDetails.isAccountNonLocked()) {
                 throw new LockedException('Account is locked', userDetails)
@@ -81,9 +88,12 @@ class ActiveDirectoryAuthenticationProvider implements AuthenticationProvider, A
         }
     }
 
-    private def validateActiveDirectoryUser(String username, String password) {
-        def server = grailsApplication.config.com.interact.listen.activeDirectory.server
-        def domain = grailsApplication.config.com.interact.listen.activeDirectory.domain
+    private def validateActiveDirectoryUser(String username, String password, String orgId)
+    {
+//        def server = grailsApplication.config.com.interact.listen.activeDirectory.server
+        Organization org = Organization.get(orgId);
+        def server = org.getAdServer();
+        def domain = org.getAdDomain();
 
         def principal = "${username}@${domain}"
         def url = "ldap://${server}.${domain}/"

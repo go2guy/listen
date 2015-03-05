@@ -111,6 +111,8 @@ grails.plugin.springsecurity.userLookup.enabledPropertyName = 'enabledForLogin'
 grails.plugin.springsecurity.authority.className = 'com.interact.listen.Role'
 grails.plugin.springsecurity.useSecurityEventListener = true
 
+
+
 def providers = []
 providers << 'apiKeyAuthenticationProvider'
 providers << 'daoAuthenticationProvider'
@@ -181,10 +183,10 @@ com.interact.listen.organization.defaultExtLength = 3
 // After Hours Configuration
 com.interact.listen.afterHours.username = 'After Hours'
 
-com.interact.listen.activeDirectory.server = 'na-ne-dc01'
-com.interact.listen.activeDirectory.domain = 'newnet.local'
-com.interact.listen.ldap.basedn = System.getProperty('com.interact.listen.ldap.basedn', 'dc=newnet,dc=local')
-com.interact.listen.ldap.port = System.getProperty('com.interact.listen.ldap.port', '389')
+//com.interact.listen.activeDirectory.server = 'na-ne-dc01'
+//com.interact.listen.activeDirectory.domain = 'newnet.local'
+//com.interact.listen.ldap.basedn = System.getProperty('com.interact.listen.ldap.basedn', 'dc=newnet,dc=local')
+//com.interact.listen.ldap.port = System.getProperty('com.interact.listen.ldap.port', '389')
 
 // page:     https://test.authorize.net
 // username: hruskar@iivip.com
@@ -192,8 +194,8 @@ com.interact.listen.ldap.port = System.getProperty('com.interact.listen.ldap.por
 com.interact.listen.authorizenet.loginId = '9u9rhMY2hS2'
 com.interact.listen.authorizenet.transactionKey = '6s6Z7U5z2WnyA2Xz'
 
-com.interact.listen.acd.callProcessor.repeatInterval = 5000
-com.interact.listen.acd.cleanup.repeatInterval = 20000
+com.interact.listen.acd.callProcessor.repeatInterval = 0
+com.interact.listen.acd.cleanup.repeatInterval = 0
 com.interact.listen.acd.agent.waitTime = 15
 com.interact.listen.acd.waiting.max = 300
 com.interact.listen.acd.connect_request.max = 20
@@ -211,4 +213,11 @@ environments {
     grails.converters.default.pretty.print = true
   }
 }
+
+// Added by the MultiTenant plugin
+multiTenant {
+    tenantClass = com.interact.listen.User
+}
+
+multiTenant.resolveTenantBeforeLogin=true
 

@@ -18,13 +18,14 @@ class FindmeController {
     ]
 
     def historyService
+    def springSecurityService
 
     def index = {
         redirect(action: 'configure')
     }
 
     def configure = {
-        def user = authenticatedUser
+        def user = springSecurityService.currentUser
         def preferences = FindMePreferences.findByUser(user)
         def groups = FindMeNumber.findAllByUserGroupedByPriority(user)
         render(view: 'configure', model: [groups: groups, preferences: preferences])
@@ -38,7 +39,7 @@ class FindmeController {
             return
         }
 
-        def user = authenticatedUser
+        def user = springSecurityService.currentUser
         def extension = Extension.findByOwnerAndNumber(user, number)
         def forwardedTo = extension?.forwardedTo
         def canDial = user.canDial(forwardedTo ?: number)
@@ -51,7 +52,7 @@ class FindmeController {
     }
 
     def save = {
-        def user = authenticatedUser
+        def user = springSecurityService.currentUser
 
         // hacky value override since we declared it twice on the page, causing it to come in as an array
         

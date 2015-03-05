@@ -168,7 +168,7 @@ class OrganizationController {
 
         Organization.withTransaction { status ->
             def organization = new Organization()
-            organization.properties['name', 'contextPath', 'outboundCallid', 'outboundCallidByDid'] = params
+            organization.properties['name', 'contextPath', 'outboundCallid', 'outboundCallidByDid', 'adServer', 'adDomain', 'ldapBasedn', 'ldapPort', 'ldapDc'] = params
 
             if(organization?.outboundCallidByDid){
                 log.debug "Outbound call id by DID checked"
@@ -239,7 +239,7 @@ class OrganizationController {
             organization.outboundCallidByDid=false
         }
 
-        organization.properties['name', 'contextPath', 'outboundCallid', 'outboundCallidByDid', 'extLength'] = params
+        organization.properties['name', 'contextPath', 'outboundCallid', 'outboundCallidByDid', 'extLength', 'adServer', 'adDomain', 'ldapBasedn', 'ldapPort', 'ldapDc'] = params
         
         if(organization?.outboundCallidByDid){
             log.debug "Outbound call id by DID checked [${organization?.outboundCallidByDid}]"

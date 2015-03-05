@@ -50,10 +50,10 @@ class UserCreationService {
                     owner: user
                 ]
                 log.debug "Calling extension service create"
-                def extension = extensionService.create(p, organization, false)
-                if(!extension.hasErrors()) {
+                def result = extensionService.create(p, organization, user, false)
+                if(!result.extension.hasErrors()) {
                     log.debug "adding phone numbers"
-                    user.addToPhoneNumbers(extension)
+                    user.addToPhoneNumbers(result.extension)
                 }
             }
 
@@ -65,7 +65,7 @@ class UserCreationService {
         }
 
         try {
-            log.debug "Attempt cloudtodeviceServcie"
+            log.debug "Attempt cloudtodeviceService"
             cloudToDeviceService.sendContactSync()
         } catch (Exception e) {
             log.error "Exception caught from cloud to device service [${e}]"

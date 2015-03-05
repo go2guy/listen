@@ -1,6 +1,7 @@
 package com.interact.listen.pbx
 
 import com.interact.listen.Organization
+import com.interact.listen.User
 import org.joda.time.DateTime
 import javax.servlet.http.HttpServletResponse as HSR
 import org.apache.log4j.Logger
@@ -28,10 +29,16 @@ class ExtensionService {
         log.debug "register extension with params [${params}]"
     }
 
-    Result create(def params, Organization organization, def checkPermission = true) {
+    Result create(def params, Organization organization, def checkPermission = true)
+    {
+        def user = springSecurityService.getCurrentUser();
+        return create(params, organization, user, checkPermission);
+    }
+
+    Result create(def params, Organization organization, User user, def checkPermission = true) {
         log.debug "Attempt to create extension [${params}]"
         def result = new Result()
-        def user = springSecurityService.getCurrentUser()
+
         if (user)
             log.debug "We got the current user [${user.username}]"
         else
@@ -45,11 +52,23 @@ class ExtensionService {
 
         // This tokenization was added because NewNet put XXX-XXX-XXXX xEXT in the AD
         def tokenList = params.number.tokenize('x')
-        if (tokenList.size() > 1) {
+        if (tokenList.size() > 1)
+        {
             params.number = tokenList[1]
             log.debug "Setting extension number to [${params.number}]"
-        } else {
-            log.debug "Using extension number provided [${params.number}]"
+        }
+        else
+        {
+            tokenList = params.number.tokenize('X');
+            if (tokenList.size() > 1)
+            {
+                params.number = tokenList[1]
+                log.debug "Setting extension number to [${params.number}]"
+            }
+            else
+            {
+                log.debug "Using extension number provided [${params.number}]"
+            }
         }
 
         try {
@@ -66,7 +85,8 @@ class ExtensionService {
             result.sipPhone.ip = null
             result.sipPhone.dateRegistered = null
             result.sipPhone.dateExpires = null
-            result.sipPhone.userAgent = null
+            result.sipPhone.username = user.username;
+
 
             log.debug "Now actually create the sipPhone extension for [${params}]"
             log.debug("sipPhone info Ext Test        [${result.extension.sipPhone?.username}]")
@@ -141,7 +161,6 @@ class ExtensionService {
                 result.sipPhone.passwordConfirm = params?.passwordConfirm
                 result.sipPhone.dateRegistered = null
                 result.sipPhone.dateExpires = null
-                result.sipPhone.userAgent = null
             } else {
                 if ((params?.password && params?.passwordConfirm) || (params?.password != result.sipPhone.password) ) {
                     log.debug("updateExtension, set password")

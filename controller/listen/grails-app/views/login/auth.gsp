@@ -12,6 +12,7 @@
       <div id="logo"><img src="${resource(dir: 'resources/app/images', file: 'listen_logo_172x73.png')}" width="172" height="73"/></div>
     </div>
     <div id="right">
+
       <div id="login">
         <form action="${postUrl}" method="post" id="loginForm">
           <fieldset>
@@ -19,6 +20,7 @@
               <ul class="messages error"><li>${flash.message}</li></ul>
             </g:if>
 
+            <label><listen:userOrg/></label>
             <g:hiddenField name="organization" value="${listen.contextOrganizationProperty(field: 'id', defaultValue: '-1')}"/>
 
             <label for="username"><g:message code="page.login.auth.username.label"/></label>

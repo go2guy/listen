@@ -150,7 +150,7 @@ class AdministrationController {
         log.debug "addInternalRoute with params [${params}]"
         def route = new NumberRoute(params)
         route.type = NumberRoute.Type.INTERNAL
-        route.organization = authenticatedUser.organization
+        route.organization = session.organization
 
         if(route.validate() && route.save()) {
             log.debug "We've saved a new internal route"
@@ -167,9 +167,9 @@ class AdministrationController {
 
     def addExtension = {
         log.debug "addExtension with params [${params}]"
-        def organization = authenticatedUser.organization
+        def organization = session.organization
 
-        def extInfo = extensionService.create(params, organization)
+        def extInfo = extensionService.create(params, springSecurityService. organization)
 
         if(extInfo.extension?.hasErrors() || extInfo?.sipPhone?.hasErrors()) {
             log.debug "addExtension failed to be added"
@@ -201,7 +201,7 @@ class AdministrationController {
     def addRestriction = {
         def restriction = new OutdialRestriction()
         restriction.pattern = params.pattern
-        restriction.organization = authenticatedUser.organization
+        restriction.organization = session.organization
         if(params.target) {
             def target = User.get(params.target)
             if(!target) {
@@ -257,7 +257,7 @@ class AdministrationController {
     }
 
     def configuration = {
-        def organization = authenticatedUser.organization
+        def organization = session.organization
 
         def transcription = TranscriptionConfiguration.findByOrganization(organization)
         def afterHours = AfterHoursConfiguration.findByOrganization(organization)
@@ -361,7 +361,7 @@ class AdministrationController {
         
         log.debug "Add new skill with params [${params}]"
         
-        def organization = authenticatedUser.organization
+        def organization = session.organization
         def skill = new Skill()
         
         skill.skillname = params.skillname
@@ -386,7 +386,7 @@ class AdministrationController {
     def editSkill = {
         log.debug "Edit skill with params [${params}]"
         
-        def organization = authenticatedUser.organization
+        def organization = session.organization
         def skill = Skill.get(params.id)
         if(!skill) {
             flash.errorMessage = message(code: 'skill.notFound.message')
@@ -588,7 +588,7 @@ class AdministrationController {
     }
     
     def history = {
-        def organization = authenticatedUser.organization
+        def organization = session.organization
 
         params.offset = params.offset ? params.int('offset') : 0
         params.max = Math.min(params.max ? params.int('max') : 25, 100)
@@ -692,7 +692,7 @@ class AdministrationController {
 
     def saveConfiguration = {
         log.debug "Saving administration configuration [${params}]"
-        def organization = authenticatedUser.organization
+        def organization = session.organization
 
         def transcription = TranscriptionConfiguration.findByOrganization(organization)
         if(!transcription) {
@@ -921,7 +921,7 @@ class AdministrationController {
             return
         }
 
-        if(authenticatedUser.organization != route.organization) {
+        if(session.organization != route.organization) {
             log.error "Authorization denied for user [${params}]"
             redirect(controller: 'login', action: 'denied')
             return
@@ -947,7 +947,7 @@ class AdministrationController {
             return
         }
 
-        if(authenticatedUser.organization != route.organization) {
+        if(session.organization != route.organization) {
             redirect(controller: 'login', action: 'denied')
             return
         }
@@ -984,7 +984,7 @@ class AdministrationController {
             return
         }
 
-        def organization = authenticatedUser.organization
+        def organization = session.organization
         def extInfo = extensionService.update(params, extension, organization)
         if(extInfo.extension?.hasErrors() || extInfo?.sipPhone?.hasErrors()) {
             log.debug "addExtension failed to be added"
@@ -1011,7 +1011,7 @@ class AdministrationController {
             return
         }
 
-        if(authenticatedUser.organization != restriction.organization) {
+        if(session.organization != restriction.organization) {
             redirect(controller: 'login', action: 'denied')
             return
         }
@@ -1055,7 +1055,7 @@ class AdministrationController {
     }
 
     private def phonesModel() {
-        def organization = authenticatedUser.organization
+        def organization = session.organization
         params.max = Math.min(params.max ? params.int('max') : 100, 100)
         params.sort = params.sort ?: 'number'
         params.order = params.order ?: 'asc'
@@ -1086,7 +1086,7 @@ class AdministrationController {
     }
 
     private def outdialingModel() {
-        def organization = authenticatedUser.organization
+        def organization = session.organization
         def globalRestrictions = GlobalOutdialRestriction.findAllByPatternLike('%', [sort: 'pattern', order: 'asc'])
         def restrictions = OutdialRestriction.findAllByOrganization(organization, [sort: 'pattern', order: 'asc'])
         def exceptions = OutdialRestrictionException.createCriteria().list([sort: 'restriction', order: 'asc']) {
@@ -1108,7 +1108,7 @@ class AdministrationController {
     }
 
     private def skillModel() {
-        def organization = authenticatedUser.organization
+        def organization = session.organization
         log.debug "Checking skills for organization [${organization.name}]"
         def skills = Skill.findAllByOrganization(organization, [sort: 'skillname', order: 'asc'])
         log.debug "Organization [${organization.id}] has [${skills.size()}] skills configured"
@@ -1138,8 +1138,11 @@ class AdministrationController {
         ] 
     }
     
-    private def routingModel() {
-        def organization = authenticatedUser.organization
+    private def routingModel()
+    {
+//        User user = springSecurityService.currentUser;
+
+        def organization = session.organization;
         def external = NumberRoute.findAllByOrganizationAndType(organization, NumberRoute.Type.EXTERNAL, [sort: 'pattern', order: 'asc'])
         def internal = NumberRoute.findAllByOrganizationAndType(organization, NumberRoute.Type.INTERNAL, [sort: 'pattern', order: 'asc'])
         def directInwardDialNumbers = DirectInwardDialNumber.withCriteria {
