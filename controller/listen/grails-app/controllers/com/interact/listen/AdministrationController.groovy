@@ -23,6 +23,7 @@ class AdministrationController {
     def extensionService
     def historyService
     def licenseService
+    def messageLightService
     def realizeAlertUpdateService
 
     static allowedMethods = [
@@ -46,6 +47,8 @@ class AdministrationController {
         history: 'GET',
         outdialing: 'GET',
         phones: 'GET',
+        toggleMsgLight: 'GET',
+        updateMsgLight: 'POST',
         pollAvailableUsers: 'POST',
         routing: 'GET',
         saveAndroid: 'POST',
@@ -196,6 +199,38 @@ class AdministrationController {
             flash.successMessage = message(code: 'extension.created.message')
             redirect(action: 'listPhones')
         }
+    }
+
+    def toggleMsgLight = {
+        log.debug "toggleMsgLight with params [${params}]"
+        render(view: 'toggleMsgLight', model: phonesModel())
+    }
+
+    def updateMsgLight = {
+        log.debug "updateMsgLight with params [${params}]"
+
+        def extension = Extension.get(params?.id)
+        if(!extension) {
+            log.error("updateMsgLight passed invalid extension [${params?.id}]")
+            flash.errorMessage = message(code: 'extension.notFound.message')
+            redirect(action: 'toggleMsgLight')
+            return
+        }
+
+        if(params?.lightStatus == message(code: 'page.administration.phones.toggleMsgLight.button.on')) {
+            log.debug("updateMsgLight to turn it on")
+            messageLightService.toggle(extension.number, extension?.sipPhone?.ip, true)
+            flash.successMessage = message(code: 'page.administration.phones.toggleMsgLight.action.on', args: [extension.number])
+        } else if (params?.lightStatus == message(code: 'page.administration.phones.toggleMsgLight.button.off')) {
+            log.debug("updateMsgLight to turn it off")
+            messageLightService.toggle(extension.number, extension?.sipPhone?.ip, false)
+            flash.successMessage = message(code: 'page.administration.phones.toggleMsgLight.action.off', args: [extension.number])
+        } else {
+            log.error("updateMsgLight invalid or missing parameter [lightStatus] [${params?.lightStatus}]")
+            flash.errorMessage = message(code: 'page.administration.phones.toggleMsgLight.input.error')
+        }
+
+        render(view: 'toggleMsgLight', model: phonesModel())
     }
 
     def addRestriction = {
