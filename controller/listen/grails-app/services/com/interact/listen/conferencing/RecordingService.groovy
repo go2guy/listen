@@ -5,6 +5,7 @@ class RecordingService {
 
     void delete(Recording recording) {
         recording.delete()
+        recording.audio.delete()
         historyService.deletedConferenceRecording(recording)
     }
 }
