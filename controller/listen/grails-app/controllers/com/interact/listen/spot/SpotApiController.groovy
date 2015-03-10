@@ -738,6 +738,10 @@ class SpotApiController {
         }
 
         conferenceService.dropCaller(participant)
+
+        def partsRemaining = conferenceService.confParticipantsRemaining(participant.conference)
+        log.debug("Conference id after [${participant?.conference?.id}] has part count[${partsRemaining}]")
+
         response.flushBuffer()
     }
 

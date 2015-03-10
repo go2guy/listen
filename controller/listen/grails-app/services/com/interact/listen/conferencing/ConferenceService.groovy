@@ -9,6 +9,19 @@ class ConferenceService {
     def springSecurityService
     def statWriterService
 
+    Integer confParticipantsRemaining(Conference conference) {
+        log.debug("confParticipantsRemaining for conf id [${conference.id}]")
+
+        def total = Participant.createCriteria().get {
+            projections {
+                count('id')
+            }
+            eq('conference', conference)
+        }
+        log.debug("confParticipantsRemaining conf id [${conference.id}] currently has [${total}] participants")
+        return total
+    }
+
     boolean dropCaller(Participant participant) {
         participant.delete()
         participant.recordedName.delete()
