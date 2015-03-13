@@ -45,7 +45,7 @@ class ExtensionController {
             }
             return [
                 'number': it.number,
-                'ip': it?.sipPhone.ip,
+                //'ip': it?.sipPhone?.ip,
                 'phoneType': phoneType
             ]
         }
