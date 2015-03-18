@@ -85,7 +85,6 @@ CREATE TABLE `phone_number` (
   `class` varchar(255) NOT NULL,
   `sms_domain` varchar(50) default NULL,
   PRIMARY KEY  (`id`),
-  UNIQUE KEY `ip` (`ip`),
   KEY `FKDB80433A12722FBB` (`greeting_id`),
   KEY `FKDB80433A6D23A06E` (`owner_id`),
   CONSTRAINT `phone_number_greeting_i_fk` FOREIGN KEY (`greeting_id`) REFERENCES `audio` (`id`),
@@ -105,7 +104,7 @@ CREATE TABLE `acd_user_status` (
   `onacall` bit(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   FOREIGN KEY (owner_id) REFERENCES user (id) ON UPDATE CASCADE ON DELETE CASCADE,
-  FOREIGN KEY (contact_number_id) REFERENCES phone_number (id) ON DELETE CASCADE,
+  FOREIGN KEY (contact_number_id) REFERENCES phone_number (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 

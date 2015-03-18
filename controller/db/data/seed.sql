@@ -14,7 +14,8 @@ INSERT INTO `user` (id, version, account_expired, account_locked, email_address,
 UNLOCK TABLES;
 
 LOCK TABLES `phone_number` WRITE;
-INSERT INTO `phone_number` VALUES (1,1,NULL,1,NULL,'357',2,'com.interact.listen.pbx.Extension',NULL,NULL);
+INSERT INTO `phone_number` (id, version,forwarded_to,greeting_id,is_public,number,owner_id,class,sms_domain)
+  VALUES (1,1,NULL,1,NULL,'357',2,'com.interact.listen.pbx.Extension',NULL);
 UNLOCK TABLES;
 
 
