@@ -6,7 +6,13 @@ class ReplayMenuAction extends Action
 
     def toIvrCommand(String promptDirectory, String promptBefore, String artifactsDirectory, long organizationId)
     {
-        //Not implemented.
-        return null;
+        def args = [
+        ]
+
+        return [
+            promptBefore: !promptBefore || promptBefore.trim() == '' ? '' : promptDirectory + '/' + promptBefore,
+            action: 'REPLAY',
+            args: args
+        ]
     }
 }
