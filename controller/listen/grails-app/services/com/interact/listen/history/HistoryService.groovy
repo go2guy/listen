@@ -16,6 +16,12 @@ import org.springframework.web.context.request.RequestContextHolder as RCH
 class HistoryService {
     def springSecurityService
     // TODO handle service (if necessary)
+    
+    void updatedAttendantMenu(User user) {
+        write(action: Action.UPDATED_ATTENDANT_MENU,
+              description: "Updated Attendant Menu Configuration",
+              onUser: user)
+    }
 
     void cancelledConferenceInvitation(ScheduledConference invitation) {
         write(action: Action.CANCELLED_CONFERENCE_INVITATION,

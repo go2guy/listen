@@ -2,6 +2,7 @@ package com.interact.listen.attendant
 
 import com.interact.listen.attendant.action.*
 import com.interact.listen.acd.*
+import com.interact.listen.history.*
 import com.interact.listen.voicemail.TimeRestriction
 import org.joda.time.LocalTime
 import org.json.simple.JSONArray
@@ -12,6 +13,7 @@ import org.springframework.context.MessageSource
 
 class MenuGroupService {
 
+    def historyService
     def springSecurityService
     MessageSource messageSource
 
@@ -115,6 +117,8 @@ class MenuGroupService {
                 throw new MenuGroupValidationException("Group named [${group.name}] failed validation", group.errors, groups)
             }
         }
+
+        historyService.updatedAttendantMenu(user);
 
         return true
     }
