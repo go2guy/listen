@@ -8,7 +8,7 @@ enum AssignablePermission {
     VOICEMAIL      ('ROLE_VOICEMAIL_USER',     'Voicemail',           true),
     ADMINISTRATION ('ROLE_ORGANIZATION_ADMIN', 'Administration',      false),
     ACD            ('ROLE_ACD_USER',           'ACD',                 false),
-    QUEUE          ('ROLE_QUEUE_USER',         'Acd Call Queue',      false)
+    QUEUE          ('ROLE_QUEUE_USER',         'ACD Call Queue',      false)
 
     String authority
     String description
