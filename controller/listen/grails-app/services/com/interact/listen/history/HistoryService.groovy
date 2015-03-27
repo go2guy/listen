@@ -317,7 +317,19 @@ class HistoryService {
               description: "Updated ACD contact number to [${acdUserStatus.contactNumber.number}]",
               onUser: acdUserStatus.owner )
     }
-    
+
+    void addUserPermission(User user, def role) {
+        write(action: Action.ADDED_USER_PERMISSION,
+                description: "Added user permission [${role}]",
+                onUser: user )
+    }
+
+    void removeUserPermission(User user, def role) {
+        write(action: Action.DELETED_USER_PERMISSION,
+                description: "Removed user permission [${role}]",
+                onUser: user )
+    }
+
     void disabledAndroidCloudToDevice() {
         write(action: Action.DISABLED_ANDROID_CLOUD_TO_DEVICE,
               description: "Disabled Android Cloud-to-Device")

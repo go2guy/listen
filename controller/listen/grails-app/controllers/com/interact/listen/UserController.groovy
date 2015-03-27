@@ -28,6 +28,7 @@ class UserController {
     def springSecurityService
     def userCreationService
     def userService
+    def historyService
 
     def index = {
         redirect(action: 'list')
@@ -220,6 +221,7 @@ class UserController {
     }
 
     def togglePermission = {
+        log.debug "togglePermission with params [${params}]"
         def user = User.get(params.id)
         if(!user) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, 'User not found')
@@ -244,9 +246,13 @@ class UserController {
         }
 
         if(UserRole.findByUserAndRole(user, role)) {
+            log.debug "Removing user role [${permission.description}]"
             UserRole.remove(user, role, true)
+            historyService.removeUserPermission(user, permission.description);
         } else {
+            log.debug "Adding user role [${permission.description}]"
             UserRole.create(user, role, true)
+            historyService.addUserPermission(user, permission.description);
         }
 
         render(contentType: 'application/json') {
