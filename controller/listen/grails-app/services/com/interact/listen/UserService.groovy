@@ -79,6 +79,7 @@ class UserService {
                                 //Yes they did, did the priority change
 
                                 int newPriority = 0;
+                                def origPriority = userSkill.priority;
                                 if(screenPriority)
                                 {
                                     newPriority = Integer.parseInt(screenPriority);
@@ -93,6 +94,7 @@ class UserService {
                                     }
                                     userSkill.priority = newPriority;
                                     userSkill.save(flush: true);
+                                    historyService.updatePriorityUserSkill(userSkill, origPriority);
                                 }
                                 existingSkill = true;
                                 break;
@@ -118,6 +120,7 @@ class UserService {
                             {
                                 //get rid of it
                                 userSkill.delete(flush: true);
+                                historyService.deletedUserSkill(userSkill)
                                 break;
                             }
                         }
@@ -132,6 +135,7 @@ class UserService {
                         log.debug("Adding new skill: " + newSkill.skill.description);
                     }
                     newSkill.insert(flush: true);
+                    historyService.addedUserSkill(newSkill);
                 }
 
                 // loop through existing user skills.  Remove skills that are no longer selected.

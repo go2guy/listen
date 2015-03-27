@@ -42,20 +42,6 @@ class UserCreationService {
         if(!user.errors.hasErrors()) {
             log.debug "create user didn't have errors, lets LDAP"
             ldapService.addUser(user)
-            if(params.extension) {
-                def p = [
-                    number: params.extension,
-                    ip: params.ip,
-                    'owner.id': user.id,
-                    owner: user
-                ]
-                log.debug "Calling extension service create"
-                def extension = extensionService.create(p, organization, false)
-                if(!extension.hasErrors()) {
-                    log.debug "adding phone numbers"
-                    user.addToPhoneNumbers(extension)
-                }
-            }
 
             // TODO default passcode should be configurable?
             new VoicemailPreferences(passcode: '1234', user: user).save()

@@ -276,7 +276,7 @@ class HistoryService {
 
     void addedUserSkill(UserSkill userSkill) {
         write(action: Action.ADDED_ACD_SKILL_USER,
-              description: "Add ACD skill [${userSkill.skill.skillname}]",
+              description: "Added ACD skill [${userSkill.skill.skillname}] with priority [${userSkill.priority}]",
               onUser: userSkill.user )
     }
     
@@ -285,7 +285,12 @@ class HistoryService {
               description: "Removed ACD skill [${userSkill.skill.skillname}]",
               onUser: userSkill.user )
     }
-    
+
+    void updatePriorityUserSkill(UserSkill userSkill, def oldPriority ) {
+        write(action: Action.UPDATED_ACD_SKILL_PRIORITY_USER,
+                description: "Updated priority of ACD skill [${userSkill.skill.skillname}] from [${oldPriority}] to [${userSkill.priority}]",
+                onUser: userSkill.user )
+    }
     void createdSkill(Skill skill) {
         write(action: Action.CREATED_ACD_SKILL,
               description: "Created ACD skill [${skill.skillname}] for org [${skill.organization}]")

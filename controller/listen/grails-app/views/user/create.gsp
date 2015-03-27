@@ -26,13 +26,6 @@
         <label for="emailAddress"><g:message code="user.emailAddress.label"/></label>
         <g:textField name="emailAddress" value="${fieldValue(bean: user, field: 'emailAddress')}" class="${listen.validationClass(bean: user, field: 'emailAddress')}"/>
 
-        <h3>Office Phone (Optional)</h3>
-        <label for="extension"><g:message code="extension.number.label"/></label>
-        <g:textField name="extension" value="${params.extension?.encodeAsHTML()}"/>
-
-        <label for="ip"><g:message code="extension.ip.label"/></label>
-        <g:textField name="ip" value="${params.ip?.encodeAsHTML()}"/>
-
         <ul class="form-buttons">
           <li><g:submitButton name="submit" value="${g.message(code: 'default.button.create.label')}"/></li>
         </ul>
