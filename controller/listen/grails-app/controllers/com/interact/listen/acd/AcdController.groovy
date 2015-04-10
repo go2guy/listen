@@ -173,9 +173,10 @@ class AcdController
       def user = authenticatedUser
 
       params.sort = params.sort ?: 'enqueueTime'
-      params.order = params.order ?: 'asc'
+      params.order = params.order ?: 'desc'
       params.max = params.max ?: 10
       params.offset = params.offset ?: 0
+      LocalDate today = new LocalDate();
 
       def json = [:]
 
@@ -186,6 +187,7 @@ class AcdController
             order(params.sort, params.order)
             maxResults(params.max.toInteger())
             firstResult(params.offset.toInteger())
+            ge("enqueueTime",today.toDateTimeAtStartOfDay())
         }
       }
       else { // get call history for current user
@@ -194,6 +196,7 @@ class AcdController
             maxResults(params.max.toInteger())
             firstResult(params.offset.toInteger())
             eq("user",user)
+            ge("enqueueTime",today.toDateTimeAtStartOfDay())
         }
       }
 
@@ -387,10 +390,23 @@ class AcdController
 
       LocalDate today = new LocalDate()
 
-      def callHistory = AcdCallHistory.createCriteria().list() {
-        order(params.historySort, params.historyOrder)
-        eq("user", user)
-        ge("enqueueTime",today.toDateTimeAtStartOfDay())
+//      def callHistory = AcdCallHistory.createCriteria().list() {
+//        order(params.historySort, params.historyOrder)
+//        eq("user", user)
+//        ge("enqueueTime",today.toDateTimeAtStartOfDay())
+//      }
+      
+      if ( user.hasRole('ROLE_ORGANIZATION_ADMIN') ) { // get all call history
+        callHistory = AcdCallHistory.createCriteria().list {
+            order(params.historySort, params.historyOrder)
+            ge("enqueueTime",today.toDateTimeAtStartOfDay())
+        }
+      } else { // get call history for current user
+        callHistory = AcdCallHistory.createCriteria().list {
+            order(params.historySort, params.historyOrder)
+            eq("user",user)
+            ge("enqueueTime",today.toDateTimeAtStartOfDay())
+        }
       }
 
       def historyTotal = callHistory.size()

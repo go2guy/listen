@@ -154,7 +154,7 @@
     });
 
     function disconnectClicked(e, callId) {
-        alert("Disconnect Call?");
+        alert("Transfer the call to Voicemail?");
         $.ajax({
             url: '${createLink(action: 'disconnectCaller')}?id=' + callId,
             dataType: 'json',
@@ -163,11 +163,11 @@
             {
                 if(data && data.success == "true")
                 {
-                    listen.showSuccessMessage('Call disconnected.')
+                    listen.showSuccessMessage('Transferred to Voicemail.')
                 }
                 else
                 {
-                    listen.showErrorMessage('Unable to disconnect call.')
+                    listen.showErrorMessage('Unable to transfer the call to Voicemail.')
                 }
             }
         });

@@ -161,7 +161,7 @@
                   <td class="disconnect-button">
                     <button type="button" class="disconnectButton" id="disconnectButton"
                             value="${thisCall.id}"
-                            onclick="disconnectClicked(this, this.value)">Disconnect</button>
+                            onclick="disconnectClicked(this, this.value)">Voicemail</button>
                   </td>
                   <td class="transfer-dropdown hidden">
                     <div id="transferDropdownDiv">
@@ -310,7 +310,7 @@
         <td class="disconnect-button" >
           <button type="button" class="disconnectButton" id="disconnectButton"
                   value=""
-                  onclick="disconnectClicked(this, this.value)">Disconnect</button>
+                  onclick="disconnectClicked(this, this.value)">Voicemail</button>
         </td>
         <td class="transfer-dropdown hidden">
           <div id="transferDropdownDiv">
@@ -485,7 +485,7 @@
     }
 
     function disconnectClicked(e) {
-        if(confirm('Disconnect Call?'))
+        if(confirm('Transfer the call to Voicemail?'))
         {
             var callId = $('#hiddenCallId')[0].value;
 
@@ -497,13 +497,13 @@
                 {
                     if(data && data.success == "true")
                     {
-                        listen.showSuccessMessage('Call disconnected.')
+                        listen.showSuccessMessage('Transferred to Voicemail.')
                         $('.transfer-dropdown').addClass('hidden');
                         $('#transferHeader')[0].innerHTML = "";
                     }
                     else
                     {
-                        listen.showErrorMessage('Unable to disconnect call.')
+                        listen.showErrorMessage('Unable to transfer the call to Voicemail.')
                         $('.transfer-button').removeClass('hidden');
                         $('.transfer-dropdown').addClass('hidden');
                         $('#transferHeader')[0].innerHTML = "";
@@ -517,7 +517,6 @@
         {
             return false;
         }
-
     }
 
     function toggleHold(element, callId)
@@ -666,12 +665,92 @@
         }
     };
 
-
-
     $(document).ready(function()
     {
         setInterval(callList.poll, 2000);
     });
+    
+    // TODO: Change it up for Call History!!!
+
+    $(document).ready( function () {
+      setInterval(callHistory.poll,1000);
+    });
+
+    var callHistory = {
+      poll: function() {
+        $.ajax({
+          // passing in params to ensure sort and pagination are kept
+          url: '${createLink(action: 'pollHistory')}',
+          dataType: 'json',
+          cache: false,
+          success: function(data) {
+            if ( data && data.calls.length > 0 )
+            {
+              // update call history
+              var tbody = $("#agent-history > div > table > tbody");
+              // tbody doesn't exist! (jquery has a weird way of checking this)
+              if ( tbody.length == 0 ) {
+                // build it from scratch
+                var div = $("#agent-history > div");
+                div.empty();
+                div.append('<table id="history-table" cellspacing="0" cellpadding="0" class="fixed"></table>');
+                var table = $("#callQueue");
+                table.append('<thead><tr><th>Caller</th><th>Skill</th><th>Agent Time</th><th>Queue Time</th></thead>');
+                table.append('<tbody></tbody>');
+                tbody = $("agent-history > div > table > tbody");
+              }
+              tbody.empty();
+              var tr;
+              var row_count = 0;
+              data.calls.forEach(function(call) {
+                tr = "";
+                tr += '<tr class="' + (++row_count % 2 == 0 ? 'even' : 'odd') + '">';
+                tr += '<td class="overflow">' + call.ani + '</td>';
+                tr += '<td class="overflow">' + call.skill + '</td>';
+                tr += '<td class="overflow">' + getDifference(call.start, call.end) + '</td>';
+                tr += '<td class="overflow">' + getDifference(call.enqueueTime,call.dequeueTime) + '</td></tr>';
+
+                tbody.append(tr);
+              });
+            } // if ( data && ... )
+            else
+            { // there were no calls in the queue
+              var tbody = $("#agent-history > div > table > tbody");
+              // if there were previously calls ( aka tbody exists )
+              if ( tbody.length > 0 ) {
+                // we need to remove the table
+                var div = $("#agent-history > div");
+                div.empty();
+                div.append('<span>You have no recent call history.</span>');
+              } // if ( tbody.length > 0 ) ...
+            }
+
+            //Now Check for change in status
+            if(data && data.userStatus)
+            {
+                if($('#statusButton')[0].value != data.userStatus)
+                {
+                    $('#statusButton')[0].value = data.userStatus;
+
+                    if(data.userStatus == 'Unavailable')
+                    {
+                        $('.statusButton').removeClass('Available');
+                        $('.statusButton').addClass('Unavailable');
+                    }
+                    else
+                    {
+                        $('.statusButton').removeClass('Unavailable');
+                        $('.statusButton').addClass('Available');
+                    }
+
+                    $('#statusButton')[0].title = data.userStatusTitle;
+                }
+            }
+          } // success
+        }); // $.ajax
+      } // callHistory.poll
+    }; // callHistory
+    
     </script>
   </body>
 
