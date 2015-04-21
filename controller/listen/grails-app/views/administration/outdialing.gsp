@@ -22,6 +22,8 @@ tr.add td.col-button {
   </head>
   <body>
 
+    <listen:infoSnippet summaryCode="page.administration.outdialing.snippet.summary" contentCode="page.administration.outdialing.snippet.content"/>
+
     <g:if test="${globalRestrictions.size() > 0}">
       <table>
         <caption><g:message code="page.administration.outdialing.global.caption"/></caption>
