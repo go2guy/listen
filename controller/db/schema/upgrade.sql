@@ -1,5 +1,7 @@
 use listen2;
 
+SET foreign_key_checks = 0;
+
 -- OLD upgrade.sql
 -----------------------------------------------------------------------------------------
 -- ALTER TABLE sip_phone ADD COLUMN `user_agent` varchar(50) DEFAULT NULL AFTER `cseq`;
@@ -9,69 +11,84 @@ use listen2;
 -- NEW upgrade.sql - v6 to v7
 -----------------------------------------------------------------------------------------
 /*
-	Adding on Cascades must drop foreign key to begin with
+        Adding on Cascades must drop foreign key to begin with
 */
-ALTER TABLE acd_user_status DROP FOREIGN KEY owner_id;
-ALTER TABLE acd_user_status
-	ADD CONSTRAINT `acd_user_status_ibfk_1`
-	FOREIGN KEY (`owner_id`)
-	REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
-ALTER TABLE acd_user_status DROP FOREIGN KEY contact_number_id;
-ALTER TABLE acd_user_status
-	ADD CONSTRAINT `acd_user_status_ibfk_2`
-	FOREIGN KEY (`contact_number_id`)
-	REFERENCES `phone_number` (`id`) ON DELETE CASCADE;
-
-	
 /*
-	Removing Constraints for action_history
-*/	
+ALTER TABLE acd_user_status DROP FOREIGN KEY owner_id;
+*/
+ALTER TABLE acd_user_status DROP FOREIGN KEY `acd_user_status_ibfk_1`;
+ALTER TABLE acd_user_status
+        ADD CONSTRAINT `acd_user_status_ibfk_1`
+        FOREIGN KEY (`owner_id`)
+        REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+/*
+ALTER TABLE acd_user_status DROP FOREIGN KEY contact_number_id;
+*/
+ALTER TABLE acd_user_status DROP FOREIGN KEY `acd_user_status_ibfk_2`;
+ALTER TABLE acd_user_status
+        ADD CONSTRAINT `acd_user_status_ibfk_2`
+        FOREIGN KEY (`contact_number_id`)
+        REFERENCES `phone_number` (`id`) ON DELETE CASCADE;
+
+
+/*
+        Removing Constraints for action_history
 ALTER TABLE action_history DROP FOREIGN KEY by_user_id;
 ALTER TABLE action_history DROP FOREIGN KEY on_user_id;
+*/
+ALTER TABLE action_history DROP FOREIGN KEY `action_history_by_user_id_fk`;
+ALTER TABLE action_history DROP FOREIGN KEY `action_history_on_user_id_fk`;
+
+
 
 /*
-	Removing Constraints for call_history
-*/	
+        Removing Constraints for call_history
 ALTER TABLE call_history DROP FOREIGN KEY from_user_id;
 ALTER TABLE call_history DROP FOREIGN KEY to_user_id;
+*/
+ALTER TABLE call_history DROP FOREIGN KEY `call_history_to_user_id_fk`;
+ALTER TABLE call_history DROP FOREIGN KEY `call_history_from_user__fk`;
 
 /*
-	Removing Constraints for inbox_message
-*/	
+        Removing Constraints for inbox_message
 ALTER TABLE inbox_message DROP FOREIGN KEY forwarded_by_id;
 ALTER TABLE inbox_message DROP FOREIGN KEY left_by_id;
+*/
+ALTER TABLE inbox_message DROP FOREIGN KEY `voicemail_forwarded__fk`;
+ALTER TABLE inbox_message DROP FOREIGN KEY `voicemail_left_by_id_fk`;
 
 /*
-	Add ext_length to organization
+        Add ext_length to organization
 */
 ALTER TABLE organization ADD COLUMN ext_length int(11) NOT NULL;
 
 /*
-	Removing Column ip in phone_number
-*/	
+        Removing Column ip in phone_number
+*/
 ALTER TABLE phone_number DROP COLUMN ip;
 
 /*
-	Adding on Cascades must drop foreign key to begin with
-*/
+        Adding on Cascades must drop foreign key to begin with
 ALTER TABLE prompt_override DROP FOREIGN KEY use_menu_id;
-ALTER TABLE prompt_override
-	ADD CONSTRAINT `FK90874447DD97B406`
-	FOREIGN KEY (`use_menu_id`)
-	REFERENCES `menu_group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
-/*
-	Adding on Cascades must drop foreign key to begin with
 */
-ALTER TABLE recording DROP FOREIGN KEY audio_id;
-ALTER TABLE recording
-	ADD CONSTRAINT `recording_audio_id_fk`
-	FOREIGN KEY (`audio_id`)
-	REFERENCES `audio` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE prompt_override DROP FOREIGN KEY `FK90874447DD97B406`;
+ALTER TABLE prompt_override
+        ADD CONSTRAINT `FK90874447DD97B406`
+        FOREIGN KEY (`use_menu_id`)
+        REFERENCES `menu_group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 /*
-	Modify Columns of scheduled_conference
+        Adding on Cascades must drop foreign key to begin with
+ALTER TABLE recording DROP FOREIGN KEY audio_id;
+*/
+ALTER TABLE recording DROP FOREIGN KEY `recording_audio_id_fk`;
+ALTER TABLE recording
+        ADD CONSTRAINT `recording_audio_id_fk`
+        FOREIGN KEY (`audio_id`)
+        REFERENCES `audio` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+/*
+        Modify Columns of scheduled_conference
 */
 ALTER TABLE scheduled_conference MODIFY COLUMN active_caller_addresses longtext;
 ALTER TABLE scheduled_conference MODIFY COLUMN passive_caller_addresses longtext;
@@ -101,4 +118,5 @@ CREATE TABLE `sip_phone` (
   CONSTRAINT `sip_phone_organization_id_fk` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf8;
 
+SET foreign_key_checks = 1;
 commit work;
