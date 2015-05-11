@@ -746,12 +746,13 @@ class AdministrationController {
             afterHours = new AfterHoursConfiguration(organization: organization)
         }
 
+        def originalMobilePhone = afterHours.mobilePhone
+        def originalAlternateNumber = afterHours.alternateNumber
+        def originalRealizeUrl = afterHours.realizeUrl
+        def originalRealizeAlertName = afterHours.realizeAlertName
+
         if(licenseService.canAccess(ListenFeature.AFTERHOURS)) {
-            log.debug "After hourse is licensed, saving configuration"
-            def originalMobilePhone = afterHours.mobilePhone
-            def originalAlternateNumber = afterHours.alternateNumber
-            def originalRealizeUrl = afterHours.realizeUrl
-            def originalRealizeAlertName = afterHours.realizeAlertName
+            log.debug "After hours is licensed, saving configuration"
 
             if(params['afterHours.mobilePhone.id'] == '') {
                 afterHours.mobilePhone = null
@@ -794,7 +795,7 @@ class AdministrationController {
 
         // TODO use a transaction
         if(licenseService.canAccess(ListenFeature.AFTERHOURS) && afterHours.validate() && afterHours.save()) {
-            log.debug "Saving after hourse configuration successful"
+            log.debug "Saving after hours configuration successful"
             if(originalMobilePhone != afterHours.mobilePhone) {
                 historyService.changedAfterHoursMobileNumber(afterHours, originalMobilePhone)
             }
