@@ -39,6 +39,8 @@ grails.project.dependency.resolution = {
         mavenRepo "http://download.java.net/maven/2/"
         mavenRepo "http://megatron:8081/nexus/content/groups/public"
         mavenRepo "http://repo1.maven.org/maven2"
+        mavenRepo "http://repo.grails.org/grails/core"
+        mavenRepo "http://repo.grails.org/grails/plugins"
     }
 
     dependencies {
@@ -59,6 +61,7 @@ grails.project.dependency.resolution = {
         compile('shared-ldap:shared-ldap:0.9.12')
         compile('shared-ldap:shared-ldap-constants:0.9.12')
         compile('commons-dbcp:commons-dbcp:1.4')
+        compile('commons-pool:commons-pool:1.5.4')
         compile('commons-configuration:commons-configuration:1.9')
 
         runtime 'commons-codec:commons-codec:1.4',
@@ -70,7 +73,6 @@ grails.project.dependency.resolution = {
                 'org.apache.httpcomponents:httpmime:4.0.1',
                 'com.googlecode.json-simple:json-simple:1.1',
                 'org.apache.tika:tika-core:0.9',
-//                'org.apache.commons-pool:commons-pool:1.5.4',
                 'net.sourceforge.jexcelapi:jxl:2.6.12'
 
         runtime('mariadb-client:mariadb-java-client:1.1.5')
