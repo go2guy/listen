@@ -24,6 +24,11 @@ class Conference {
         startTime nullable: true
     }
 
+    def findAdmins() {
+        def admins = Participant.findAllByConferenceAndIsAdmin(this, true)
+        return admins
+    }
+
     def firstAdminSessionId() {
         def sessionId = Participant.findByConferenceAndIsAdmin(this, true)?.sessionId
         if(!sessionId) {

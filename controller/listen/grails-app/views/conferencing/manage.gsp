@@ -303,7 +303,7 @@ span.recording-status.started {
                 </g:form>
               </td>
               <td class="col-drop-button">
-                <g:form controller="conferencing" action="dropCaller" method="post" class="drop-form ajax-form disable-on-submit confirm-before-submit${participant.isAdmin ? ' initially-hidden' : ''}">
+                <g:form controller="conferencing" action="dropCaller" method="post" class="drop-form ajax-form disable-on-submit confirm-before-submit">
                   <input type="hidden" name="id" value="${participant.id}"/>
                   <input type="submit" value="Drop"/>
                 </g:form>
@@ -531,7 +531,6 @@ var conference = {
         $('.unmute-form input[name="id"], .mute-form input[name="id"], .drop-form input[name="id"]', row).val(participant.id);
         $('.unmute-form', row).toggle(participant.isAdminMuted);
         $('.mute-form', row).toggle(!(participant.isPassive || participant.isAdmin || participant.isAdminMuted));
-        $('.drop-form', row).toggle(!participant.isAdmin);
 
         if(changed && animate === true) {
             conference.highlight(row);

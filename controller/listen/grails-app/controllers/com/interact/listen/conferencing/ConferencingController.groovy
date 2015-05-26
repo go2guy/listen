@@ -38,6 +38,7 @@ class ConferencingController {
     def scheduledConferenceNotificationService
     def spotCommunicationService
     def userCreationService
+    def conferenceService
 
     def index = {
         redirect(action: 'manage')
@@ -158,8 +159,11 @@ class ConferencingController {
     }
 
     def dropCaller = {
+        log.debug("dropCaller with params [${params}]")
+
         def participant = Participant.get(params.id)
         if(!participant) {
+            log.error("dropCaller passed invalid participant [${params.id}]")
             flash.errorMessage = 'Participant not found'
             redirect(action: 'manage')
             return
@@ -167,14 +171,15 @@ class ConferencingController {
 
         def user = authenticatedUser
         if(participant.conference.owner != user) {
+            log.warn("can't dropCaller because dropper is not the conference owner [${user}]")
             redirect(controller: 'login', action: 'denied')
             return
         }
 
         if(participant.isAdmin) {
-            flash.errorMessage = 'Cannot drop admin caller'
-            redirect(action: 'manage')
-            return
+            log.warn("Authenticated GUI user [${user.username}] is dropping admin participant [${participant.user.username}]")
+        } else {
+            log.debug("Authenticated GUI user [${user.username}] is dropping participant [${participant.displayName()}]")
         }
 
         if(spotCommunicationService.dropParticipant(participant)){
@@ -184,6 +189,29 @@ class ConferencingController {
             // something went wrong and we couldn't drop the participant, go ahead and directly delete the entry from the database
             log.error("We've failed to drop the participant [${participant.id}], directly delete from database.")
             participant.delete()
+            def adminLegs = participant.conference.findAdmins()
+            log.debug("The number of admins [${adminLegs.size()}]")
+            def shutdownConf = true
+            if (adminLegs.size() > 0) {
+                adminLegs.each { admin ->
+                    log.debug("We still have an admin conference leg active [${admin}]")
+                    if (admin.id == participant.id) {
+                        log.debug("We already deleted admin [${admin}]")
+                    } else {
+                        log.debug("Admin id [${admin.id}] still active, leave conference alone")
+                        shutdownConf = false
+                    }
+                }
+            } else {
+                log.error("We don't have an admin conference leg available, shutdown conference")
+            }
+
+            if (shutdownConf) {
+                log.debug("We will shutdown conference [${participant.conference.id}]")
+                conferenceService.stopConference(participant.conference)
+            } else {
+                log.debug("We'll leave conference [${participant.conference.id}] active for now")
+            }
         }
 
         redirect(action: 'manage')
