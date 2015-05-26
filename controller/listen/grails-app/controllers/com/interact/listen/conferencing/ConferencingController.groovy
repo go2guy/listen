@@ -177,9 +177,9 @@ class ConferencingController {
         }
 
         if(participant.isAdmin) {
-            log.warn("Authenticated GUI user [${user.username}] is dropping admin participant [${participant.user.username}]")
+            log.warn("Authenticated GUI user [${user?.username}] is dropping admin participant [${participant.displayName()}]")
         } else {
-            log.debug("Authenticated GUI user [${user.username}] is dropping participant [${participant.displayName()}]")
+            log.debug("Authenticated GUI user [${user?.username}] is dropping participant [${participant.displayName()}]")
         }
 
         if(spotCommunicationService.dropParticipant(participant)){
