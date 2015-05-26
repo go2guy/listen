@@ -1,0 +1,49 @@
+<component name="libraryTable">
+  <library name="lib11">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib/commons-configuration-1.9.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib/shared-ldap-constants-0.9.12.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib/shared-asn1-codec-0.9.12.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib/apacheds-core-constants-1.5.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib/license-client-1.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib/apacheds-core-entry-1.5.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib/shared-bouncycastle-reduced-0.9.12.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib/json-simple-1.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib/apacheds-kerberos-shared-1.5.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib/apacheds-protocol-shared-1.5.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib/apacheds-core-shared-1.5.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib/anet-java-sdk-1.4.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib/shared-asn1-0.9.12.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib/apacheds-protocol-ldap-1.5.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib/commons-dbcp-1.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib/realize-client-1.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib/mina-filter-ssl-1.1.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib/apacheds-bootstrap-partition-1.5.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib/apacheds-core-avl-1.5.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib/apacheds-jdbm-1.5.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib/httpcore-nio-4.0.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib/httpclient-4.0.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib/apacheds-jdbm-store-1.5.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib/apacheds-xdbm-base-1.5.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib/apacheds-xdbm-search-1.5.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib/apacheds-utils-1.5.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib/prettytime-2.1.3.Final.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib/apacheds-schema-extras-1.5.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib/imgscalr-lib-3.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib/apacheds-core-cursor-1.5.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib/httpcore-4.0.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib/apacheds-schema-registries-1.5.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib/apacheds-core-1.5.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib/mysql-connector-java-5.1.12.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib/apacheds-bootstrap-extract-1.5.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib/shared-ldap-0.9.12.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib/apacheds-core-jndi-1.5.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib/mina-core-1.1.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib/httpmime-4.0.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib/apacheds-xdbm-tools-1.5.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/controller/listen/lib/apacheds-schema-bootstrap-1.5.4.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
