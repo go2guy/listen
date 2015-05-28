@@ -1001,6 +1001,10 @@ class SpotApiController {
             return
         }
 
+        def entryToneCfg = grailsApplication.config.com.interact.listen.conference.entryTone?.toBoolean()
+        def exitToneCfg = grailsApplication.config.com.interact.listen.conference.exitTone?.toBoolean()
+        log.debug("getConference entryTone [${entryToneCfg}] exitTone [${exitToneCfg}]")
+
         def formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS")
 
         render(contentType: 'application/json') {
@@ -1015,6 +1019,8 @@ class SpotApiController {
             subscriber = {
                 href = '/subscribers/' + conference.owner.id
             }
+            entryTone = entryToneCfg
+            exitTone = exitToneCfg
         }
     }
 

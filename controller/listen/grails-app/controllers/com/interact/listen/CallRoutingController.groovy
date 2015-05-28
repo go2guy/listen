@@ -35,13 +35,14 @@ class CallRoutingController {
             render(contentType: 'application/json') {}
         } else {
             log.debug "route call with result [${result}]"
-            
+
             render(contentType: 'application/json') {
                 application = result?.application
                 organization = {
                     id = result?.organization?.id
                     extLength = result?.organization?.extLength
                 }
+                dmnExtension = result?.dmnExtension
             }
         }
     }

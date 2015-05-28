@@ -17,6 +17,5 @@ class Extension extends PhoneNumber {
         // all fields must be nullable since we extend PhoneNumber
         forwardedTo nullable: true, blank: false, maxSize: 50
         greeting nullable: true
-        //BRIAN REMOVE ip nullable: true, blank: false, unique: true, maxSize: 50
     }
 }

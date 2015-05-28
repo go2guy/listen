@@ -205,6 +205,10 @@ com.interact.listen.sip.expires = 3600
 // listen artifacts directory - not everything is using this at the moment
 com.interact.listen.artifactsDirectory = '/interact/listen/artifacts'
 
+// Conference properties to control conference behavior
+com.interact.listen.conference.entryTone = true
+com.interact.listen.conference.exitTone = true
+
 // Enable pretty print for JSON and XML.
 environments {
   development {

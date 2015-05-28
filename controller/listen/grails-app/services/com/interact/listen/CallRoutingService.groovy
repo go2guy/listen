@@ -21,7 +21,20 @@ class CallRoutingService {
         def extension
         if(mapping) {
             log.debug "returning because of mappings"
-            return [application: mapping.destination, organization: mapping.organization]
+            def dmnExtension = ''
+            if(mapping?.destination == 'Direct Message') {
+                log.debug "Lookup direct message number [${dnis}]"
+                def dmn = DirectMessageNumber.findByNumber(dnis)
+                if(dmn && dmn.owner.enabled()) {
+                    log.debug "User [${dmn.owner?.username}] associated with direct message number [${dnis}]"
+                    extension = Extension.findByOwner(dmn.owner)
+                    if(extension) {
+                        dmnExtension = extension.number
+                        log.debug "Extension [${dmnExtension}] associated with direct message number [${dnis}]"
+                    }
+                }
+            }
+            return [application: mapping.destination, organization: mapping.organization, dmnExtension: dmnExtension]
         } else {
             //Look up organization by the extension that is making the call
             extension = Extension.findByNumber(ani)
