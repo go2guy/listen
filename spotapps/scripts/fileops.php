@@ -28,7 +28,13 @@
 
         case "stat":
             if (!(strpos($FILE1,'://'))) {
-                $aStat = @stat($FILE1);
+                if (($pos = strpos($FILE1,':/'))) {
+                    $File = substr($FILE1, $pos+1);
+                } else {
+                    $File = $FILE1;
+                }
+
+                $aStat = @stat($File);
                 if ($aStat)
                     exitresult($OBJNAME, "Success", "", $aStat['size'], $aStat['atime'], $aStat['mtime'],$aStat['ctime']);
             }

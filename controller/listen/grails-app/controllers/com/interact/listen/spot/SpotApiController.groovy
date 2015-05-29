@@ -1124,19 +1124,22 @@ class SpotApiController {
             ip: (phoneNumber.instanceOf(Extension) ? phoneNumber?.sipPhone?.ip : '')
         ]
 
-        if(phoneNumber.instanceOf(MobilePhone)) {
+        if((phoneNumber.instanceOf(Extension)) || (phoneNumber.instanceOf(DirectInwardDialNumber))) {
+            result.greetingLocation = phoneNumber?.greeting?.file?.toURI()?.toString() ?: ''
+            result.forwardedTo = phoneNumber.forwardedTo ?: ''
+            result.publicNumber = true
+        } else if(phoneNumber.instanceOf(DirectMessageNumber)) {
+            result.forwardedTo = ''
+            result.greetingLocation = phoneNumber?.greeting?.file?.toURI()?.toString() ?: ''
+            result.publicNumber = true
+        } else if((phoneNumber.instanceOf(MobilePhone)) || (phoneNumber.instanceOf(OtherPhone))) {
+            result.forwardedTo = ''
+            result.greetingLocation = phoneNumber?.greeting?.file?.toURI()?.toString() ?: ''
+            result.publicNumber = phoneNumber.isPublic
+        } else {
             result.forwardedTo = ''
             result.greetingLocation = ''
             result.publicNumber = phoneNumber.isPublic
-        } else {
-            result.greetingLocation = phoneNumber?.greeting?.file?.toURI()?.toString() ?: ''
-            if(phoneNumber.instanceOf(Extension)) {
-                result.forwardedTo = phoneNumber.forwardedTo ?: ''
-                result.publicNumber = true
-            } else {
-                result.forwardedTo = ''
-                result.publicNumber = false
-            }
         }
 
         render(result as JSON)
