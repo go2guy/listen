@@ -33,7 +33,14 @@ class VoicemailPreferences {
 
     def smsNotificationNumber() {
         if(smsNotificationAddress?.split('@')?.length == 2) {
-            return smsNotificationAddress.split('@')[0]
+            def smsNumber = smsNotificationAddress.split('@')[0]
+
+            if(smsNumber.length() == 11 && smsNumber.startsWith("1")) {
+                return smsNumber.substring(1)
+            }
+            else {
+                return smsNumber
+            }
         }
     }
 

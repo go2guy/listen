@@ -177,7 +177,17 @@ class VoicemailController {
             return
         }
 
-        voicemailNotificationService.sendNewVoicemailTestSms(params.address)
+        if(params.address?.split('@')?.length == 2) {
+            def smsNumber = params.address.split('@')[0]
+            def smsProvider = params.address.split('@')[1]
+
+            if (smsNumber.length() == 11 && smsNumber.startsWith("1")) {
+                voicemailNotificationService.sendNewVoicemailTestSms(smsNumber.substring(1)+'@'+smsProvider)
+            } else {
+                voicemailNotificationService.sendNewVoicemailTestSms(params.address)
+            }
+        }
+
         response.flushBuffer()
     }
 
