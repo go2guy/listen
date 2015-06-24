@@ -2,6 +2,14 @@ drop database if exists listen2;
 create database if not exists listen2 DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
 use listen2;
 
+DROP TABLE IF EXISTS `primary_node`;
+CREATE TABLE `primary_node` (
+  `id` bigint(20) NOT NULL auto_increment,
+  `version` bigint(20) NOT NULL,
+  `node_name` varchar(64) default NULL,
+  `last_modified` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `action`;
 CREATE TABLE `action` (

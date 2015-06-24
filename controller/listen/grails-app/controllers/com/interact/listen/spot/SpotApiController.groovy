@@ -21,6 +21,7 @@ import com.interact.listen.voicemail.*
 import com.interact.listen.User
 import com.interact.listen.DirectMessageNumber
 import com.interact.listen.DirectInwardDialNumber
+import com.interact.listen.OtherPhone
 import com.interact.listen.Organization
 import com.interact.listen.voicemail.afterhours.AfterHoursConfiguration
 import grails.converters.JSON
