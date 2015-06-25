@@ -12,7 +12,9 @@ class FindMeExpirationReminderJob {
 
     def execute() {
         def hostName = InetAddress.getLocalHost().getHostName();
+        log.info "hostName = [${hostName}]"
         def primaryNodeName = PrimaryNode.findAll().nodeName[0];
+        log.info "primaryNodeName = [${primaryNodeName}]"
         def now = new LocalDateTime().withSecondOfMinute(0).withMillisOfSecond(0)
         def start = now.plusMinutes(30)
         def end = now.plusMinutes(60)
