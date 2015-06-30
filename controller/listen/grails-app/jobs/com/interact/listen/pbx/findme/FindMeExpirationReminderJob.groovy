@@ -10,6 +10,8 @@ class FindMeExpirationReminderJob {
 
     def findMeExpirationReminderService
 
+    def concurrent = false;
+
     def execute() {
         def hostName = InetAddress.getLocalHost().getHostName();
         log.info "hostName = [${hostName}]"
