@@ -2,7 +2,6 @@ package com.interact.listen
 
 class MobilePhone extends PhoneNumber {
     boolean isPublic = true
-    Audio greeting
     String smsDomain
 
     static constraints = {

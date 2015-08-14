@@ -13,8 +13,8 @@ class LicenseService implements InitializingBean {
     private def license // set by InitializingBean#afterPropertiesSet()
 
     boolean isLicensed(def feature) {
-        //return license.isFeatureLicensed(feature)
-        return true
+        return license.isFeatureLicensed(feature)
+        //return true
     }
     
     List licensableFeatures() {
