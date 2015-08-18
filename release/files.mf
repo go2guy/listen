@@ -30,16 +30,15 @@ vex-.*.rpm
 vex.uia
 
 # nodejs files
+iinodejs-*.rpm
 iinodejs.uia
 
 # arcade files
-iiacs-V.*.rpm
-iiacs-audio-V.*.rpm
-iiacs-softspot-V.*.rpm
-iiserv-V.*.rpm
-iiserv-snmp-V.*.rpm
-iiserv-tool-V.*.rpm
-iixap-V.*.rpm
+iiarcade*.rpm
+iiacs-audio-V*.rpm
+iiacs-softspot-V*.rpm
+iispot-V*.rpm
+iireleaseinfo-V*.rpm
 iiacs.uia
 iiacs-softspot.uia
 iiserv.uia
