@@ -6,9 +6,8 @@ Listen.uia
 listen-controller-.*.rpm
 listen-controller.uia
 
-# Spot Apps files
-listen-spotapps-.*.rpm
-listen-spotapps.uia
+# Listen Build Apps files
+Listen-Merge*.zip
 
 # Stats collection files
 statcollector-.*.rpm
@@ -26,9 +25,12 @@ xmlsecurity.uia
 dmv-[0-9].*.rpm
 dmv.uia
 
-# spotbuild-vip files
-spotbuild-vip-.*.rpm
-spotbuild-vip.uia
+# vex files
+vex-.*.rpm
+vex.uia
+
+# nodejs files
+iinodejs.uia
 
 # arcade files
 iiacs-V.*.rpm
