@@ -27,6 +27,37 @@
     <title>Listen Release Notes</title>
   </head>
   <body>
+    <h1>7.3 - August 18, 2015</h1>
+    <h2>Listen</h2>
+    <h3>Features</h3>
+    <ul>
+       <li>66783 Added error port from the custom VXML Node</li>
+       <li>67224 Added ability to shutdown active sessions without restarting MOAP</li>
+       <li>67289 Upgraded to nodejs 0.10.9</li>
+       <li>67351 Upgraded Tomcat to 7.0.63</li>
+    </ul>
+    <h3>Bugs</h3>
+    <ul>
+	   <li>67056 Removed unnecessary else statements from compile of conditional node</li>
+       <li>67061 Undefined variable used as case variable for switch node will now take the default path rather than end in error</li>
+       <li>67196 Attempting to drag a prompt with invalid characters into the Build prompts dialog will now display an error</li>
+       <li>67246 Resolved issue where software was terminating sessions prematurely when there was a nap after the disconnect</li>       
+       <li>67278 Fixed issues with connection.merge failures</li>
+       <li>67279 Audio is now joined during progressing for transfers rather than on connection</li>
+       <li>67286 Fixed issue with CCXML sessions were not always closing properly</li>
+       <li>67369 Number types deployed as LOCAL instead of REAL</li>
+       <li>67372 Custom VXML Node will now deploy if no path from error port</li>
+       <li>67399 Arcade upgrade puts correct permissions on console and docs</li>
+       <li>67450 Resolved issue where a Listen conference might drop after about 3 hours</li>
+       <li>67459 Resolved issue with switch node failures</li>  
+       <li>67460 Resolved issue where parent IDs were not always saved with subroutines</li>	   
+       <li>67484 Resolved issue where some disconnects during auto-attendant resulted in hung session.</li>
+       <li>67488 Resolved issue with intermittant application load failures in Build</li>
+	   <li>67548 Listen will now allow you to dial a 10 digit number that starts with '9'.</li>
+	   <li>67550 Made 'End' one of the switch parameters for the Listen Merge app</li>
+    </ul>
+  </body>
+  <body>
     <h1>7.2 - July 31, 2015</h1>
     <h2>Listen</h2>
     <h3>Features</h3>
