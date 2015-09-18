@@ -141,6 +141,7 @@ ${file ? 'The voicemail is attached' : '(The voicemail could not be attached to 
     }
 
     void sendNewVoicemailTestEmail(String address) {
+        log.debug("sendNewVoicemailTestEmail to address [${address}]")
         backgroundService.execute("New voicemail test email to [${address}]", {
             sendMail {
                 to address
@@ -154,6 +155,7 @@ You have correctly configured your settings to receive Listen email notification
 """
             }
         })
+        log.debug("sendNewVoicemailTestEmail to send stat")
         statWriterService.send(Stat.TEST_VOICEMAIL_EMAIL)
     }
 

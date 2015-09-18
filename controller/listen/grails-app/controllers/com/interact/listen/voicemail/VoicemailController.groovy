@@ -166,8 +166,10 @@ class VoicemailController {
             address = user.emailAddress
         }
 
+        log.debug("sendTestEmail to [${address}]")
         voicemailNotificationService.sendNewVoicemailTestEmail(address)
         response.flushBuffer()
+        log.debug("sendTestEmail to [${address}] has returned")
     }
 
     // ajax
