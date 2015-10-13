@@ -119,6 +119,7 @@ class SpotApiController {
             if(log.isDebugEnabled())
             {
                 log.debug("AddAcdCall JSON: " + json);
+                log.debug("Call from IVR: " + request.remoteAddr);
             }
 
             if(json.ani && json.dnis && json.selection && json.sessionId)

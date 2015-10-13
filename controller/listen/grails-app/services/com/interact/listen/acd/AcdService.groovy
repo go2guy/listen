@@ -120,6 +120,7 @@ class AcdService
             }
         }
 
+        log.debug("Found [${results.size()}] available users.");
         if(results != null && results.size() > 0)
         {
             results.sort{it.priority};
