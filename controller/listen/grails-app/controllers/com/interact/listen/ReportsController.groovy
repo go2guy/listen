@@ -31,6 +31,8 @@ class ReportsController {
         // this is inefficient, but will do for now
         // TODO optimize if it becomes slow
 
+        def organization = authenticatedUser.organization
+        log.debug "Generate a call volume by user report for organization [${organization.name}]"
         def formatter = ISODateTimeFormat.date()
         def now = new DateTime()
         params.start = params.start ?: formatter.print(now.minusDays(7))
@@ -47,7 +49,7 @@ class ReportsController {
         def users = [:]
         def totals = callReportMap()
 
-        User.list().each { user ->
+        User.findAllByOrganization(organization, [sort: 'realName', order: 'asc']).each { user ->
             users.put(user.id, [name: user.realName, numbers: [:]])
 
             CallHistory.withCriteria {
@@ -60,7 +62,7 @@ class ReportsController {
 //                    addEmptyCallReportStructure(users[user.id]['numbers'], call.ani)
                 }
 
-                def type = call.dnis.size() < 4 ? 'internal' : 'external'
+                def type = call.dnis.size() <= organization.extLength  ? 'internal' : 'external'
                 users[user.id]['numbers'][call.ani]['outbound'][type]['count']++
                 users[user.id]['numbers'][call.ani]['outbound'][type]['duration'] = users[user.id]['numbers'][call.ani]['outbound'][type]['duration'].plus(call.duration)
                 users[user.id]['numbers'][call.ani]['outbound']['total']['count']++
@@ -86,7 +88,7 @@ class ReportsController {
 //                    addEmptyCallReportStructure(users[user.id]['numbers'], call.dnis)
                 }
 
-                def type = call.dnis.size() < 4 ? 'internal' : 'external'
+                def type = call.dnis.size() <= organization.extLength ? 'internal' : 'external'
                 users[user.id]['numbers'][call.dnis]['inbound'][type]['count']++
                 users[user.id]['numbers'][call.dnis]['inbound'][type]['duration'] = users[user.id]['numbers'][call.dnis]['inbound'][type]['duration'].plus(call.duration)
                 users[user.id]['numbers'][call.dnis]['inbound']['total']['count']++
@@ -110,9 +112,11 @@ class ReportsController {
 
         withFormat {
             html {
+                log.debug "call volume report to render html"
                 render(view: 'callVolumeByUser', model: [calls: users, totals: totals])
             }
             xls {
+                log.debug "call volume report to render xls"
                 def filename = "callVolumeByUser_${params.start}_to_${params.end}.xls"
                 def report = callVolumeByUserXlsReport(users, totals, params)
                 response.contentLength = report.size()
@@ -126,6 +130,7 @@ class ReportsController {
     }
 
     private def callVolumeByUserXlsReport(def users, def totals, def params) {
+        log.debug "Generate a call volume by user xls report"
         def file = File.createTempFile('callVolumeByUser', 'xls')
         file.deleteOnExit()
 
