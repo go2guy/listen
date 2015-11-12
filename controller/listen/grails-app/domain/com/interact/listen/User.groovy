@@ -61,7 +61,7 @@ class User {
     }
     
     static def lookupByPhoneNumber(def number) {
-        Extension.findByNumber(number)?.owner ?: MobilePhone.findByNumber(number)?.owner
+        return (PhoneNumber.findByNumber(number)?.owner)
     }
     
     boolean canDial(def destination) {

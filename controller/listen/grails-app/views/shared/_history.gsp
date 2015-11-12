@@ -1,6 +1,6 @@
   <sec:ifNotGranted roles="ROLE_CUSTODIAN">
     <table>
-      <caption>Call History</caption>
+      <caption><g:message code="callHistory.label"/></caption>
       <thead>
         <g:sortableColumn property="dateTime" title="Began" class="col-dateTime"/>
         <g:sortableColumn property="ani" title="Calling Party" class="col-ani"/>
@@ -27,7 +27,7 @@
   </sec:ifNotGranted>
 
     <table>
-      <caption>Action History</caption>
+      <caption><g:message code="actionHistory.label"/></caption>
       <thead>
         <g:sortableColumn property="dateCreated" title="Date" class="col-dateCreated"/>
         <g:sortableColumn property="byUser" title="User" class="col-byUser"/>
