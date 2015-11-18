@@ -40,6 +40,21 @@ class CallRoutingService
             }
             return [application: mapping.destination, organization: mapping.organization, dmnExtension: dmnExtension]
         }
+        else if(authorization == null || authorization.isEmpty())
+        {
+            log.warn("Didn't get sip authorization.");
+            List<SingleOrganizationConfiguration> socList = SingleOrganizationConfiguration.list();
+            //There's only one here
+            if(socList != null && socList.size() > 0)
+            {
+                organization = socList.get(0).organization;
+                if(log.isDebugEnabled())
+                {
+                    log.debug("Single organization mode enabled, using default org.");
+                }
+            }
+        }
+
         else
         {
             //Look up organization by the extension that is making the call
