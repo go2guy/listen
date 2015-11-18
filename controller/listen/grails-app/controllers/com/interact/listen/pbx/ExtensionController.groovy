@@ -55,6 +55,8 @@ class ExtensionController {
             results: results
         ]
 
+        log.debug("Returning: " + json);
+
         render json as JSON
     }
 }

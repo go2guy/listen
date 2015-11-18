@@ -21,9 +21,10 @@ class VoicemailController {
     def audioDownloadService
     def historyService
     def voicemailNotificationService
+    def springSecurityService
 
     def download = {
-        def user = authenticatedUser
+        def user = springSecurityService.currentUser
 
         if ( !user ) {
           redirect(controller: 'login', action: 'denied')
@@ -47,7 +48,7 @@ class VoicemailController {
         // Determine whether user should be able to access the voicemail
 
         // are they the voicemail owner???
-        def authorized = (voicemail.owner == authenticatedUser)
+        def authorized = (voicemail.owner == springSecurityService.currentUser)
 
         if ( !authorized ) {
           // does the voicemail belong to a user designated as an acd skill voicemail user???
@@ -76,7 +77,7 @@ class VoicemailController {
 
     def saveSettings = {
         log.debug "Voicemail saveSettings [${params}]"
-        def user = authenticatedUser
+        def user = springSecurityService.currentUser
         def preferences = VoicemailPreferences.findByUser(user)
         if(!preferences) {
             log.info "Didn't find voicemail preferences for user [${params}]"
@@ -160,7 +161,7 @@ class VoicemailController {
 
     // ajax
     def sendTestEmail = {
-        def user = authenticatedUser
+        def user = springSecurityService.currentUser
         def address = params.address
         if(!address || address.trim() == '') {
             address = user.emailAddress
@@ -192,7 +193,7 @@ class VoicemailController {
     }
 
     def settings = {
-        def user = authenticatedUser
+        def user = springSecurityService.currentUser
         def preferences = VoicemailPreferences.findByUser(user)
         render(view: 'settings', model: [preferences: preferences])
     }

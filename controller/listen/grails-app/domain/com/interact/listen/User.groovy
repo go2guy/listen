@@ -4,9 +4,10 @@ import com.interact.listen.acd.AcdUserStatus
 import com.interact.listen.pbx.Extension
 import org.joda.time.DateTime
 import com.interact.listen.acd.Skill
+import grails.plugin.multitenant.core.Tenant;
 
-class User {
-
+class User implements Tenant
+{
     boolean accountExpired
     boolean accountLocked
     boolean isActiveDirectory = false
@@ -49,6 +50,12 @@ class User {
 
     static mapping = {
         password column: '`password`'
+    }
+
+    @Override
+    Integer tenantId()
+    {
+        return organization.id;
     }
     
     Set<Role> getAuthorities() {

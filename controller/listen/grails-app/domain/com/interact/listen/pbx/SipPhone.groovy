@@ -29,7 +29,7 @@ class SipPhone {
         organization nullable: false
         realName nullable: true, unique: false, maxSize: 50
         username blank: false, unique: 'organization', maxSize: 50, matches: '^[^:]+$'
-        password blank: false, maxsize: 255
+        password nullable: true, maxsize: 255
         passwordConfirm blank: false, maxsize: 255, validator: { val, obj ->
             if(obj.password == val) {
                 return true
@@ -40,7 +40,7 @@ class SipPhone {
         ip nullable: true, blank: false, unique: false, maxSize: 50
         dateRegistered nullable: true, unique: false
         dateExpires nullable: true, unique: false
-        userAgent nullable: true, unique: false
+        userAgent nullable:true
     }
 
     def isRegistered() {

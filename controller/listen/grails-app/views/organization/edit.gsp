@@ -26,8 +26,23 @@
 
         <label for="extLength"><g:message code="organizationConfiguration.extLength.label"/></label>
         <g:textField name="extLength" value="${fieldValue(bean: organization, field: 'extLength')}" class="${listen.validationClass(bean: organization, field: 'extLength')}"/>
-    
-        <h3><g:message code="page.organization.edit.features.header"/></h3>
+
+          <label for="adServer">AD Server</label>
+          <g:textField name="adServer" value="${fieldValue(bean: organization, field: 'adServer')}" class="${listen.validationClass(bean: organization, field: 'adServer')}"/>
+
+          <label for="adDomain">AD Domain</label>
+          <g:textField name="adDomain" value="${fieldValue(bean: organization, field: 'adDomain')}" class="${listen.validationClass(bean: organization, field: 'adDomain')}"/>
+
+          <label for="ldapBasedn">LDAP Base Dn</label>
+          <g:textField name="ldapBasedn" value="${fieldValue(bean: organization, field: 'ldapBasedn')}" class="${listen.validationClass(bean: organization, field: 'ldapBasedn')}"/>
+
+          <label for="ldapPort">Ldap Port</label>
+          <g:textField name="ldapPort" value="${fieldValue(bean: organization, field: 'ldapPort')}" class="${listen.validationClass(bean: organization, field: 'ldapPort')}"/>
+
+          <label for="ldapDc">Ldap DC</label>
+          <g:textField name="ldapDc" value="${fieldValue(bean: organization, field: 'ldapDc')}" class="${listen.validationClass(bean: organization, field: 'ldapDc')}"/>
+
+          <h3><g:message code="page.organization.edit.features.header"/></h3>
 
         <g:each in="${enableableFeatures}" var="feature">
           <label for="enabledFeature-${feature}">

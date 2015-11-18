@@ -15,9 +15,16 @@ class OrganizationUserDetailsService extends GormUserDetailsService {
 //  def grailsApplication
 
     @Override
-    UserDetails loadUserByUsername(String compositeUsername, boolean loadRoles) throws UsernameNotFoundException {
+    UserDetails loadUserByUsername(String compositeUsername, boolean loadRoles) throws UsernameNotFoundException
+    {
+        return loadUserByUsername(compositeUsername, loadRoles, false);
+    }
+
+    UserDetails loadUserByUsername(String compositeUsername, boolean loadRoles, boolean isActiveDirectory)
+        throws UsernameNotFoundException
+    {
         def conf = SpringSecurityUtils.securityConfig
-        Class<?> User = grailsApplication.getDomainClass(conf.userLookup.userDomainClassName).clazz
+//        Class<?> User = grailsApplication.getDomainClass(conf.userLookup.userDomainClassName).clazz
 
         _log.debug "Authenticating [${compositeUsername}] with loadRoles [${loadRoles}]"
 
@@ -37,7 +44,8 @@ class OrganizationUserDetailsService extends GormUserDetailsService {
                     throw new UsernameNotFoundException('User not found', username)
                 }
 
-                user = User.findWhere(organization: organization, (conf.userLookup.usernamePropertyName): username, isActiveDirectory: false)
+                user = User.findWhere(organization: organization, (conf.userLookup.usernamePropertyName): username,
+                        isActiveDirectory: isActiveDirectory)
                 if(!user) {
                     _log.warn "User [${username}] not found for organization [${organization.id}:${organization.name}]"
                     throw new UsernameNotFoundException('User not found', username)

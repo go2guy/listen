@@ -21,17 +21,38 @@ class ExtractOrganizationFilters {
                     return true
                 }
 
-                if(SingleOrganizationConfiguration.exists() && params.organizationContext != 'custodian') {
+                if(SingleOrganizationConfiguration.exists() && params.organizationContext != 'custodian')
+                {
                     session.organizationContext = SingleOrganizationConfiguration.retrieve().contextPath
                     if(fu.shouldLog(controllerName, actionName)) {
                         log.debug "Forcibly set session organization context to [${session.organizationContext}]"
                     }
-                } else if(params.organizationContext) {
+                }
+                else if(params.organizationContext)
+                {
                     session.organizationContext = params.organizationContext
                 }
+                else
+                {
+                    //Not single org, and not custodian (no organization context)
+                    String host = request.getServerName()
+                    def organization = Organization.findByContextPath(host)
+                    if(!organization || !organization.enabled)
+                    {
+                        session.organizationContext = null
+                        log.warn "Organization not found for context [" + host + "]"
+                        return false;
+                    }
+                    else
+                    {
+                        session.organizationContext = organization.contextPath;
+                    }
+                }
 
-                if(session.organizationContext) {
-                    if(session.organizationContext == 'custodian') {
+                if(session.organizationContext)
+                {
+                    if(session.organizationContext == 'custodian')
+                    {
                         session.organization = null
                         if(fu.shouldLog(controllerName, actionName)) {
                             log.debug "Organization context is 'custodian'"
@@ -50,7 +71,9 @@ class ExtractOrganizationFilters {
                     }
 
                     session.organization = organization
-                } else {
+                }
+                else
+                {
                     if(fu.shouldLog(controllerName, actionName)) {
                         log.warn "No organization in session"
                     }

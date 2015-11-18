@@ -4,10 +4,14 @@ import com.interact.listen.pbx.Extension
 import com.interact.listen.pbx.NumberRoute
 import org.apache.log4j.Logger
 
-class CallRoutingService {
+class CallRoutingService
+{
+    def userService;
+
     static transactional = false
 
-    def routeCall(def ani, def dnis) {
+    def routeCall(def ani, def dnis, String authorization)
+    {
         log.debug "route call request for [${ani}][${dnis}]"
         //Check external number routes first
         def mappings = [:]
@@ -35,11 +39,13 @@ class CallRoutingService {
                 }
             }
             return [application: mapping.destination, organization: mapping.organization, dmnExtension: dmnExtension]
-        } else {
+        }
+        else
+        {
             //Look up organization by the extension that is making the call
-            extension = Extension.findByNumber(ani)
-            organization = extension?.owner?.organization
-        }        
+            User extensionUser = userService.parseFromSipAuthorization(authorization);
+            organization = extensionUser.getOrganization();
+        }
 
         if(organization == null) {
             //Unknown ip dialed a non-external route.  We do not know what organization to use here, so fail

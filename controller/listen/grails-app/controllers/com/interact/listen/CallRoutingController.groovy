@@ -27,7 +27,14 @@ class CallRoutingController {
             return
         }
 
-        def result = callRoutingService.routeCall(ani, dnis)
+        String authorization = params.authorization;
+        if(!authorization || authorization.trim() == '')
+        {
+            response.sendError(HSR.SC_BAD_REQUEST, 'Missing required parameter [authorization]')
+            return
+        }
+
+        def result = callRoutingService.routeCall(ani, dnis, authorization);
 
         if(!result) {
             log.debug "route call without result"
@@ -41,6 +48,7 @@ class CallRoutingController {
                 organization = {
                     id = result?.organization?.id
                     extLength = result?.organization?.extLength
+                    outboundCallid = result?.organization?.outboundCallid
                 }
                 dmnExtension = result?.dmnExtension
             }

@@ -23,6 +23,7 @@ class AttendantController {
     def menuGroupService
     def promptFileService
     def promptOverrideService
+    def springSecurityService
 
     private static final String storageLocation = "attendant";
 
@@ -169,7 +170,7 @@ class AttendantController {
     }
 
     def menu = {
-        def groups = MenuGroup.findAllByOrganization(authenticatedUser.organization, [sort: 'isDefault', order: 'desc'])
+        def groups = MenuGroup.findAllByOrganization(springSecurityService.currentUser.organization, [sort: 'isDefault', order: 'desc'])
         render(view: 'menu', model: [groups: groups])
     }
 
@@ -200,7 +201,7 @@ class AttendantController {
             return
         }
 
-        def user = authenticatedUser
+        def user = springSecurityService.currentUser
         promptFileService.save(storageLocation, file, user.organization.id)
 
         render('Success')
@@ -208,9 +209,9 @@ class AttendantController {
 
     private def promptOverrideModel(EventType type)
     {
-        if(authenticatedUser)
+        if(springSecurityService.currentUser)
         {
-            def user = authenticatedUser
+            def user = springSecurityService.currentUser
             return [
                 promptOverrideList: PromptOverride.findAllByOrganizationAndEventTypeAndNotPast(user.organization, type,
                         [sort: 'date', order: 'asc'])

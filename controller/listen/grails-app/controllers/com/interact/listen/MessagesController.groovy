@@ -24,6 +24,7 @@ class MessagesController {
     ]
 
     def inboxMessageService
+    def springSecurityService
 
     def index = {
         redirect(action: 'inbox')
@@ -31,12 +32,12 @@ class MessagesController {
 
     def inbox =
     {
-        if(!authenticatedUser)
+        if(!springSecurityService.currentUser)
         {
             //Redirect to login
             redirect(controller: 'login', action: 'auth');
         }
-        def user = authenticatedUser
+        def user = springSecurityService.currentUser
 
         params.max = Math.min(params.max ? params.int('max') : 25, 100)
         params.sort = params.sort ? params.sort : 'dateCreated'
@@ -61,7 +62,7 @@ class MessagesController {
     }
 
     def acdInbox = {
-      def user = authenticatedUser
+      def user = springSecurityService.currentUser
       def voicemailUser
       def skillList = []
       def count = ""
@@ -154,7 +155,7 @@ class MessagesController {
             return
         }
 
-        def user = authenticatedUser
+        def user = springSecurityService.currentUser
         // are they the voicemail owner?
         def authorized = (user == message.owner)
         def voicemailOwner = authorized
@@ -222,7 +223,7 @@ class MessagesController {
             return
         }
 
-        def user = authenticatedUser
+        def user = springSecurityService.currentUser
         if ( message.owner != user && ! referer.contains('acdInbox') ) {
             redirect(controller: 'login', action: 'denied')
             return
@@ -242,7 +243,7 @@ class MessagesController {
     
     // ajax
     def pollingList = {
-        def user = authenticatedUser
+        def user = springSecurityService.currentUser
 
         params.max = Math.min(params.max ? params.int('max') : 25, 100)
         params.sort = params.sort ? params.sort : 'dateCreated'
@@ -331,7 +332,7 @@ class MessagesController {
         params.order = params.order ? params.order : 'desc'
         params.currentSkill = params.currentSkill ? params.currentSkill : 'All'
 
-        def user = authenticatedUser
+        def user = springSecurityService.currentUser
         def currentSkill = params.currentSkill
         def voicemailUser
         def list = []
@@ -455,7 +456,7 @@ class MessagesController {
             return
         }
 
-        def user = authenticatedUser
+        def user = springSecurityService.currentUser
         if(message.owner != user) {
             response.sendError(HSR.SC_BAD_REQUEST, 'Current user not owner of message')
             response.flushBuffer()

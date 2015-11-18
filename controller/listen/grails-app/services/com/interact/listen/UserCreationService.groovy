@@ -51,7 +51,7 @@ class UserCreationService {
         }
 
         try {
-            log.debug "Attempt cloudtodeviceServcie"
+            log.debug "Attempt cloudtodeviceService"
             cloudToDeviceService.sendContactSync()
         } catch (Exception e) {
             log.error "Exception caught from cloud to device service [${e}]"

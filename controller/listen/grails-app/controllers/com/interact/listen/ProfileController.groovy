@@ -8,8 +8,7 @@ import com.interact.listen.voicemail.afterhours.AfterHoursConfiguration
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.log4j.Logger
-
-//import grails.plugins.springsecurity.Secured
+import javax.servlet.http.HttpSession
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class ProfileController {
@@ -69,7 +68,7 @@ class ProfileController {
     }
 
     def afterHours = {
-        def user = authenticatedUser
+        def user =  springSecurityService.currentUser;
         def afterHoursConfiguration = AfterHoursConfiguration.findByOrganization(user.organization)
         render(view: 'afterHours', model: [afterHoursConfiguration: afterHoursConfiguration])
     }
@@ -80,7 +79,7 @@ class ProfileController {
         boolean canDial = true
 
         if(number) {
-            def user = authenticatedUser
+            def user =  springSecurityService.currentUser;
             canDial = user.canDial(number)
         }
 
@@ -117,7 +116,7 @@ class ProfileController {
 
     def settings =
     {
-        User user = authenticatedUser;
+        User user = springSecurityService.currentUser;
         List<UserSkill> userSkills = null;
 
         if(user.hasRole("ROLE_ACD_USER"))
@@ -133,13 +132,13 @@ class ProfileController {
     }
 
     def history = {
-        def user = authenticatedUser
+        def user = springSecurityService.currentUser;
 
         // TODO since there are two tables on the page, none of the sorting
         // is being used yet. also, both tables will page together (i.e. not separately).
         // we should investigate an elegant way to accomplish this. its likely that
         // these pages will be changed in the future to display the data in a way that is
-        // more appropriate to how theyre supposed to be viewed. this should be considered
+        // more appropriate to how they're supposed to be viewed. this should be considered
         // at that time.
 
         params.offset = params.offset ? params.int('offset') : 0
@@ -189,7 +188,7 @@ class ProfileController {
     }
 
     def saveAfterHours = {
-        def user = authenticatedUser
+        def user = springSecurityService.currentUser;
         def afterHours = AfterHoursConfiguration.findByOrganization(user.organization)
         if(!afterHours) {
             flash.errorMessage = 'After Hours has not been configured by an administrator; alternate number cannot be set.'
@@ -218,7 +217,7 @@ class ProfileController {
     }
 
     def saveSettings = {
-        def user = authenticatedUser
+        def user =  springSecurityService.currentUser;
         user = userService.update(user, params, false)
         if(user.hasErrors()) {
             render(view: 'settings', model: [user: user])
@@ -235,7 +234,7 @@ class ProfileController {
             redirect(action: 'phone')
             return
         }
-        def organization = authenticatedUser.organization
+        def organization = session.organization
 
         def extInfo = extensionService.update(params, extension, organization)
         if(extInfo.extension?.hasErrors() || extInfo?.sipPhone?.hasErrors()) {
@@ -309,7 +308,7 @@ class ProfileController {
     }
 
     private def phonesModel() {
-        def user = authenticatedUser
+        def user = springSecurityService.currentUser;
         def extensionList = Extension.withCriteria {
             eq('owner', user)
         }

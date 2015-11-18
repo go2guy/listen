@@ -11,6 +11,11 @@ class Organization {
     String outboundCallid
     boolean outboundCallidByDid = false
     int extLength = Holders.config.com.interact.listen.organization.defaultExtLength
+    String adServer;
+    String adDomain;
+    String ldapBasedn;
+    String ldapPort;
+    String ldapDc;
 
     static hasMany = [users: User, enabledFeatures: ListenFeature]
 
@@ -25,10 +30,16 @@ class Organization {
 
 
     static constraints = {
-        contextPath blank: false, maxSize: 50, unique: true, matches: '^[a-z0-9_-]+$', notEqual: 'custodian'
+//        contextPath blank: false, maxSize: 50, unique: true, matches: '^[a-z0-9_-]+$', notEqual: 'custodian'
+        contextPath blank: false, maxSize: 50, unique: true, notEqual: 'custodian'
         name blank: false, maxSize: 100, unique: true // TODO for max constraints, add maxlengths to the text fields on the views
         outboundCallid blank: false, maxSize: 10, unique: false, matches: '^[0-9]+$'
         extLength min: 2, max: 9
+        adServer nullable: true
+        adDomain nullable: true
+        ldapBasedn nullable: true
+        ldapPort nullable: true
+        ldapDc nullable: true
     }
 
     String toString() {

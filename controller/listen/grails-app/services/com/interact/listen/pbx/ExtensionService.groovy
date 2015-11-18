@@ -1,6 +1,7 @@
 package com.interact.listen.pbx
 
 import com.interact.listen.Organization
+import com.interact.listen.User
 import org.joda.time.DateTime
 import javax.servlet.http.HttpServletResponse as HSR
 import org.apache.log4j.Logger
@@ -28,10 +29,17 @@ class ExtensionService {
         log.debug "register extension with params [${params}]"
     }
 
-    Result create(def params, Organization organization, def checkPermission = true) {
+    Result create(def params, Organization organization, def checkPermission = true)
+    {
+        def user = springSecurityService.getCurrentUser();
+        return create(params, organization, user, checkPermission);
+    }
+
+    Result create(def params, Organization organization, User user, def checkPermission = true)
+    {
         log.debug "Attempt to create extension [${params}]"
         def result = new Result()
-        def user = springSecurityService.getCurrentUser()
+
         if (user)
             log.debug "We got the current user [${user.username}]"
         else
@@ -45,11 +53,23 @@ class ExtensionService {
 
         // This tokenization was added because NewNet put XXX-XXX-XXXX xEXT in the AD
         def tokenList = params.number.tokenize('x')
-        if (tokenList.size() > 1) {
+        if (tokenList.size() > 1)
+        {
             params.number = tokenList[1]
             log.debug "Setting extension number to [${params.number}]"
-        } else {
-            log.debug "Using extension number provided [${params.number}]"
+        }
+        else
+        {
+            tokenList = params.number.tokenize('X');
+            if (tokenList.size() > 1)
+            {
+                params.number = tokenList[1]
+                log.debug "Setting extension number to [${params.number}]"
+            }
+            else
+            {
+                log.debug "Using extension number provided [${params.number}]"
+            }
         }
 
         try {
@@ -66,7 +86,7 @@ class ExtensionService {
             result.sipPhone.ip = null
             result.sipPhone.dateRegistered = null
             result.sipPhone.dateExpires = null
-            result.sipPhone.userAgent = null
+            result.sipPhone.userAgent = user.username;
 
             log.debug "Now actually create the sipPhone extension for [${params}]"
             log.debug("sipPhone info Ext Test        [${result.extension.sipPhone?.username}]")
@@ -141,7 +161,6 @@ class ExtensionService {
                 result.sipPhone.passwordConfirm = params?.passwordConfirm
                 result.sipPhone.dateRegistered = null
                 result.sipPhone.dateExpires = null
-                result.sipPhone.userAgent = null
             } else {
                 if ((params?.password && params?.passwordConfirm) || (params?.password != result.sipPhone.password) ) {
                     log.debug("updateExtension, set password")
@@ -221,13 +240,59 @@ class ExtensionService {
 
         def regResponse = new RegResponse()
         log.debug("sipRequest for extension [${extIn?.number}] with username [${extIn.sipPhone?.username}]")
-        log.debug("sipRequest request for [${extIn?.number}]         from IP [${extIn?.sipPhone.ip}]")
-        log.debug("sipRequest request for [${extIn?.number}]       with CSeq [${extIn?.sipPhone.cseq}]")
+        log.debug("sipRequest request for [${extIn?.number}]         from IP [${extIn?.sipPhone?.ip}]")
+        log.debug("sipRequest request for [${extIn?.number}]       with CSeq [${extIn?.sipPhone?.cseq}]")
 
-        def extension = Extension.findByNumber(extIn?.number)
+        if (!extIn?.sipPhone?.username) {
+            // We're not authorizing based upon user name, just ID.  We've found a match so lets get out
+            log.debug("Extension validated based upon ID")
+            regResponse.returnCode = HSR.SC_OK
+            regResponse.extension = null
+            return regResponse
+        }
 
-        if (!extension) {
-            log.debug("sipRequest failed to find extension number [${extIn?.number}]")
+        Extension extension = null;
+
+        //Look up by the username of the phone
+        User user = User.get(extIn.sipPhone.username);
+        if(user != null)
+        {
+            if(log.isDebugEnabled())
+            {
+                log.debug("Extension validated for user[" + user.username + "]");
+            }
+
+            extension = Extension.findByNumberAndOwner(extIn?.number, user);
+        }
+        else
+        {
+            if(log.isDebugEnabled())
+            {
+                log.debug("Unable to validate phone by userId. Trying sipPhone");
+            }
+
+            //Lets see if there's a sipPhone entry for this username
+            SipPhone sipPhone1 = SipPhone.findByUsername(extIn.sipPhone.username);
+            if(sipPhone1 != null)
+            {
+                extension = sipPhone1.extension;
+            }
+            else
+            {
+                log.debug("sipRequest failed for user id [${extIn?.sipPhone?.number}]")
+                regResponse.extension = extIn
+                regResponse.returnCode = HSR.SC_NOT_FOUND
+                return regResponse
+            }
+        }
+
+        if (!extension)
+        {
+            if(log.isDebugEnabled())
+            {
+                log.debug("sipRequest failed to find extension number [${extIn?.number}] with username[" +
+                        extIn.sipPhone.username + "]");
+            }
             regResponse.extension = extIn
             regResponse.returnCode = HSR.SC_NOT_FOUND
             return regResponse
@@ -247,13 +312,7 @@ class ExtensionService {
             return regResponse
         }
 
-        if (!extIn?.sipPhone?.username) {
-            // We're not authorizing based upon user name, just ID.  We've found a match so lets get out
-            log.debug("Extension validated based upon ID")
-            regResponse.returnCode = HSR.SC_OK
-            regResponse.extension = extension
-            return regResponse
-        }
+
 
         log.debug("sipRequest username validation [${extension?.sipPhone?.username}]?=[${extIn?.sipPhone?.username}]")
         // we have a valid extension, lets see if the usernames match
@@ -273,7 +332,8 @@ class ExtensionService {
             // TODO maybe do something different if the cseq number in is less than what we have in the db
         }
 
-        def origIp
+        def origIp = null;
+
         if(extIn.sipPhone?.ip) {
             origIp = extension.sipPhone.ip
             extension.sipPhone.ip = extIn.sipPhone.ip
@@ -307,14 +367,24 @@ class ExtensionService {
         // Just to keep the domain validation happy
         extension.sipPhone.passwordConfirm = extension.sipPhone.password
 
-        if(extension.sipPhone.validate() && extension.sipPhone.save(flush: true)) {
+        if(extension.sipPhone.validate() && extension.sipPhone.save(flush: true))
+        {
             log.debug("sipRequest of extension [${extension?.number}] successfully updated in db")
             regResponse.returnCode = HSR.SC_OK
-            if (extension.sipPhone.ip != origIp) {
-                log.debug "sipRequest, we have a different IP lets notifiy of message light at [${extension.sipPhone.ip}]"
-                messageLightService.toggle(extension)
+            if (origIp != null && extension.sipPhone.ip != origIp)
+            {
+                log.debug "sipRequest, we have a different IP lets notify of message light at [${extension.sipPhone.ip}]"
+                try
+                {
+                    messageLightService.toggle(extension)
+                }
+                catch(Exception e)
+                {
+                    log.warn("Received exception toggling message light: " + e, e);
+                }
             }
-        } else {
+        }
+        else {
             log.error "Failed to update extension [${extension?.number}] due to sipPhone errors [${extension.sipPhone.errors}]"
             regResponse.returnCode = HSR.SC_INTERNAL_SERVER_ERROR
         }

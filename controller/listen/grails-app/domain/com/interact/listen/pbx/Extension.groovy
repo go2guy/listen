@@ -18,4 +18,8 @@ class Extension extends PhoneNumber {
         forwardedTo nullable: true, blank: false, maxSize: 50
         greeting nullable: true
     }
+
+    static mapping = {
+        sipPhone fetch: 'join'
+    }
 }

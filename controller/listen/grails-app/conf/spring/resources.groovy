@@ -40,6 +40,7 @@ beans = {
     activeDirectoryAuthenticationProvider(com.interact.listen.authentication.ActiveDirectoryAuthenticationProvider) {
         grailsApplication = ref('grailsApplication')
         userDetailsService = ref('gormUserDetailsService')
+        organizationUserDetailsService = ref('organizationUserDetailsService')
     }
 
     //MAILOVERIDE
@@ -61,4 +62,8 @@ beans = {
         it.autowire = true
     }
 
+    tenantResolver(com.interact.listen.DomainTenantResolver)
+    tenantRepository(com.interact.listen.ListenTenantRepository)
+
+    sessionFactory()
 }

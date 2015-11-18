@@ -41,6 +41,7 @@ grails.project.dependency.resolution = {
         mavenRepo "http://repo1.maven.org/maven2"
         mavenRepo "http://repo.grails.org/grails/core"
         mavenRepo "http://repo.grails.org/grails/plugins"
+        mavenRepo "http://repo.grails.org/grails/repo"
     }
 
     dependencies {
@@ -91,8 +92,9 @@ grails.project.dependency.resolution = {
         compile ':mail:1.0', {
             excludes 'spring-test'
         }
+        compile ":multi-tenant-single-db:0.8.3"
         compile ":quartz:1.0.1"
-        compile ':spring-security-core:1.2.7.3'
+        compile ':spring-security-core:2.0-RC4'
         compile ":spring-security-ldap:2.0-RC2"
         compile ":background-thread:1.6"
         compile ":tooltip:0.8"

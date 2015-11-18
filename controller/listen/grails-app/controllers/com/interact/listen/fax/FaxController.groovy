@@ -24,6 +24,7 @@ class FaxController {
 
     def faxSenderService
     def historyService
+    def springSecurityService
 
     def index = {
         redirect(action: 'create')
@@ -49,7 +50,7 @@ class FaxController {
             return
         }
 
-        if(fax.owner != authenticatedUser) {
+        if(fax.owner != springSecurityService.currentUser) {
             redirect(controller: 'login', action: 'denied')
             return
         }
@@ -81,7 +82,7 @@ class FaxController {
     }
 
     def save = { MultiFileUploadCommand command ->
-        def user = authenticatedUser
+        def user = springSecurityService.currentUser
 
         def uploaded = [] as List
         def names = [] as List

@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/controller/controller.iml" filepath="$PROJECT_DIR$/controller/controller.iml" />
+      <module fileurl="file://$PROJECT_DIR$/controller/db/db.iml" filepath="$PROJECT_DIR$/controller/db/db.iml" />
       <module fileurl="file://$PROJECT_DIR$/controller/listen/listen.iml" filepath="$PROJECT_DIR$/controller/listen/listen.iml" />
       <module fileurl="file://$PROJECT_DIR$/controller/listen/listen-grailsPlugins.iml" filepath="$PROJECT_DIR$/controller/listen/listen-grailsPlugins.iml" />
       <module fileurl="file://$PROJECT_DIR$/spotapps/spotapps.iml" filepath="$PROJECT_DIR$/spotapps/spotapps.iml" />

@@ -61,6 +61,7 @@ class SpotApiController {
         getAfterHoursSubscriber: 'GET',
         getConference: 'GET',
         getEnabledFeatureStatus: 'GET',
+        getOrganization: 'GET',
         getParticipants: 'GET',
         getPhoneNumber: 'GET',
         getPin: 'GET',
@@ -100,6 +101,7 @@ class SpotApiController {
     def voicemailNotificationService
     def callRoutingService
     def extensionService
+    def springSecurityService
 
     /**
      * Add an acd call to the queue.
@@ -436,7 +438,7 @@ class SpotApiController {
     }
 
     def androidEmailContact = {
-        def user = authenticatedUser
+        def user = springSecurityService.currentUser
         def contact = User.get(params.id)
 
         if(!contact || contact.organization != user.organization || !contact.enabled()) {
@@ -455,7 +457,7 @@ class SpotApiController {
     }
 
     def androidEmailContacts = {
-        def user = authenticatedUser
+        def user = springSecurityService.currentUser
 
         params.offset = params['_first'] ?: 0
         params.max = params['_max'] ?: 100
@@ -487,7 +489,7 @@ class SpotApiController {
     }
 
     def androidGetDeviceRegistration = {
-        def user = authenticatedUser
+        def user = springSecurityService.currentUser
         def deviceType = DeviceRegistration.DeviceType.valueOf(params.deviceType)
 
         def device = DeviceRegistration.findWhere(user: user, deviceType: deviceType, deviceId: params.deviceId)
@@ -508,7 +510,7 @@ class SpotApiController {
     }
 
     def androidNumberContact = {
-        def user = authenticatedUser
+        def user = springSecurityService.currentUser
         def number = PhoneNumber.get(params.id)
 
         if(!number || number.owner.organization != user.organization || !number.owner.enabled()) {
@@ -528,7 +530,7 @@ class SpotApiController {
     }
 
     def androidNumberContacts = {
-        def user = authenticatedUser
+        def user = springSecurityService.currentUser
 
         params.offset = params['_first'] ?: 0
         params.max = params['_max'] ?: 100
@@ -579,7 +581,7 @@ class SpotApiController {
     }
 
     def androidUpdateDeviceRegistration = {
-        def user = authenticatedUser
+        def user = springSecurityService.currentUser
 
         def json = JSON.parse(request)
 
@@ -650,7 +652,7 @@ class SpotApiController {
             return
         }
 
-        def user = authenticatedUser
+        def user = springSecurityService.currentUser
         if(voicemail.owner != user) {
             response.sendError(HSR.SC_UNAUTHORIZED)
             return
@@ -757,7 +759,7 @@ class SpotApiController {
 
         try {
             // if this is an Android user, make sure that they are only accessing their own voicemails
-            def current = authenticatedUser
+            def current = springSecurityService.currentUser
             if(current && !current.hasRole('ROLE_SPOT_API') && current.id != user.id) {
                 response.sendError(HSR.SC_UNAUTHORIZED)
                 return
@@ -780,7 +782,7 @@ class SpotApiController {
     // (considering find me configurations, forwarding, outdialing restrictions, etc.)
     def dial = {
         log.debug "dial request[${request}] with params[${params}]"
-        // TODO this does not consider find me configurations yet, since 
+        // TODO this does not consider find me configurations yet, since
         // find me has not yet been migrated. after migrating, add find me lookups
 
         if(!params.destination) {
@@ -811,7 +813,8 @@ class SpotApiController {
                 eq('organization', organization)
             }
         }
-        def user = userPhoneNumber?.owner
+
+        User user = userPhoneNumber?.owner
 
         if(!user) {
             response.sendError(HSR.SC_BAD_REQUEST, "Subscriber not found with phone number [${destination}]")
@@ -842,11 +845,15 @@ class SpotApiController {
             findMeNumber.duration = 25
             findMeNumber.enabled = true
 
-            def destinationPhoneNumber = PhoneNumber.findByNumber(destination)
-            if(destinationPhoneNumber?.instanceOf(Extension)) {
-                if(destinationPhoneNumber.forwardedTo && destinationPhoneNumber.owner.canDial(destinationPhoneNumber.forwardedTo)) {
-                    findMeNumber.number = destinationPhoneNumber.forwardedTo
+            if(userPhoneNumber?.instanceOf(Extension))
+            {
+                Extension destinationExtension = (Extension)userPhoneNumber;
+                if(destinationExtension.forwardedTo && userPhoneNumber.owner.canDial(destinationExtension.forwardedTo))
+                {
+                    findMeNumber.number = destinationExtension.forwardedTo;
                 }
+
+                findMeNumber.ip =  destinationExtension.sipPhone.ip;
             }
 
             def findMeNumbers = []
@@ -863,24 +870,41 @@ class SpotApiController {
                     updatedNumber.duration = it.dialDuration
                     updatedNumber.enabled = it.isEnabled
 
-                    def phoneNumber = PhoneNumber.findByNumber(updatedNumber.number)
-                    if(phoneNumber?.instanceOf(Extension)) {
-                        if(phoneNumber.forwardedTo && phoneNumber.owner.canDial(phoneNumber.forwardedTo)) {
-                            updatedNumber.number = phoneNumber.forwardedTo
+                    PhoneNumber findMePhoneNumber = PhoneNumber.createCriteria().get {
+                        eq('number', updatedNumber.number)
+                        owner {
+                            eq('organization', organization)
                         }
                     }
 
-                    if(user.canDial(updatedNumber.number)) {
+                    if(findMePhoneNumber?.instanceOf(Extension))
+                    {
+                        Extension findMeNumberAsExtension = (Extension)findMePhoneNumber;
+
+                        if(findMeNumberAsExtension.forwardedTo
+                            && findMePhoneNumber.owner.canDial(findMeNumberAsExtension.forwardedTo))
+                        {
+                            updatedNumber.number = findMeNumberAsExtension.forwardedTo;
+                        }
+
+                        updatedNumber.ip =  findMeNumberAsExtension.sipPhone.ip;
+                    }
+
+                    if(user.canDial(updatedNumber.number))
+                    {
                         updatedNumbers.add(updatedNumber)
                     }
                 }
 
-                if(updatedNumbers.size() > 0) {
+                if(updatedNumbers.size() > 0)
+                {
                     //tempGroups currently has FindMeNumbers. Remove and add in the map version with less info
-                    tempGroups.remove(entry)
-                    tempGroups.add(updatedNumbers)
-                } else {
-                    tempGroups.remove(entry)
+                    tempGroups.remove(entry);
+                    tempGroups.add(updatedNumbers);
+                }
+                else
+                {
+                    tempGroups.remove(entry);
                 }
             }
 
@@ -1147,6 +1171,35 @@ class SpotApiController {
         render(result as JSON)
     }
 
+    def getOrganization = {
+        log.debug("getOrganization with params [${params}]")
+        if(!params.extension) {
+            response.sendError(HSR.SC_BAD_REQUEST, 'Missing required parameter [number]')
+            return
+        }
+
+        def pin = Pin.findByNumber(params.number)
+        if(!pin) {
+            response.sendError(HSR.SC_NOT_FOUND, "Pin not found with number [${params.number}]")
+            return
+        }
+
+        if(!pin.conference.owner.enabled()) {
+            response.sendError(HSR.SC_FORBIDDEN)
+            return
+        }
+
+        render(contentType: 'application/json') {
+            href = '/pins/' + pin.id
+            conference = {
+                href = '/conferences/' + pin.conference.id
+            }
+            id = pin.id
+            number = pin.number
+            type = pin.pinType.toString()
+        }
+    }
+
     def getPin = {
         log.debug("getPin with params [${params}]")
         if(!params.number) {
@@ -1339,7 +1392,7 @@ class SpotApiController {
         def organization = Organization.get(getIdFromHref(params.organization))
 
         if(!organization) {
-            def user = authenticatedUser
+            def user = springSecurityService.currentUser
             if(!params.username || user.username != params.username) {
                 response.sendError(HSR.SC_UNAUTHORIZED)
                 return
@@ -1405,7 +1458,7 @@ class SpotApiController {
 
         try {
             // if this is an Android user, make sure that they are only accessing their own voicemails
-            def current = authenticatedUser
+            def current = springSecurityService.currentUser
             if(current && !current.hasRole('ROLE_SPOT_API') && current.id != user.id) {
                 log.warn "Android user is unauthorized; current.id [${current.id}], user.id [${user.id}], hasRole [${user.hasRole('ROLE_SPOT_API')}]"
                 response.sendError(HSR.SC_UNAUTHORIZED)
@@ -1513,14 +1566,25 @@ class SpotApiController {
         }
 
         def phoneNumber = phoneNumbers.size() > 0 ? phoneNumbers[0] : null
-        if(phoneNumber && !phoneNumber.owner.enabled()) {
+        if(phoneNumber && !phoneNumber.owner.enabled())
+        {
             log.debug "Phone number [${number}] is not enabled"
             response.sendError(HSR.SC_FORBIDDEN)
             return
-        } else if (!phoneNumber) {
+        }
+        else if (!phoneNumber)
+        {
             log.info "Phone number [${number}] is not configured"
             response.sendError(HSR.SC_NOT_FOUND)
             return
+        }
+        else
+        {
+            if(log.isDebugEnabled())
+            {
+                log.debug("Returning phoneNumber[" + phoneNumber.number + "] for user[" +
+                        phoneNumber.owner.username + "]");
+            }
         }
 
         render(contentType: 'application/json') {
@@ -2132,7 +2196,7 @@ class SpotApiController {
 
         try {
             // if this is an Android user, make sure that they are only accessing their own voicemails
-            def current = authenticatedUser
+            def current = springSecurityService.currentUser
             if(current && !current.hasRole('ROLE_SPOT_API') && current.id != user.id) {
                 response.sendError(HSR.SC_UNAUTHORIZED)
                 return

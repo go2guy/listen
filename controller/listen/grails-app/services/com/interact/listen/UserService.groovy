@@ -302,4 +302,40 @@ class UserService {
         }
         return user
     }
+
+    User parseFromSipAuthorization(String sipAuthorization)
+    {
+        User theUser = null;
+
+        if(sipAuthorization != null && !sipAuthorization.isEmpty())
+        {
+            if(log.isDebugEnabled())
+            {
+                log.debug("Attempting to parse userid from sipAuthorization[" + sipAuthorization + "]");
+            }
+
+            String[] parse1 = sipAuthorization.split("username=\"");
+            if(parse1 != null && parse1.length > 0)
+            {
+                String[] parse2 = parse1[1].split("\"");
+                if(parse2 != null && parse2.length > 0)
+                {
+                    String userId = parse2[0];
+                    if(log.isDebugEnabled())
+                    {
+                        log.debug("Parsed userId: " + userId);
+                    }
+
+                    theUser = User.get(userId);
+
+                    if(log.isDebugEnabled())
+                    {
+                        log.debug("User is : " + theUser.username);
+                    }
+                }
+            }
+        }
+
+        return theUser;
+    }
 }

@@ -6,6 +6,22 @@ class CurrentUserTagLib {
     def inboxMessageService
     def springSecurityService
 
+    def userOrg = { attrs ->
+        if(!session.organizationContext.equalsIgnoreCase("custodian"))
+        {
+            int orgId = new DomainTenantResolver().resolve(request);
+            if(orgId > -1)
+            {
+                Organization org = Organization.get(orgId);
+                out << org.name
+            }
+        }
+//
+//        {
+//            out << session.organization.name
+//        }
+    }
+
     def realName = { attrs ->
         out << springSecurityService.getCurrentUser().realName
     }

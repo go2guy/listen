@@ -19,6 +19,7 @@
               <ul class="messages error"><li>${flash.message}</li></ul>
             </g:if>
 
+            <label><listen:userOrg/></label>
             <g:hiddenField name="organization" value="${listen.contextOrganizationProperty(field: 'id', defaultValue: '-1')}"/>
 
             <label for="username"><g:message code="page.login.auth.username.label"/></label>

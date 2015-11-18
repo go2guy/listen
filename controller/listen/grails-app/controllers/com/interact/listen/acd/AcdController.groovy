@@ -38,6 +38,7 @@ class AcdController
     def historyService
     def spotCommunicationService
     def acdService
+    def springSecurityService
 
     private static final String storageLocation = "acd";
 
@@ -50,11 +51,11 @@ class AcdController
     }
 
     def callQueue = {
-      if (!authenticatedUser) {
+      if (!springSecurityService.currentUser) {
         //Redirect to login
         redirect(controller: 'login', action: 'auth');
       }
-      def user = authenticatedUser
+      def user = springSecurityService.currentUser
 
       params.sort = params.sort ?: 'enqueueTime'
       params.order = params.order ?: 'asc'
@@ -108,7 +109,7 @@ class AcdController
     }
 
     def pollQueue = {
-      def user = authenticatedUser
+      def user = springSecurityService.currentUser
 
       params.sort = params.sort ?: 'enqueueTime'
       params.order = params.order ?: 'asc'
@@ -170,7 +171,7 @@ class AcdController
     }
 
     def pollHistory = {
-      def user = authenticatedUser
+      def user = springSecurityService.currentUser
 
       params.sort = params.sort ?: 'enqueueTime'
       params.order = params.order ?: 'desc'
@@ -233,7 +234,7 @@ class AcdController
     }
 
     def pollStatus = {
-      def user = authenticatedUser
+      def user = springSecurityService.currentUser
 
       params.queueSort = params.queueSort ?: 'enqueueTime'
       params.queueOrder = params.queueOrder ?: 'asc'
@@ -289,13 +290,13 @@ class AcdController
     }
 
     def status = {
-      if (!authenticatedUser)
+      if (!springSecurityService.currentUser)
       {
         //Redirect to login
         redirect(controller: 'login', action: 'auth');
       }
 
-      def user = authenticatedUser
+      def user = springSecurityService.currentUser
 
       // Get Agent Status Details
       def acdUserStatus = AcdUserStatus.findByOwner(user)
@@ -439,7 +440,7 @@ class AcdController
                 log.debug "AcdController.toggleStatus: params[${params}]"
             }
 
-            def acdUserStatus = AcdUserStatus.findByOwner(authenticatedUser)
+            def acdUserStatus = AcdUserStatus.findByOwner(springSecurityService.currentUser)
             if (!acdUserStatus)
             {
                 log.error "Failed to find acd user status, maybe not serious"
@@ -538,7 +539,7 @@ class AcdController
             {
                 log.debug "AcdController.updateNumber: params[${params}]"
             }
-            def acdUserStatus = AcdUserStatus.findByOwner(authenticatedUser)
+            def acdUserStatus = AcdUserStatus.findByOwner(springSecurityService.currentUser)
             if (!acdUserStatus)
             {
                 log.error "Failed to find acd user status, maybe not serious"
@@ -588,7 +589,7 @@ class AcdController
                 return
             }
 
-            def user = authenticatedUser
+            def user = springSecurityService.currentUser
             promptFileService.save(storageLocation, file, user.organization.id)
 
             render('Success')
@@ -596,13 +597,13 @@ class AcdController
 
     def currentCall =
         {
-            def call = AcdCall.findAllByUser(authenticatedUser)
+            def call = AcdCall.findAllByUser(springSecurityService.currentUser)
             render(view: 'currentCall', model: [calls: call])
         }
 
     def polledCalls =
         {
-            List<AcdCall> calls = AcdCall.findAllByUser(authenticatedUser)
+            List<AcdCall> calls = AcdCall.findAllByUser(springSecurityService.currentUser)
 
             def json = [:]
 
@@ -940,11 +941,11 @@ class AcdController
 
     def callHistory =
     {
-        if (!authenticatedUser) {
+        if (!springSecurityService.currentUser) {
             //Redirect to login
             redirect(controller: 'login', action: 'auth');
         }
-        def user = authenticatedUser
+        def user = springSecurityService.currentUser
 
         if (log.isDebugEnabled())
         {

@@ -43,8 +43,8 @@ tbody .col-light { text-align: center; }
         <tr>
           <g:form controller="administration" action="addExtension" method="post" autocomplete="off">
             <td class="col-number"><g:textField name="number" value="${fieldValue(bean: newExtension, field: 'number')}" class="${listen.validationClass(bean: newExtension, field: 'number')}" placeholder="${g.message(code: 'page.administration.phones.extension.placeholder')}" autofocus="focus"/></td>
-            <td class="col-owner"><listen:userSelectForOperator name="owner.id" value="${newExtension?.owner?.id}" class="${listen.validationClass(bean: newExtension, field: 'owner')}" noSelection="${['':'-- Choose Owner --']}" style="width:225px"/></td>
-            <td class="col-username"><g:textField name="username" value="${fieldValue(bean: newSipPhone, field: 'username')}" class="${listen.validationClass(bean: newSipPhone, field: 'username')}" placeholder="${g.message(code: 'page.administration.phones.username.placeholder')}" autocomplete="off"/></td>
+            <td class="col-owner" id="ownerColumn"><listen:userSelectForOperator name="owner.id" value="${newExtension?.owner?.id}" class="${listen.validationClass(bean: newExtension, field: 'owner')}" noSelection="${['':'-- Choose Owner --']}" style="width:225px"/></td>
+            <td class="col-username" id="usernameColumn"><g:textField name="username" value="${fieldValue(bean: newSipPhone, field: 'username')}" class="${listen.validationClass(bean: newSipPhone, field: 'username')}" placeholder="${g.message(code: 'page.administration.phones.username.placeholder')}" autocomplete="off"/></td>
             <td class="col-password"><g:passwordField name="password" value="${fieldValue(bean: newSipPhone, field: 'password')}" class="${listen.validationClass(bean: newSipPhone, field: 'password')}" placeholder="${g.message(code: 'page.administration.phones.password.placeholder')}" autocomplete="off"/></td>
             <td class="col-password"><g:passwordField name="passwordConfirm" value="${fieldValue(bean: newSipPhone, field: 'passwordConfirm')}" class="${listen.validationClass(bean: newSipPhone, field: 'passwordConfirm')}" placeholder="${g.message(code: 'page.administration.phones.passwordConfirm.placeholder')}"  autocomplete="off"/></td>
             <td class="col-button"><g:submitButton name="add" value="${g.message(code: 'page.administration.phones.add.button.addExtension')}"/></td>
@@ -116,6 +116,13 @@ tbody .col-light { text-align: center; }
 $(document).ready(function() {
     $('#number').focus();
 });
+
+    $('#ownerColumn').change(function(theValue) {
+        var userId = theValue.target.options[theValue.target.selectedIndex].value;
+
+        $('#username').attr('value', userId);
+    });
+
     </script>
   </body>
 </html>

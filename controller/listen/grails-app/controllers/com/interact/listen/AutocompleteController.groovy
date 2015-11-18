@@ -2,7 +2,6 @@ package com.interact.listen
 
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
-//import grails.plugins.springsecurity.Secured
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AutocompleteController {
@@ -11,7 +10,7 @@ class AutocompleteController {
     ]
 
     def contacts = {
-        def user = authenticatedUser
+        def user = springSecurityService.currentUser;
 
         def result = [
             my: [
