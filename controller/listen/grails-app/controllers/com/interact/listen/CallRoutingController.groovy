@@ -28,11 +28,6 @@ class CallRoutingController {
         }
 
         String authorization = params.authorization;
-        if(!authorization || authorization.trim() == '')
-        {
-            response.sendError(HSR.SC_BAD_REQUEST, 'Missing required parameter [authorization]')
-            return
-        }
 
         def result = callRoutingService.routeCall(ani, dnis, authorization);
 
