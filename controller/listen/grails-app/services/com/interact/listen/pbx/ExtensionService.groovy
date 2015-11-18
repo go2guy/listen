@@ -253,22 +253,22 @@ class ExtensionService {
 
         Extension extension = null;
 
-        //Look up by the username of the phone
-        User user = User.get(extIn.sipPhone.username);
-        if(user != null)
-        {
+//        //Look up by the username of the phone
+//        User user = User.get(extIn.sipPhone.username);
+//        if(user != null)
+//        {
+//            if(log.isDebugEnabled())
+//            {
+//                log.debug("Extension validated for user[" + user.username + "]");
+//            }
+//
+//            extension = Extension.findByNumberAndOwner(extIn?.number, user);
+//        }
+//        else
+//        {
             if(log.isDebugEnabled())
             {
-                log.debug("Extension validated for user[" + user.username + "]");
-            }
-
-            extension = Extension.findByNumberAndOwner(extIn?.number, user);
-        }
-        else
-        {
-            if(log.isDebugEnabled())
-            {
-                log.debug("Unable to validate phone by userId. Trying sipPhone");
+                log.debug("Looking up extension by phone username[" + extIn.sipPhone.username + "]");
             }
 
             //Lets see if there's a sipPhone entry for this username
@@ -284,7 +284,7 @@ class ExtensionService {
                 regResponse.returnCode = HSR.SC_NOT_FOUND
                 return regResponse
             }
-        }
+//        }
 
         if (!extension)
         {
