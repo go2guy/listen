@@ -257,6 +257,8 @@ class ProfileController {
         }
 
         did.properties['forwardedTo', 'greeting'] = params
+        // Don't want any non-numeric characters
+        did.forwardedTo = String.valueOf(params.forwardedTo).replaceAll("\\D+", "")
 
         if(did.validate() && did.save()) {
             log.error "We've saved the did properties"

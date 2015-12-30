@@ -196,6 +196,7 @@ class ExtensionService {
                 result.extension.properties = params
             } else {
                 result.extension.properties['forwardedTo', 'greeting'] = params
+                result.extension.forwardedTo = String.valueOf(params.forwardedTo).replaceAll("\\D+", "")
             }
 
             if(result.sipPhone.validate() && result.extension.validate() && result.extension.save(flush: true)) {

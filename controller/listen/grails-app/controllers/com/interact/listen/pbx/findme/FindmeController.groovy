@@ -67,8 +67,8 @@ class FindmeController {
             jsonGroup.each { jsonDestination ->
                 def number = new FindMeNumber(user: user, priority: priority)
                 def map = [
-                    'number': String.valueOf(jsonDestination.number),
-                    'dialDuration': String.valueOf(jsonDestination.dialDuration),
+                    'number': String.valueOf(jsonDestination.number).replaceAll("\\D+", ""),
+                    'dialDuration': String.valueOf(jsonDestination.dialDuration).replaceAll("\\D+", ""),
                     'isEnabled': String.valueOf(jsonDestination.isEnabled)
                 ]
                 number.properties['number', 'dialDuration', 'isEnabled'] = map
