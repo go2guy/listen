@@ -280,7 +280,7 @@ class ExtensionService {
             }
             else
             {
-                log.debug("sipRequest failed for user id [${extIn?.sipPhone?.number}]")
+                log.debug("sipRequest failed for user id [${extIn?.sipPhone?.username}]")
                 regResponse.extension = extIn
                 regResponse.returnCode = HSR.SC_NOT_FOUND
                 return regResponse
