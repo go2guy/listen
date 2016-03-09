@@ -6,7 +6,7 @@ import org.apache.log4j.Logger
 
 class CallRoutingService
 {
-    def userService;
+    def organizationService;
 
     static transactional = false
 
@@ -54,12 +54,10 @@ class CallRoutingService
                 }
             }
         }
-
         else
         {
             //Look up organization by the extension that is making the call
-            User extensionUser = userService.parseFromSipAuthorization(authorization);
-            organization = extensionUser.getOrganization();
+            organization = organizationService.parseFromSipContact(authorization);
         }
 
         if(organization == null) {

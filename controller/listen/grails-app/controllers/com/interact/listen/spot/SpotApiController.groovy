@@ -212,13 +212,14 @@ class SpotApiController {
 
         log.debug("addCallHistory with json [${json}]")
         def callHistory = new CallHistory()
+        Organization callOrganization = Organization.get(getIdFromHref(json.organization.href));
         callHistory.dateTime = formatter.parseDateTime(json.date)
         callHistory.ani = json.ani
         callHistory.dnis = json.dnis
         callHistory.duration = new Duration(json.duration)
-        callHistory.fromUser = User.lookupByPhoneNumber(json.ani)
-        callHistory.toUser = User.lookupByPhoneNumber(json.dnis)
-        callHistory.organization = Organization.get(getIdFromHref(json.organization.href))
+        callHistory.fromUser = User.lookupByPhoneNumberAndOrganization(json.ani, callOrganization);
+        callHistory.toUser = User.lookupByPhoneNumberAndOrganization(json.dnis, callOrganization);
+        callHistory.organization = callOrganization;
         if(json.result) {
         	callHistory.result = json.result
         } else {
@@ -1810,22 +1811,33 @@ class SpotApiController {
         }
 
         def Contact = URLDecoder.decode(json?.Contact, 'UTF-8')
-        if (Contact.contains(";") || Contact.contains("@")) {
+        if (Contact.contains(";") || Contact.contains("@"))
+        {
             def contactList = Contact.tokenize(';')
 
-            for ( int i = 0; i < contactList.size(); i++ ){
-                def tmpval = contactList[i]
-                if (tmpval.contains('expires=')){
-                    extension.sipPhone.expires = tmpval.split("expires=")[1].toInteger()
-                } else if (tmpval.contains('sip:') && (tmpval.contains('@'))){
-                    if (invite) {
-                        // for INVITE requests, we want to take the info from contact and use it as the originating extenstion number
-                        extension.number = tmpval.split("@")[0]?.split("sip:")[1]
+            for ( int i = 0; i < contactList.size(); i++ )
+            {
+                def tmpval = contactList[i];
+                if (tmpval.contains('expires='))
+                {
+                    extension.sipPhone.expires = tmpval.split("expires=")[1].toInteger();
+                }
+
+                if (tmpval.contains('sip:') && (tmpval.contains('@')))
+                {
+                    if (invite)
+                    {
+                        // for INVITE requests, we want to take the info from contact and use it as the originating extension number
+                        extension.number = tmpval.split("@")[0]?.split("sip:")[1];
                     }
-                    extension.sipPhone.ip = tmpval.split("@")[1]?.split(":")[0].replaceAll(/\>/, '')
+
+                    String sipIp = tmpval.split("@")[1]?.replaceAll(/\>/, '');
+                    log.debug("Using SIP IP[" + sipIp + "]");
+                    extension.sipPhone.ip = sipIp;
                 }
             }
-        } else if ((Contact == '*') && (extension.sipPhone.expires == 0 )) {
+        }
+        else if ((Contact == '*') && (extension.sipPhone.expires == 0 )) {
             // RFC 3261 section 10.2.2
             extension.sipPhone.ip = ''
         } else {

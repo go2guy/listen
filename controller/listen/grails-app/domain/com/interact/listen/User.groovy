@@ -66,9 +66,20 @@ class User implements Tenant
         def roleStrings = getAuthorities().collect { it.authority }
         return roleStrings.contains(authority)
     }
+
+    static def lookupByPhoneNumber(def number)
+    {
+        return (PhoneNumber.findByNumber(number)?.owner);
+    }
     
-    static def lookupByPhoneNumber(def number) {
-        return (PhoneNumber.findByNumber(number)?.owner)
+    static def lookupByPhoneNumberAndOrganization(String number, Organization organization)
+    {
+        return createCriteria().get {
+            phoneNumbers {
+                eq('number', number)
+            }
+            eq('organization', organization)
+        }
     }
     
     boolean canDial(def destination) {
