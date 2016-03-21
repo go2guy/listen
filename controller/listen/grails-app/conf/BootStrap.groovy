@@ -19,6 +19,7 @@ class BootStrap
 
             if(callProcessorInterval > 0)
             {
+                log.debug("Scheduling AcdCallProcessorJob with interval[" + callProcessorInterval + "]");
                 AcdCallProcessorJob.schedule(callProcessorInterval);
             }
 
@@ -29,6 +30,10 @@ class BootStrap
             {
                 AcdCleanupJob.schedule(cleanupInterval);
             }
+        }
+        else
+        {
+            log.debug("Listen ACD Feature is not licensed.");
         }
 
         mailService.mailMessageBuilderFactory = customMailMessageBuilderFactory

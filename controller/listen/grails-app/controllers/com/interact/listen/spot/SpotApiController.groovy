@@ -365,8 +365,9 @@ class SpotApiController {
     }
 
     def addVoicemail = {
-	log.debug "addVoicemail request[${request}] with params[${params}]"
+
         def json = JSON.parse(request)
+        log.debug "addVoicemail with params [${json}]"
         response.status = HSR.SC_CREATED
 
         Voicemail.withTransaction { status ->
