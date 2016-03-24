@@ -15,39 +15,16 @@ class CallRoutingService
         log.debug "route call request for [${ani}][${dnis}]"
         //Check external number routes first
         def mappings = [:]
-        def organization
-        NumberRoute.findAllByType(NumberRoute.Type.EXTERNAL).each {
-            mappings.put(it.pattern, it)
-        }
+        Organization callerOrganization = null;
 
-        def matcher = new WildcardNumberMatcher()
-        def mapping = matcher.findMatch(dnis, mappings)
-        def extension
-        if(mapping) {
-            log.debug "returning because of mappings"
-            def dmnExtension = ''
-            if(mapping?.destination == 'Direct Message') {
-                log.debug "Lookup direct message number [${dnis}]"
-                def dmn = DirectMessageNumber.findByNumber(dnis)
-                if(dmn && dmn.owner.enabled()) {
-                    log.debug "User [${dmn.owner?.username}] associated with direct message number [${dnis}]"
-                    extension = Extension.findByOwner(dmn.owner)
-                    if(extension) {
-                        dmnExtension = extension.number
-                        log.debug "Extension [${dmnExtension}] associated with direct message number [${dnis}]"
-                    }
-                }
-            }
-            return [application: mapping.destination, organization: mapping.organization, dmnExtension: dmnExtension]
-        }
-        else if(authorization == null || authorization.isEmpty())
+        if(authorization == null || authorization.isEmpty())
         {
             log.warn("Didn't get sip authorization.");
             List<SingleOrganizationConfiguration> socList = SingleOrganizationConfiguration.list();
             //There's only one here
             if(socList != null && socList.size() > 0)
             {
-                organization = socList.get(0).organization;
+                callerOrganization = socList.get(0).organization;
                 if(log.isDebugEnabled())
                 {
                     log.debug("Single organization mode enabled, using default org.");
@@ -57,26 +34,73 @@ class CallRoutingService
         else
         {
             //Look up organization by the extension that is making the call
-            organization = organizationService.parseFromSipContact(authorization);
+            callerOrganization = organizationService.parseFromSipContact(authorization);
         }
 
-        if(organization == null) {
+        NumberRoute.findAllByType(NumberRoute.Type.EXTERNAL).each {
+            mappings.put(it.pattern, it)
+        }
+
+        def matcher = new WildcardNumberMatcher()
+        def mapping = matcher.findMatch(dnis, mappings)
+        def extension
+        if(mapping)
+        {
+            log.debug "returning because of mappings"
+            def dmnExtension = ''
+            String callerId = null;
+
+            if(mapping?.destination == 'Direct Message')
+            {
+                log.debug "Lookup direct message number [${dnis}]"
+                def dmn = DirectMessageNumber.findByNumber(dnis)
+                if(dmn && dmn.owner.enabled())
+                {
+                    log.debug "User [${dmn.owner?.username}] associated with direct message number [${dnis}]"
+                    extension = Extension.findByOwner(dmn.owner)
+                    if(extension) {
+                        dmnExtension = extension.number
+                        log.debug "Extension [${dmnExtension}] associated with direct message number [${dnis}]"
+                    }
+                }
+            }
+
+            //Check if caller is in the same organization
+            if((callerOrganization != null) && (mapping.organization != callerOrganization))
+            {
+                //Caller is from another org. Set the callerId
+                callerId = callerOrganization.outboundCallid;
+                if(log.isDebugEnabled())
+                {
+                    log.debug("Setting caller's callerId to : " + callerId);
+                }
+            }
+
+            return [application: mapping.destination, organization: mapping.organization, dmnExtension: dmnExtension,
+                callerId: callerId];
+        }
+
+
+        if(callerOrganization == null) {
             //Unknown ip dialed a non-external route.  We do not know what organization to use here, so fail
             log.error "call with unknown organization"
             return null
         }
 
         mappings.clear()
-        NumberRoute.findAllByOrganizationAndType(organization, NumberRoute.Type.INTERNAL).each {
+        NumberRoute.findAllByOrganizationAndType(callerOrganization, NumberRoute.Type.INTERNAL).each {
                 mappings.put(it.pattern, it)
         }
 
         mapping = matcher.findMatch(dnis, mappings)
 
-        if(mapping) {
+        if(mapping)
+        {
             log.debug "returning final with mappings"
-            return [application: mapping.destination, organization: organization]
-        } else {
+            return [application: mapping.destination, organization: callerOrganization]
+        }
+        else
+        {
             log.debug "Returning without application mappings"
             return null
         }

@@ -42,7 +42,7 @@ class OrganizationService {
                         theOrganization = sipPhone.organization;
                     }
 
-                    if(log.isDebugEnabled())
+                    if(log.isDebugEnabled() && theOrganization != null)
                     {
                         log.debug("Organization is : " + theOrganization.name);
                     }

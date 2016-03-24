@@ -46,6 +46,7 @@ class CallRoutingController {
                     outboundCallid = result?.organization?.outboundCallid
                 }
                 dmnExtension = result?.dmnExtension
+                callerId = result?.callerId
             }
         }
     }
