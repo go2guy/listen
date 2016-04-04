@@ -12,7 +12,7 @@ table { margin-bottom: 10px; }
 
 .col-number input[type=text], .col-number, .col-ip input[type=text] { width: 100px; }
 .col-owner { width: 225px;}
-.col-password input[type=password], .col-username input[type=text] { width: 145px; }
+.col-password input[type=password], .col-username input[type=text], .col-userId input[type=text] { width: 145px; }
 
 .col-dateTime { width: 100px; }
 .col-reg { width: 80px;}
@@ -34,9 +34,9 @@ tbody .col-light { text-align: center; }
       <thead>
         <th class="col-number"><g:message code="page.administration.phones.column.number"/></th>
         <th class="col-owner"><g:message code="page.administration.phones.column.owner"/></th>
+        <th class="col-userId"><g:message code="page.administration.phones.column.userId"/></th>
         <th class="col-username"><g:message code="page.administration.phones.column.username"/></th>
         <th class="col-password"><g:message code="page.administration.phones.column.password"/></th>
-        <th class="col-password"><g:message code="page.administration.phones.column.passwordConfirm"/></th>
         <th class="col-button"></th>
       </thead>
       <tbody>
@@ -44,9 +44,10 @@ tbody .col-light { text-align: center; }
           <g:form controller="administration" action="addExtension" method="post" autocomplete="off">
             <td class="col-number"><g:textField name="number" value="${fieldValue(bean: newExtension, field: 'number')}" class="${listen.validationClass(bean: newExtension, field: 'number')}" placeholder="${g.message(code: 'page.administration.phones.extension.placeholder')}" autofocus="focus"/></td>
             <td class="col-owner" id="ownerColumn"><listen:userSelectForOperator name="owner.id" value="${newExtension?.owner?.id}" class="${listen.validationClass(bean: newExtension, field: 'owner')}" noSelection="${['':'-- Choose Owner --']}" style="width:225px"/></td>
+            <td class="col-userId" id="useridColumn"><g:textField name="phoneUserId" value="${fieldValue(bean: newSipPhone, field: 'phoneUserId')}" class="${listen.validationClass(bean: newSipPhone, field: 'phoneUserId')}" placeholder="${g.message(code: 'page.administration.phones.userId.placeholder')}" autocomplete="off"/></td>
             <td class="col-username" id="usernameColumn"><g:textField name="username" value="${fieldValue(bean: newSipPhone, field: 'username')}" class="${listen.validationClass(bean: newSipPhone, field: 'username')}" placeholder="${g.message(code: 'page.administration.phones.username.placeholder')}" autocomplete="off"/></td>
             <td class="col-password"><g:passwordField name="password" value="${fieldValue(bean: newSipPhone, field: 'password')}" class="${listen.validationClass(bean: newSipPhone, field: 'password')}" placeholder="${g.message(code: 'page.administration.phones.password.placeholder')}" autocomplete="off"/></td>
-            <td class="col-password"><g:passwordField name="passwordConfirm" value="${fieldValue(bean: newSipPhone, field: 'passwordConfirm')}" class="${listen.validationClass(bean: newSipPhone, field: 'passwordConfirm')}" placeholder="${g.message(code: 'page.administration.phones.passwordConfirm.placeholder')}"  autocomplete="off"/></td>
+
             <td class="col-button"><g:submitButton name="add" value="${g.message(code: 'page.administration.phones.add.button.addExtension')}"/></td>
           </g:form>
         </tr>
@@ -58,6 +59,7 @@ tbody .col-light { text-align: center; }
       <thead>
         <g:sortableColumn property="number" title="${g.message(code: 'page.administration.phones.column.number')}" class="col-number"/>
         <g:sortableColumn property="owner.realName" title="${g.message(code: 'page.administration.phones.column.owner')}" class="col-owner"/>
+        <g:sortableColumn property="sipPhone.phoneUserId" title="${g.message(code: 'page.administration.phones.column.userId')}" class="col-userId"/>
         <g:sortableColumn property="sipPhone.ip" title="${g.message(code: 'page.administration.phones.column.ip')}" class="col-ip"/>
         <g:sortableColumn property="sipPhone.dateRegistered" title="${g.message(code: 'page.administration.phones.column.dateRegistered')}" class="col-ip"/>
         <th class="col-button"></th>
@@ -71,6 +73,7 @@ tbody .col-light { text-align: center; }
                       <g:if test="${extension.sipPhone}">
                             <td class="col-number"onmouseover="tooltip.show('${extension.sipPhone?.userAgent}');" onmouseout="tooltip.hide();">${fieldValue(bean: extension, field: 'number')}</td>
                             <td class="col-owner" onmouseover="tooltip.show('${extension.sipPhone?.realName}');" onmouseout="tooltip.hide();">${extension.owner.realName}</td>
+                            <td class="col-userId">${extension.sipPhone.phoneUserId}</td>
                             <td class="col-ip">${extension.sipPhone.ip}</td>
                             <g:if test="${extension.sipPhone.dateRegistered}">
                                 <td class="col-datereg" onmouseover="tooltip.show('<joda:format value="${extension.sipPhone?.dateRegistered}" pattern="yyyy-MM-dd HH:mm:ss"/>');" onmouseout="tooltip.hide();"><listen:prettytime date="${extension?.sipPhone?.dateRegistered}"/></td>
@@ -116,12 +119,6 @@ tbody .col-light { text-align: center; }
 $(document).ready(function() {
     $('#number').focus();
 });
-
-    $('#ownerColumn').change(function(theValue) {
-        var userId = theValue.target.options[theValue.target.selectedIndex].value;
-
-        $('#username').attr('value', userId);
-    });
 
     </script>
   </body>

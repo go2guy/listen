@@ -783,10 +783,12 @@ CREATE TABLE `sip_phone` (
   `user_agent` varchar(50) DEFAULT NULL,
   `date_registered` datetime default NULL,
   `date_expires` datetime default NULL,
+  `phone_user_id` varchar(50) NOT NULL,
   PRIMARY KEY  (`id`),
   KEY `FKC5294l23B3209252` (`extension_id`),
   KEY `FKC510738B56D05B56` (`organization_id`),
   KEY `unique-username` (`organization_id`,`username`),
+  KEY `unique-phone-user-id` (`phone_user_id`),
   CONSTRAINT `sip_phone_extension_id_fk` FOREIGN KEY (`extension_id`) REFERENCES `phone_number` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `sip_phone_organization_id_fk` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8;

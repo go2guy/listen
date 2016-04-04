@@ -2,6 +2,7 @@ package com.interact.listen
 
 import com.interact.listen.pbx.Extension
 import com.interact.listen.pbx.NumberRoute
+import com.interact.listen.pbx.SipPhone
 import org.apache.log4j.Logger
 
 class CallRoutingService
@@ -16,6 +17,7 @@ class CallRoutingService
         //Check external number routes first
         def mappings = [:]
         Organization callerOrganization = null;
+        String callerId = null;
 
         if(authorization == null || authorization.isEmpty())
         {
@@ -31,10 +33,12 @@ class CallRoutingService
                 }
             }
         }
-        else
+
+        if(callerOrganization == null)
         {
-            //Look up organization by the extension that is making the call
-            callerOrganization = organizationService.parseFromSipContact(authorization);
+            //Look up organization by the user id that is making the call
+            SipPhone sipPhone = SipPhone.findByPhoneUserId(ani);
+            callerOrganization = sipPhone.getOrganization();
         }
 
         NumberRoute.findAllByType(NumberRoute.Type.EXTERNAL).each {
@@ -48,7 +52,6 @@ class CallRoutingService
         {
             log.debug "returning because of mappings"
             def dmnExtension = ''
-            String callerId = null;
 
             if(mapping?.destination == 'Direct Message')
             {
@@ -72,7 +75,17 @@ class CallRoutingService
                 callerId = callerOrganization.outboundCallid;
                 if(log.isDebugEnabled())
                 {
-                    log.debug("Setting caller's callerId to : " + callerId);
+                    log.debug("Setting external mapping callerId to : " + callerId);
+                }
+            }
+            else
+            {
+                //Need to look up the actual callerid based on the inbound ani (phone's user id)
+                SipPhone callerSipPhone = SipPhone.findByOrganizationAndPhoneUserId(callerOrganization, ani);
+                if(callerSipPhone != null && callerSipPhone.getExtension() != null)
+                {
+                    callerId = callerSipPhone.getExtension().getNumber();
+                    log.debug("Setting internal mapping callerId to " + callerId);
                 }
             }
 
@@ -81,10 +94,21 @@ class CallRoutingService
         }
 
 
-        if(callerOrganization == null) {
+        if(callerOrganization == null)
+        {
             //Unknown ip dialed a non-external route.  We do not know what organization to use here, so fail
             log.error "call with unknown organization"
             return null
+        }
+        else
+        {
+            //Need to look up the actual callerid based on the inbound ani (phone's user id)
+            SipPhone callerSipPhone = SipPhone.findByOrganizationAndPhoneUserId(callerOrganization, ani);
+            if(callerSipPhone != null && callerSipPhone.getExtension() != null)
+            {
+                callerId = callerSipPhone.getExtension().getNumber();
+                log.debug("Setting callerId to " + callerId);
+            }
         }
 
         mappings.clear()
@@ -97,7 +121,7 @@ class CallRoutingService
         if(mapping)
         {
             log.debug "returning final with mappings"
-            return [application: mapping.destination, organization: callerOrganization]
+            return [application: mapping.destination, organization: callerOrganization, callerId: callerId];
         }
         else
         {

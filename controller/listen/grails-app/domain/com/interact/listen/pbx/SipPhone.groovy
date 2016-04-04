@@ -8,6 +8,7 @@ class SipPhone {
     Extension extension
     Organization organization
     Boolean registered = false
+    String phoneUserId;
     String realName
     String username
     String password
@@ -28,15 +29,16 @@ class SipPhone {
         extension nullable: false
         organization nullable: false
         realName nullable: true, unique: false, maxSize: 50
-        username blank: false, unique: 'organization', maxSize: 50, matches: '^[^:]+$'
+        username blank: false, maxSize: 50, matches: '^[^:]+$'
+        phoneUserId maxSize: 50, unique: true
         password nullable: true, maxsize: 255
-        passwordConfirm blank: false, maxsize: 255, validator: { val, obj ->
+        /*passwordConfirm blank: false, maxsize: 255, validator: { val, obj ->
             if(obj.password == val) {
                 return true
             } else {
                 return ['passwordMismatch']
             }
-        }
+        }*/
         ip nullable: true, blank: false, unique: false, maxSize: 50
         dateRegistered nullable: true, unique: false
         dateExpires nullable: true, unique: false

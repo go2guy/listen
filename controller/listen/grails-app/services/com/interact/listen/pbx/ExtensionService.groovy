@@ -93,6 +93,7 @@ class ExtensionService {
             log.debug("sipPhone info id              [${result.sipPhone?.id}]")
             log.debug("sipPhone info ext id          [${result.sipPhone?.extension.id}]")
             log.debug("sipPhone info org id          [${result.sipPhone?.organization.id}]")
+            log.debug("sipPhone info phone user id   [${result.sipPhone?.phoneUserId}]")
             log.debug("sipPhone info username        [${result.sipPhone?.username}]")
             log.debug("sipPhone info password        [${result.sipPhone?.password}]")
             log.debug("sipPhone info passwordConfirm [${result.sipPhone?.passwordConfirm}]")
@@ -246,7 +247,7 @@ class ExtensionService {
 
         if (!extIn?.sipPhone?.username) {
             // We're not authorizing based upon user name, just ID.  We've found a match so lets get out
-            log.debug("Extension validated based upon ID")
+            log.debug("Extension validated based upon ID. Username not provided.")
             regResponse.returnCode = HSR.SC_OK
             regResponse.extension = null
             return regResponse
@@ -254,38 +255,43 @@ class ExtensionService {
 
         Extension extension = null;
 
-//        //Look up by the username of the phone
-//        User user = User.get(extIn.sipPhone.username);
-//        if(user != null)
-//        {
-//            if(log.isDebugEnabled())
-//            {
-//                log.debug("Extension validated for user[" + user.username + "]");
-//            }
-//
-//            extension = Extension.findByNumberAndOwner(extIn?.number, user);
-//        }
-//        else
-//        {
-            if(log.isDebugEnabled())
-            {
-                log.debug("Looking up extension by phone username[" + extIn.sipPhone.username + "]");
-            }
+        if(log.isDebugEnabled())
+        {
+            log.debug("Looking up extension by phone username[" + extIn.sipPhone.username + "] and id[" +
+                    extIn?.number + "]");
+        }
 
-            //Lets see if there's a sipPhone entry for this username
-            SipPhone sipPhone1 = SipPhone.findByUsername(extIn.sipPhone.username);
-            if(sipPhone1 != null)
-            {
-                extension = sipPhone1.extension;
+        Extension ext1 = Extension.createCriteria().get {
+            sipPhone {
+                eq('username', extIn.sipPhone.username)
+                eq('phoneUserId', extIn?.number)
             }
-            else
-            {
-                log.debug("sipRequest failed for user id [${extIn?.sipPhone?.username}]")
-                regResponse.extension = extIn
-                regResponse.returnCode = HSR.SC_NOT_FOUND
-                return regResponse
+        }
+        /*//Lets see if there's a sipPhone entry for this username
+        SipPhone sipPhone2 = SipPhone.createCriteria().get {
+        extension {
+                eq('number', extIn?.number)
             }
-//        }
+            eq('username', extIn.sipPhone.username)
+        }*/
+
+        //Lets see if there's a sipPhone entry for this username
+        //SipPhone sipPhone1 = SipPhone.findByUsername(extIn.sipPhone.username);
+        /*if(sipPhone2 != null)
+        {
+            extension = sipPhone2.extension;
+        }*/
+        if(ext1 != null)
+        {
+            extension = ext1;
+        }
+        else
+        {
+            log.debug("sipRequest failed for user id [${extIn?.sipPhone?.username}]")
+            regResponse.extension = extIn
+            regResponse.returnCode = HSR.SC_NOT_FOUND
+            return regResponse
+        }
 
         if (!extension)
         {

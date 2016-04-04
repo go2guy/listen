@@ -185,7 +185,7 @@ class AdministrationController {
             } else {
                 log.debug("Extension does not have sipPhone parameters, use params [${params?.username}]")
                 extInfo.sipPhone = new SipPhone(params)
-                extInfo.sipPhone.passwordConfirm = params?.passwordConfirm
+//                extInfo.sipPhone.passwordConfirm = params?.passwordConfirm
             }
 
             def model = phonesModel()

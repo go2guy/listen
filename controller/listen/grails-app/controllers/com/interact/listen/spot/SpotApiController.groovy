@@ -832,14 +832,17 @@ class SpotApiController {
 
         def isExpired = true
         def findMePreference = FindMePreferences.findByUser(user)
-        if(findMePreference) {
+        if(findMePreference)
+        {
             LocalDateTime expires = findMePreference.expires.toLocalDateTime()
-            if(expires.isAfter(new LocalDateTime())) {
+            if(expires.isAfter(new LocalDateTime()))
+            {
                 isExpired = false
             }
         }
 
-        if(groups.size() == 0 || isExpired) {
+        if(groups.size() == 0 || isExpired)
+        {
             groups.clear()
 
             def findMeNumber = [:]
@@ -856,17 +859,27 @@ class SpotApiController {
                 }
 
                 findMeNumber.ip =  destinationExtension.sipPhone.ip;
+                findMeNumber.number = destinationExtension.sipPhone.phoneUserId;
+                log.debug("Set dial number extension to " + findMeNumber.number);
+                findMeNumber.type = "extension";
+            }
+            else
+            {
+                findMeNumber.type = "external";
             }
 
             def findMeNumbers = []
             findMeNumbers.add(findMeNumber)
             groups.add(findMeNumbers)
-        } else {
+        }
+        else
+        {
             def tempGroups = groups.clone()
 
             groups.each {entry ->
                 def updatedNumbers = []
-                entry.each {
+                entry.each
+                {
                     def updatedNumber = [:]
                     updatedNumber.number = it.number
                     updatedNumber.duration = it.dialDuration
@@ -890,6 +903,11 @@ class SpotApiController {
                         }
 
                         updatedNumber.ip =  findMeNumberAsExtension.sipPhone.ip;
+                        updatedNumber.type = "extension";
+                    }
+                    else
+                    {
+                        updatedNumber.type = "external";
                     }
 
                     if(user.canDial(updatedNumber.number))
@@ -913,9 +931,10 @@ class SpotApiController {
             groups = tempGroups
         }
 
-        if(groups.size() == 0) {
+        if(groups.size() == 0)
+        {
             def findMeNumber = [:]
-            findMeNumber.number = destination
+            findMeNumber.number = destination;
             findMeNumber.duration = 25
             findMeNumber.enabled = true
 
@@ -1769,7 +1788,9 @@ class SpotApiController {
             log.warn "sipRegister request missing param [args.Request-Line]"
             response.sendError(HSR.SC_BAD_REQUEST, 'Missing required parameter [args.Request-Line]')
             return
-        } else {
+        }
+        else
+        {
             def requestLine = URLDecoder.decode(json?.'Request-Line', 'UTF-8')
             requestLine = requestLine.split(' ')[0]
             if(requestLine == 'REGISTER'){
@@ -1790,24 +1811,32 @@ class SpotApiController {
 
         def From = URLDecoder.decode(json?.From, 'UTF-8')
 
-        if (register) {
+        if (register)
+        {
             extension.sipPhone.realName = To.split("<")[0].replace("\"", "")
-        } else if (invite) {
+        }
+        else if (invite)
+        {
             extension.sipPhone.realName = From.split("<")[0].replace("\"", "")
         }
 
-        if ((extension.sipPhone.realName.length() > 0) && (extension.sipPhone.realName[extension.sipPhone.realName.length() - 1] == ' ')){
-            extension.sipPhone.realName = extension.sipPhone.realName.substring(0, extension.sipPhone.realName.length() - 1)
+        if ((extension.sipPhone.realName.length() > 0)
+                && (extension.sipPhone.realName[extension.sipPhone.realName.length() - 1] == ' '))
+        {
+            extension.sipPhone.realName =
+                extension.sipPhone.realName.substring(0, extension.sipPhone.realName.length() - 1)
         }
 
         def extNumber = To.split("sip:")[1].split("@")[0]
 
         extension.sipPhone.expires = -1
-        if (json?.Expires){
+        if (json?.Expires)
+        {
             extension.sipPhone.expires = json.Expires.toInteger()
         }
 
-        if (json?.'User-Agent') {
+        if (json?.'User-Agent')
+        {
             extension.sipPhone.userAgent = URLDecoder.decode(json?.'User-Agent', 'UTF-8')
         }
 
@@ -1919,22 +1948,30 @@ class SpotApiController {
             xmlResponse = "Id [${extension?.number}] auth username [${extension.sipPhone.username}] not found"
             response.status = HSR.SC_NOT_FOUND
         } else if ((regResponse.returnCode == HSR.SC_OK) && (!extension?.sipPhone?.username)) {
-            xmlResponse = "<arcade><client id='${extension.number}' password='${regResponse.extension?.sipPhone?.password}' username='${extension.number}'/><expires seconds='${expireSeconds}'/>"
+            xmlResponse = "<arcade><client id='${extension.number}' password='${regResponse.extension?.sipPhone?.password}' username='null'/><expires seconds='${expireSeconds}'/>"
             response.status = HSR.SC_OK
         } else if ((regResponse.returnCode == HSR.SC_OK) && (extension?.sipPhone?.username)) {
             xmlResponse = "<arcade><client id='${extension.number}' password='${regResponse.extension?.sipPhone?.password}' username='${extension.sipPhone.username}'/><expires seconds='${expireSeconds}'/>"
             response.status = HSR.SC_OK
-        } else {
+        }
+        else if (regResponse.returnCode == HSR.SC_UNAUTHORIZED)
+        {
+            response.status = HSR.SC_UNAUTHORIZED
+        }
+        else {
             log.error "sipRegister unexpected response code [${regResponse.returnCode}]"
             xmlResponse = "sipRegister internal server error [${regResponse.returnCode}]"
             response.status = HSR.SC_INTERNAL_SERVER_ERROR
         }
 
-        log.debug "sipRegister request xmlResponse [${xmlResponse}]"
-        def xmlResponseEncoded = URLEncoder.encode(xmlResponse, 'UTF-8')
+        if(xmlResponse != null)
+        {
+            log.debug "sipRegister request xmlResponse [${xmlResponse}]"
+            def xmlResponseEncoded = URLEncoder.encode(xmlResponse, 'UTF-8')
+            response << xmlResponseEncoded
+        }
         //log.debug "sipRegister request xmlResponse encoded [${xmlResponseEncoded}]"
 
-        response << xmlResponseEncoded
         response.flushBuffer()
     }
     // sets the SPOT system phone number (for display in notifications)

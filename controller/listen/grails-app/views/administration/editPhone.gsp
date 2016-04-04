@@ -62,16 +62,16 @@
                 <td class="col-owner"><listen:userSelectForOperator name="owner.id" value="${extension.owner.id}" class="${listen.validationClass(bean: extension, field: 'owner')}"/></td>
             </tr>
             <tr>
+                <td class="col-userId"><g:message code="page.administration.phones.column.userId"/></td>
+                <td class="val-userId"><g:textField name="phoneUserId" value="${fieldValue(bean: sipPhone, field: 'phoneUserId')}" class="${listen.validationClass(bean: sipPhone, field: 'phoneUserId')}"/></td>
+              </tr>
+            <tr>
                 <td class="col-number"><g:message code="page.administration.phones.column.username"/></td>
                 <td class="val-number"><g:textField name="username" value="${fieldValue(bean: sipPhone, field: 'username')}" class="${listen.validationClass(bean: sipPhone, field: 'username')}"/></td>
             </tr>
             <tr onmouseover="tooltip.show('${sipPhone?.password}');" onmouseout="tooltip.hide();">
                 <td class="col-password"><g:message code="page.administration.phones.column.password"/></td>
                 <td class="val-password"><g:passwordField name="password" value="${fieldValue(bean: sipPhone, field: 'password')}" class="${listen.validationClass(bean: sipPhone, field: 'password')}" placeholder="${g.message(code: 'page.administration.phones.password.placeholder')}" autocomplete="off"/></td>
-            </tr>
-            <tr>
-                <td class="col-password"><g:message code="page.administration.phones.column.passwordConfirm"/></td>
-                <td class="val-password" onmouseover="tooltip.show('${sipPhone?.passwordConfirm}');" onmouseout="tooltip.hide();"><g:passwordField name="passwordConfirm" value="${fieldValue(bean: sipPhone, field: 'passwordConfirm')}" class="${listen.validationClass(bean: sipPhone, field: 'passwordConfirm')}" placeholder="${g.message(code: 'page.administration.phones.passwordConfirm.placeholder')}" autocomplete="off"/></td>
             </tr>
             <tr>
                 <td class="col-realname"><g:message code="page.administration.phones.column.realName"/></td>
