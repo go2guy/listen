@@ -38,7 +38,10 @@ class CallRoutingService
         {
             //Look up organization by the user id that is making the call
             SipPhone sipPhone = SipPhone.findByPhoneUserId(ani);
-            callerOrganization = sipPhone.getOrganization();
+            if(sipPhone != null)
+            {
+                callerOrganization = sipPhone.getOrganization();
+            }
         }
 
         NumberRoute.findAllByType(NumberRoute.Type.EXTERNAL).each {
@@ -80,19 +83,26 @@ class CallRoutingService
             }
             else
             {
-                //Need to look up the actual callerid based on the inbound ani (phone's user id)
-                SipPhone callerSipPhone = SipPhone.findByOrganizationAndPhoneUserId(callerOrganization, ani);
-                if(callerSipPhone != null && callerSipPhone.getExtension() != null)
+                if(callerOrganization != null)
                 {
-                    callerId = callerSipPhone.getExtension().getNumber();
-                    log.debug("Setting internal mapping callerId to " + callerId);
+                    //Need to look up the actual callerid based on the inbound ani (phone's user id)
+                    SipPhone callerSipPhone = SipPhone.findByOrganizationAndPhoneUserId(callerOrganization, ani);
+                    if(callerSipPhone != null && callerSipPhone.getExtension() != null)
+                    {
+                        callerId = callerSipPhone.getExtension().getNumber();
+                        log.debug("Setting internal mapping callerId to " + callerId);
+                    }
+                }
+                else
+                {
+                    //This is an external call
+                    callerId = ani;
                 }
             }
 
             return [application: mapping.destination, organization: mapping.organization, dmnExtension: dmnExtension,
                 callerId: callerId];
         }
-
 
         if(callerOrganization == null)
         {
