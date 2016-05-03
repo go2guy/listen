@@ -139,7 +139,7 @@ class ExtensionService {
         historyService.deletedExtension(extension)
         ldapService.removeExtension(extension.owner, extension.number)
         cloudToDeviceService.sendContactSync()
-        messageLightService.toggle(extension.number, extension?.sipPhone.ip, false)
+        messageLightService.toggle(extension?.sipPhone?.phoneUserId, extension?.sipPhone.ip, false)
     }
 
     Result update( def params, Extension extension, Organization organization ) {

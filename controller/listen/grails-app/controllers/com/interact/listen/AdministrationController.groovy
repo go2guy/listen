@@ -220,11 +220,11 @@ class AdministrationController {
 
         if(params?.lightStatus == message(code: 'page.administration.phones.toggleMsgLight.button.on')) {
             log.debug("updateMsgLight to turn it on")
-            messageLightService.toggle(extension.number, extension?.sipPhone?.ip, true)
+            messageLightService.toggle(extension?.sipPhone?.phoneUserId, extension?.sipPhone?.ip, true)
             flash.successMessage = message(code: 'page.administration.phones.toggleMsgLight.action.on', args: [extension.number])
         } else if (params?.lightStatus == message(code: 'page.administration.phones.toggleMsgLight.button.off')) {
             log.debug("updateMsgLight to turn it off")
-            messageLightService.toggle(extension.number, extension?.sipPhone?.ip, false)
+            messageLightService.toggle(extension?.sipPhone?.phoneUserId, extension?.sipPhone?.ip, false)
             flash.successMessage = message(code: 'page.administration.phones.toggleMsgLight.action.off', args: [extension.number])
         } else {
             log.error("updateMsgLight invalid or missing parameter [lightStatus] [${params?.lightStatus}]")
