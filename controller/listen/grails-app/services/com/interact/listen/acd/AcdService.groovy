@@ -352,8 +352,8 @@ class AcdService
             //Send request to ivr
             try
             {
-                spotCommunicationService.sendAcdConnectEvent(thisCall.sessionId,
-                        agent.acdUserStatus.contactNumber.number);
+                String number = agent.organization.getId() + agent.acdUserStatus.contactNumber.number;
+                spotCommunicationService.sendAcdConnectEvent(thisCall.sessionId, number);
             }
             catch(SpotCommunicationException sce)
             {

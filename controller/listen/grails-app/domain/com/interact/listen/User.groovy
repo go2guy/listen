@@ -74,6 +74,11 @@ class User implements Tenant
     
     static def lookupByPhoneNumberAndOrganization(String number, Organization organization)
     {
+        if(number.size() == organization.extLength + 1)
+        {
+            number = number.substring(1);
+        }
+
         return createCriteria().get {
             phoneNumbers {
                 eq('number', number)
