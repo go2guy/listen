@@ -53,6 +53,11 @@
       <sourceFolder url="file://$MODULE_DIR$/test/unit" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/test/integration" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/grails-app/conf" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/grails-app/views" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/grails-app/ldap-servers" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/grails-app/migrations" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/properties" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/templates" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target/classes" />
     </content>
     <orderEntry type="inheritedJdk" />
@@ -116,6 +121,10 @@
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.tomcat.embed/tomcat-embed-jasper/jars/tomcat-embed-jasper-7.0.47.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.tomcat/tomcat-catalina-ant/jars/tomcat-catalina-ant-7.0.47.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.tomcat.embed/tomcat-embed-core/jars/tomcat-embed-core-7.0.47.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/apacheds/apacheds-jdbm-store/jars/apacheds-jdbm-store-1.5.4.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/apacheds/apacheds-xdbm-base/jars/apacheds-xdbm-base-1.5.4.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/apacheds/apacheds-protocol-ldap/jars/apacheds-protocol-ldap-1.5.4.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/apacheds/apacheds-schema-registries/jars/apacheds-schema-registries-1.5.4.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -126,6 +135,16 @@
     </orderEntry>
     <orderEntry type="module" module-name="listen-grailsPlugins" />
     <orderEntry type="library" name="grails-2.3.3" level="application" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/lib" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+        <jarDirectory url="file://$MODULE_DIR$/lib" recursive="false" />
+      </library>
+    </orderEntry>
   </component>
 </module>
 

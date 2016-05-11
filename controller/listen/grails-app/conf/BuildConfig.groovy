@@ -59,11 +59,15 @@ grails.project.dependency.resolution = {
         compile('apacheds:apacheds-core:1.5.4')
         compile('apacheds:apacheds-core-entry:1.5.4')
         compile('apacheds:apacheds-protocol-shared:1.5.4')
+        compile('apacheds:apacheds-protocol-ldap:1.5.4')
         compile('shared-ldap:shared-ldap:0.9.12')
         compile('shared-ldap:shared-ldap-constants:0.9.12')
         compile('commons-dbcp:commons-dbcp:1.4')
         compile('commons-pool:commons-pool:1.5.4')
         compile('commons-configuration:commons-configuration:1.9')
+        compile('apacheds:apacheds-xdbm-base:1.5.4')
+        compile('apacheds:apacheds-jdbm-store:1.5.4')
+        compile('apacheds:apacheds-schema-registries:1.5.4')
 
         runtime 'commons-codec:commons-codec:1.4',
                 'commons-io:commons-io:1.4',

@@ -2,6 +2,8 @@ package com.interact.listen
 
 import com.interact.listen.acd.AcdUserStatus
 import com.interact.listen.pbx.Extension
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 import org.joda.time.DateTime
 import com.interact.listen.acd.Skill
 import grails.plugin.multitenant.core.Tenant;
@@ -74,17 +76,35 @@ class User implements Tenant
     
     static def lookupByPhoneNumberAndOrganization(String number, Organization organization)
     {
+        Log LOG = LogFactory.getLog(this);
+        if(LOG.isDebugEnabled())
+        {
+            LOG.debug("Looking up User by number[" + number + "], organization[" + organization.getName() + "]");
+        }
+
         if(number.size() == organization.extLength + 1)
         {
             number = number.substring(1);
+
+            if(LOG.isDebugEnabled())
+            {
+                LOG.debug("Number truncated to [" + number + "]");
+            }
         }
 
-        return createCriteria().get {
+        User user = createCriteria().get {
             phoneNumbers {
                 eq('number', number)
             }
             eq('organization', organization)
         }
+
+        if(LOG.isDebugEnabled() && user != null)
+        {
+            LOG.debug("User is [" + user.getRealName() + "]");
+        }
+
+        return user;
     }
     
     boolean canDial(def destination) {

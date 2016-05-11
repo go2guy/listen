@@ -215,7 +215,14 @@ class SpotApiController {
         Organization callOrganization = Organization.get(getIdFromHref(json.organization.href));
         callHistory.dateTime = formatter.parseDateTime(json.date)
         callHistory.ani = json.ani
-        callHistory.dnis = json.dnis
+
+        String dnis = json.dnis;
+        if(callOrganization != null && dnis.size() == callOrganization.getExtLength() + 1)
+        {
+            dnis = dnis.substring(1);
+        }
+
+        callHistory.dnis = dnis;
         callHistory.duration = new Duration(json.duration)
         callHistory.fromUser = User.lookupByPhoneNumberAndOrganization(json.ani, callOrganization);
         callHistory.toUser = User.lookupByPhoneNumberAndOrganization(json.dnis, callOrganization);
