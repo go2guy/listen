@@ -135,9 +135,11 @@
             $('.playLink').show();
             $('ol .duration').remove();
 
-$('.delete-form').submit(function(e) {
-    return confirm('Are you sure?');
-});
+            $('.delete-form').submit(function(e) {
+              return confirm('Are you sure?');
+          });
+
+          setTimeout( "pollMessages()", 5000);
       });
 
       function playVoicemail(id) {
@@ -163,8 +165,6 @@ $('.delete-form').submit(function(e) {
            });
       }
 
-      setInterval( "pollMessages()", 1000);
-      
       function pollMessages() {
             var visibleIds = ''
             $('.message-row').each(function (index, domEle) {
@@ -273,6 +273,8 @@ $('.delete-form').submit(function(e) {
                    }
               }
             });
+
+            setTimeout( "pollMessages()", 5000);
       }
     </script>
   </body>

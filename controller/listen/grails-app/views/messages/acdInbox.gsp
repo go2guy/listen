@@ -149,6 +149,8 @@
         $('.delete-form').submit(function(e) {
           return confirm('Are you sure?');
         });
+
+        setTimeout("pollMessages()", 5000);
       });
 
       function playVoicemail(id) {
@@ -173,7 +175,7 @@
          });
       }
 
-      setInterval("pollMessages()", 5000);
+
 
       function pollMessages() {
         var visibleIds = ''
@@ -296,6 +298,8 @@
 
           } // success
         }); // $.ajax
+
+        setTimeout("pollMessages()", 5000);
       } // pollMessages
       </script>
 
