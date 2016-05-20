@@ -105,6 +105,23 @@ var listen = {
             });
         }
     }
+
+    function getAcdMessageCount() {
+        var displayedCount = $("#new-acd-message-count");
+        var newCount = '(0)';
+        $.ajax({
+            url: '${request.contextPath}/messages/newAcdCount',
+            dataType: 'json',
+            cache: false,
+            success: function(data) {
+                if (data && data.count != displayedCount.text() ) {
+                    displayedCount.text(data.count);
+                }
+            }
+        });
+
+        setTimeout("getAcdMessageCount()", 5000);
+    }
     </script>
 
     <link rel="stylesheet" type="text/css" href="${resource(dir: 'resources/jquery/skin/css/custom-theme', file: 'jquery-ui-1.8.2.custom.css')}">
@@ -526,20 +543,7 @@ $(document).ready(function() {
 </sec:ifAnyGranted>
 
 <sec:ifAnyGranted roles="ROLE_ACD_USER">
-    setInterval(function getAcdMessageCount() {
-    var displayedCount = $("#new-acd-message-count");
-    var newCount = '(0)';
-    $.ajax({
-      url: '${request.contextPath}/messages/newAcdCount',
-      dataType: 'json',
-      cache: false,
-      success: function(data) {
-        if (data && data.count != displayedCount.text() ) {
-          displayedCount.text(data.count);
-        }
-      }
-    });
-  }, 5000);
+    setTimeout("getAcdMessageCount()", 5000);
 </sec:ifAnyGranted>
 
 });

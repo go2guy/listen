@@ -2,6 +2,7 @@ package com.interact.listen.license
 
 import com.interact.license.client.UnleashLicense
 import com.interact.license.client.validate.CryptoDsigSignatureValidator
+import grails.util.Environment
 import org.springframework.beans.factory.InitializingBean
 
 class LicenseService implements InitializingBean {
@@ -12,9 +13,25 @@ class LicenseService implements InitializingBean {
     @SuppressWarnings('GrailsStatelessService')
     private def license // set by InitializingBean#afterPropertiesSet()
 
-    boolean isLicensed(def feature) {
-        return license.isFeatureLicensed(feature)
-        //return true
+    boolean isLicensed(def feature)
+    {
+        boolean returnVal = false;
+
+        switch(Environment.current)
+        {
+            case Environment.DEVELOPMENT:
+            case Environment.TEST:
+                returnVal = true;
+                break;
+            case Environment.PRODUCTION:
+                returnVal = license.isFeatureLicensed(feature);
+                break;
+            default:
+                returnVal = true;
+                break;
+        }
+
+        return returnVal;
     }
     
     List licensableFeatures() {

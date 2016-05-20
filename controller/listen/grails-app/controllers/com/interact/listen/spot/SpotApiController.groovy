@@ -417,7 +417,20 @@ class SpotApiController {
             }
 
             cloudToDeviceService.sendVoicemailSync(voicemail.owner)
-            messageLightService.toggle(voicemail.owner)
+
+            if(json.subscriber.mailBox != null && json.subscriber.mailBox != "")
+            {
+                PhoneNumber phoneNumber = PhoneNumber.findByOwnerAndNumber(voicemail.owner, json.subscriber.mailBox);
+                if(phoneNumber.instanceOf(Extension))
+                {
+                    log.debug("Toggling message light for extension[" + phoneNumber.number + "]");
+                    messageLightService.toggle((Extension)phoneNumber);
+                }
+            }
+            else
+            {
+                messageLightService.toggle(voicemail.owner, (String)json.subscriber.mailBox);
+            }
 
             if(voicemail.forwardedBy) {
                 historyService.forwardedVoicemail(voicemail)
