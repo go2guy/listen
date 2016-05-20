@@ -21,7 +21,7 @@
     $ID         = @$_REQUEST['id']          or $ID="";
     $ContentType= @$_REQUEST['contentType'] or $ContentType="application/json";
     $destURL    = @$_REQUEST['cntrlURL']    or exitresult ($objName,$status,$string,"'cntrlURL' argument missing from request");
-    $lstnChannel= @$_REQUEST['lstnChannel'] or $lstnChannel="";
+    $lstnChannel= @$_REQUEST['lstnChannel'] or $lstnChannel="TUI";
     $lstnSub    = @$_REQUEST['lstnSub']     or $lstnSub="";
     $fromCCXML  = @$_REQUEST['fromCCXML']   or $fromCCXML="";
 
