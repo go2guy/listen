@@ -830,6 +830,13 @@ class SpotApiController {
             return
         }
 
+        if(destination.size() == organization.extLength + 1)
+        {
+            String numberBefore = destination;
+            destination = destination.substring(1);
+            log.debug("Set destination to " + destination + " from " + numberBefore);
+        }
+
         def userPhoneNumber = PhoneNumber.createCriteria().get {
             eq('number', destination)
             owner {
@@ -1600,6 +1607,13 @@ class SpotApiController {
         if(!organization.enabled) {
             response.sendError(HSR.SC_FORBIDDEN)
             return
+        }
+
+        if(number.size() == organization.extLength + 1)
+        {
+            String numberBefore = number;
+            number = number.substring(1);
+            log.debug("Set number to " + number + " from " + numberBefore);
         }
 
         def phoneNumbers = PhoneNumber.withCriteria() {
