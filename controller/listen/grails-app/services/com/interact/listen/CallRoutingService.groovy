@@ -41,6 +41,7 @@ class CallRoutingService
             if(sipPhone != null)
             {
                 callerOrganization = sipPhone.getOrganization();
+                log.debug("Caller Organization: " + callerOrganization.getName());
             }
         }
 

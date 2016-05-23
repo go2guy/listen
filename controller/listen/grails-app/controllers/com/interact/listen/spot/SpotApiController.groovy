@@ -802,7 +802,8 @@ class SpotApiController {
 
     // for a given number, determines what number should *actually* be dialed
     // (considering find me configurations, forwarding, outdialing restrictions, etc.)
-    def dial = {
+    def dial =
+    {
         log.debug "dial request[${request}] with params[${params}]"
         // TODO this does not consider find me configurations yet, since
         // find me has not yet been migrated. after migrating, add find me lookups
@@ -924,6 +925,8 @@ class SpotApiController {
 
                         updatedNumber.ip =  findMeNumberAsExtension.sipPhone.ip;
                         updatedNumber.type = "extension";
+                        updatedNumber.number = findMeNumberAsExtension.sipPhone.phoneUserId;
+                        log.debug("Set updated number extension to " + updatedNumber.number);
                     }
                     else
                     {
