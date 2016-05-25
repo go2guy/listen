@@ -18,6 +18,7 @@ class CallRoutingService
         def mappings = [:]
         Organization callerOrganization = null;
         String callerId = null;
+        String routeType = null;
 
         if(authorization == null || authorization.isEmpty())
         {
@@ -81,6 +82,7 @@ class CallRoutingService
                 {
                     log.debug("Setting external mapping callerId to : " + callerId);
                 }
+                routeType = "external";
             }
             else
             {
@@ -92,17 +94,19 @@ class CallRoutingService
                     {
                         callerId = callerSipPhone.getExtension().getNumber();
                         log.debug("Setting internal mapping callerId to " + callerId);
+                        routeType = "internal";
                     }
                 }
                 else
                 {
                     //This is an external call
                     callerId = ani;
+                    routeType = "external";
                 }
             }
 
             return [application: mapping.destination, organization: mapping.organization, dmnExtension: dmnExtension,
-                callerId: callerId];
+                callerId: callerId, routeType: routeType];
         }
 
         if(callerOrganization == null)
@@ -119,6 +123,7 @@ class CallRoutingService
             {
                 callerId = callerSipPhone.getExtension().getNumber();
                 log.debug("Setting callerId to " + callerId);
+                routeType = "internal";
             }
         }
 
@@ -132,7 +137,8 @@ class CallRoutingService
         if(mapping)
         {
             log.debug "returning final with mappings"
-            return [application: mapping.destination, organization: callerOrganization, callerId: callerId];
+            return [application: mapping.destination, organization: callerOrganization, callerId: callerId,
+                    routeType: routeType];
         }
         else
         {

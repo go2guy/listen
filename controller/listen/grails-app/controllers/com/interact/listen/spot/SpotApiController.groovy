@@ -931,13 +931,13 @@ class SpotApiController {
                         }
 
                         updatedNumber.ip =  findMeNumberAsExtension.sipPhone.ip;
-                        updatedNumber.type = "extension";
+                        updatedNumber.type = "findme_extension";
                         updatedNumber.number = findMeNumberAsExtension.sipPhone.phoneUserId;
                         log.debug("Set updated number extension to " + updatedNumber.number);
                     }
                     else
                     {
-                        updatedNumber.type = "external";
+                        updatedNumber.type = "findme_external";
                     }
 
                     if(user.canDial(updatedNumber.number))

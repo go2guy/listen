@@ -47,6 +47,7 @@ class CallRoutingController {
                 }
                 dmnExtension = result?.dmnExtension
                 callerId = result?.callerId
+                routeType = result?.routeType
             }
         }
     }

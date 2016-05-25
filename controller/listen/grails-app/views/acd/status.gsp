@@ -326,7 +326,7 @@
 
     <script type="text/javascript">
     $(document).ready( function () {
-      setInterval(agentStatus.poll,1000);
+      setTimeout(agentStatus.poll,5000);
     });
 
     var agentStatus = {
@@ -402,6 +402,8 @@
             }
           } // success
         }); // $.ajax
+
+        setTimeout(agentStatus.poll,5000);
       } // agentStatus.poll
     }; // agentStatus
 
