@@ -543,7 +543,7 @@ $(document).ready(function() {
 </sec:ifAnyGranted>
 
 <sec:ifAnyGranted roles="ROLE_ACD_USER">
-    setTimeout("getAcdMessageCount()", 5000);
+    setTimeout("getAcdMessageCount()", 10000);
 </sec:ifAnyGranted>
 
 });

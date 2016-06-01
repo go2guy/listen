@@ -139,7 +139,7 @@
               return confirm('Are you sure?');
           });
 
-          setTimeout( "pollMessages()", 5000);
+          setTimeout( "pollMessages()", 1000);
       });
 
       function playVoicemail(id) {

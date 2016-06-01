@@ -1,6 +1,7 @@
 package com.interact.listen.acd
 
 import com.interact.listen.DirectInwardDialNumber
+import com.interact.listen.Organization
 import com.interact.listen.User
 import com.interact.listen.acd.AcdCall
 import com.interact.listen.acd.AcdUserStatus
@@ -1056,7 +1057,8 @@ class AcdController
             log.debug "AcdController.agentStatus: params[${params}]";
         }
 
-        List<Skill> skills = Skill.listOrderBySkillname();
+        Organization userOrg = springSecurityService.currentUser.organization;
+        List<Skill> skills = Skill.findAllByOrganization(userOrg, [sort: 'skillname', order: 'asc']);
 
         List<AcdCall> calls = AcdCall.list();
         Map<User, AcdCall> callMap = new HashMap<User,AcdCall>();
@@ -1087,7 +1089,7 @@ class AcdController
                 }
 
                 //Don't include users if they are disabled
-                if(thisUserSkill.user.enabled == false)
+                if(!thisUserSkill.user.enabled)
                 {
                     log.info("User [${thisUserSkill.user.username}] skipped because it's disabled")
                     continue;
