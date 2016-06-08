@@ -22,6 +22,10 @@ class Skill
         skillname blank: false
         organization nullable: false
         skillname(unique: ['organization'])
+	    onHoldMsg(blank: false, nullable: false)
+	    onHoldMsgExtended(blank: false, nullable: false)
+	    onHoldMusic(blank: false, nullable: false)
+	    connectMsg(blank: false, nullable: false)
     }
     
     String toString() {
