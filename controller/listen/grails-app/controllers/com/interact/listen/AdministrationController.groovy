@@ -482,6 +482,13 @@ class AdministrationController {
         
         skill.connectMsg = filterACDPrompts(params?.connectMsg)
         log.debug "set connectMsg to [${skill.connectMsg}]"
+
+	    if (params.list('userIds').size() > 0 && (!skill.onHoldMsg || !skill.onHoldMsgExtended || !skill.onHoldMusic || !skill.connectMsg)) {
+		    log.error("Did not update skill due to prompts not being filled.")
+		    flash.errorMessage = message(code: 'page.administration.acd.skills.promptsRequires')
+		    redirect(action: 'editSkill', id: params.id, params: params)
+		    return
+	    }
         
         if(skill.validate() && skill.save()) {
             log.debug "We've saved the changes to the skill record"
