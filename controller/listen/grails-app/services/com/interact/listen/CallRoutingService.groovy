@@ -46,9 +46,15 @@ class CallRoutingService
             }
         }
 
-        NumberRoute.findAllByType(NumberRoute.Type.EXTERNAL).each {
-            mappings.put(it.pattern, it)
-        }
+	    if (callerOrganization != null) {
+		    NumberRoute.findAllByTypeAndOrganization(NumberRoute.Type.EXTERNAL, callerOrganization).each {
+			    mappings.put(it.pattern, it)
+		    }
+	    } else {
+		    NumberRoute.findAllByType(NumberRoute.Type.EXTERNAL).each {
+			    mappings.put(it.pattern, it)
+		    }
+	    }
 
         def matcher = new WildcardNumberMatcher()
         def mapping = matcher.findMatch(dnis, mappings)
