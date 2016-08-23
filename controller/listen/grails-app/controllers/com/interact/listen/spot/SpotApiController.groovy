@@ -28,6 +28,7 @@ import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.web.converters.exceptions.ConverterException
 
+import javax.validation.constraints.Null
 import java.security.InvalidParameterException
 import javax.servlet.http.HttpServletResponse as HSR
 import org.apache.commons.lang.StringUtils
@@ -417,20 +418,7 @@ class SpotApiController {
             }
 
             cloudToDeviceService.sendVoicemailSync(voicemail.owner)
-
-            if(json.subscriber.mailBox != null && json.subscriber.mailBox != "")
-            {
-                PhoneNumber phoneNumber = PhoneNumber.findByOwnerAndNumber(voicemail.owner, json.subscriber.mailBox);
-                if(phoneNumber.instanceOf(Extension))
-                {
-                    log.debug("Toggling message light for extension[" + phoneNumber.number + "]");
-                    messageLightService.toggle((Extension)phoneNumber);
-                }
-            }
-            else
-            {
-                messageLightService.toggle(voicemail.owner, (String)json.subscriber.mailBox);
-            }
+            messageLightService.toggle(voicemail.owner)
 
             if(voicemail.forwardedBy) {
                 historyService.forwardedVoicemail(voicemail)
@@ -2404,7 +2392,17 @@ class SpotApiController {
 
     private def renderVoicemailAsJson(Voicemail voicemail) {
         def formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS")
+        def forwardFromExt = null;
 
+        if(voicemail.forwardedBy) {
+            // prepare some information for the render
+            def extension = Extension.findByOwner(voicemail.forwardedBy, [max: 1])
+            if (extension){
+                // We have only one extension, use it
+                forwardFromExt = extension.number;
+                log.debug("We have forwarded by extension [${forwardFromExt}]")
+            }
+        }
         render(contentType: 'application/json') {
             href = '/voicemails/' + voicemail.id
             id = voicemail.id
@@ -2413,9 +2411,11 @@ class SpotApiController {
             if(voicemail.forwardedBy) {
                 forwardedBy = {
                     href = '/subscribers/' + voicemail.forwardedBy.id
+                    ext = forwardFromExt
                 }
             } else {
                 forwardedBy = null
+                ext = null
             }
             subscriber = {
                 href = '/subscribers/' + voicemail.owner.id
