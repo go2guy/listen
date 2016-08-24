@@ -162,6 +162,7 @@ class ExtensionService {
                 result.sipPhone.passwordConfirm = params?.passwordConfirm
                 result.sipPhone.dateRegistered = null
                 result.sipPhone.dateExpires = null
+                result.sipPhone.phoneUserId = organization.id.toString() + extension.number.toString()
             } else {
                 if ((params?.password && params?.passwordConfirm) || (params?.password != result.sipPhone.password) ) {
                     log.debug("updateExtension, set password")
@@ -172,11 +173,13 @@ class ExtensionService {
                     result.sipPhone.passwordConfirm = result.sipPhone.password
                 }
                 result.sipPhone.username = params?.username
+                result.sipPhone.phoneUserId = params?.phoneUserId
             }
 
             log.debug("sipPhone info id              [${result.sipPhone.id}]")
             log.debug("sipPhone info ext id          [${result.sipPhone.extension}]")
             log.debug("sipPhone info org id          [${result.sipPhone.organization}]")
+            log.debug("sipPhone info phone user id   [${result.sipPhone.phoneUserId}]")
             log.debug("sipPhone info username        [${result.sipPhone.username}]")
             log.debug("sipPhone info password        [${result.sipPhone.password}]")
             log.debug("sipPhone info passwordConfirm [${result.sipPhone.passwordConfirm}]")
