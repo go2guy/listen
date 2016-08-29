@@ -352,8 +352,25 @@ class AcdService
             //Send request to ivr
             try
             {
-                String number = agent.organization.getId() + agent.acdUserStatus.contactNumber.number;
-                spotCommunicationService.sendAcdConnectEvent(thisCall.sessionId, number);
+                String number;
+                String type;
+
+                def contactNumber = agent.acdUserStatus.contactNumber;
+                if(contactNumber instanceof Extension)
+                {
+                    Extension extension = (Extension)contactNumber;
+                    number = extension.sipPhone.phoneUserId;
+                    log.debug("Phone is an extension, sending user id[" + number + "]");
+                    type = "extension";
+                }
+                else
+                {
+                    number = contactNumber.number;
+                    log.debug("Phone is external, sending number[" + number + "]");
+                    type = "external";
+                }
+
+                spotCommunicationService.sendAcdConnectEvent(thisCall.sessionId, number, type);
             }
             catch(SpotCommunicationException sce)
             {
@@ -399,10 +416,23 @@ class AcdService
 
             //Determine Phone Number to which to send
             String theNumber = null;
+            String type = "unknown";
 
             if(agent.acdUserStatus != null && agent.acdUserStatus.contactNumber != null)
             {
-                theNumber = agent.acdUserStatus.contactNumber.number;
+                def contactNumber = agent.acdUserStatus.contactNumber;
+                if(contactNumber instanceof Extension)
+                {
+                    Extension extension = (Extension)contactNumber;
+                    theNumber = extension.sipPhone.phoneUserId;
+                    log.debug("Transferring to user id[" + theNumber + "]");
+                    type = "extension";
+                }
+                else
+                {
+                    theNumber = agent.acdUserStatus.contactNumber.number;
+                    type = "external";
+                }
             }
             else
             {
@@ -413,7 +443,10 @@ class AcdService
                     {
                         if(number != null && number instanceof Extension)
                         {
-                            theNumber = number.number;
+                            Extension extension = (Extension)number;
+                            theNumber = extension.sipPhone.phoneUserId;
+                            log.debug("Transferring to user id[" + theNumber + "]");
+                            type = "extension";
                             break;
                         }
                     }
@@ -429,7 +462,7 @@ class AcdService
             try
             {
                 spotCommunicationService.sendAcdConnectEvent(thisCall.sessionId,
-                        theNumber);
+                        theNumber, type);
             }
             catch(SpotCommunicationException sce)
             {

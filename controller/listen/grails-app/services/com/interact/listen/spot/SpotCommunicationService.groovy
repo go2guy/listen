@@ -119,10 +119,11 @@ class SpotCommunicationService {
      *
      * @param sessionId The sessionId of the call.
      * @param number The number to connect to.
+     * @param type The type of number to connect to.
      * @throws IOException If an IOException.
      * @throws SpotCommunicationException If
      */
-    def sendAcdConnectEvent(def sessionId, def number) throws IOException, SpotCommunicationException
+    def sendAcdConnectEvent(def sessionId, def number, def type) throws IOException, SpotCommunicationException
     {
         if(log.isInfoEnabled())
         {
@@ -134,6 +135,7 @@ class SpotCommunicationService {
         importedValue.put("customEvent", "CONNECT");
         importedValue.put("sessionId", sessionId.toString());
         importedValue.put("number", number.toString());
+        importedValue.put("type", type.toString());
         buildAndSendVexRequest(importedValue);
     }
 
