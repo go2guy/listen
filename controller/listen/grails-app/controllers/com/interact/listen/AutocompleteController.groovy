@@ -9,6 +9,8 @@ class AutocompleteController {
         contacts: 'GET'
     ]
 
+    def springSecurityService;
+
     def contacts = {
         def user = springSecurityService.currentUser;
 
