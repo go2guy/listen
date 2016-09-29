@@ -965,8 +965,9 @@ class AdministrationController {
             return
         }
 
-        if(session.organization != route.organization) {
+        if(session.organization.id != route.organization.id) {
             log.error "Authorization denied for user [${params}]"
+            log.error "Session org id [${session.organization.id}] doesn't match route org id [${route.organization.id}]"
             redirect(controller: 'login', action: 'denied')
             return
         }
@@ -991,7 +992,9 @@ class AdministrationController {
             return
         }
 
-        if(session.organization != route.organization) {
+        if(session.organization.id != route.organization.id) {
+            log.error "Authorization denied for user [${params}]"
+            log.error "Session org id [${session.organization.id}] doesn't match route org id [${route.organization.id}]"
             redirect(controller: 'login', action: 'denied')
             return
         }
@@ -1055,7 +1058,9 @@ class AdministrationController {
             return
         }
 
-        if(session.organization != restriction.organization) {
+        if(session.organization.id != restriction.organization.id) {
+            log.error "Authorization denied for user [${params}]"
+            log.error "Session org id [${session.organization.id}] doesn't match route org id [${restriction.organization.id}]"
             redirect(controller: 'login', action: 'denied')
             return
         }
