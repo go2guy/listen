@@ -4,9 +4,15 @@
 %define STARTDIR %(pwd)
 %define _arch noarch
 
+# by default, the /etc/rpm/macros.dist defines this values as .el7.centos.
+%if 0%{?rhel} == 7
+  %define dist .el7
+  # CentOS 7 would force ".el7.centos", we want to avoid that.
+%endif
+
 Summary: NewNet Listen Controller
 Name: listen-controller
-Version: 2.0
+Version: 2.0%{dist}
 Release: %(echo "${RELEASE}")
 License: Copyright (c) NewNet Communication Technologies. All Rights Reserved.
 Group: Interact
