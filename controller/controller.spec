@@ -22,6 +22,7 @@ Packager: listen <listenpkg@newnet.com>
 BuildArch: %{_arch}
 Requires: xmlsecurity, iijava, iitomcat
 
+%define __spec_install_pre %{nil}
 %define __spec_install_post /usr/lib/rpm/brp-compress
 %define _topdir %(echo "${TOPDIR}")
 %define _unpackaged_files_terminate_build 0
