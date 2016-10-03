@@ -153,95 +153,12 @@ class AdministrationController {
 				log.debug("Extension does not have sipPhone parameters, use params [${params?.username}]")
 				extInfo.sipPhone = new SipPhone(params)
 //                extInfo.sipPhone.passwordConfirm = params?.passwordConfirm
+			}
 			model.newDirectInwardDialNumber = directInwardDialNumber
 			render(view: 'routing', model: model)
 		} else {
 			flash.successMessage = message(code: 'directInwardDialNumber.created.message')
 			redirect(action: 'routing')
-		}
-	}
-
-	def addDirectMessageNumber = {
-		log.debug "addDirectMessageNumber with params [${params}]"
-
-		log.debug "Add number patter [${params.number}] to params"
-
-		def directMessageNumber = directMessageNumberService.create(params)
-
-		if (directMessageNumber.hasErrors()) {
-			def model = routingModel()
-			model.newDirectMessageNumber = directMessageNumber
-			render(view: 'routing', model: model)
-		} else {
-			flash.successMessage = message(code: 'directMessageNumber.created.message')
-			redirect(action: 'routing')
-		}
-	}
-
-	def addException = {
-		def exception = new OutdialRestrictionException()
-		exception.properties['target', 'restriction'] = params
-
-		if (exception.validate() && exception.save()) {
-			historyService.createdOutdialRestrictionException(exception)
-			flash.successMessage = message(code: 'outdialRestrictionException.created.message')
-			redirect(action: 'outdialing')
-		} else {
-			def model = outdialingModel()
-			model.newException = exception
-			render(view: 'outdialing', model: model)
-		}
-	}
-
-	def addInternalRoute = {
-		log.debug "addInternalRoute with params [${params}]"
-		def route = new NumberRoute(params)
-		route.type = NumberRoute.Type.INTERNAL
-		route.organization = session.organization
-
-		if (route.validate() && route.save()) {
-			log.debug "We've saved a new internal route"
-			historyService.createdRoute(route)
-			flash.successMessage = message(code: 'numberRoute.created.message', args: [route.pattern])
-			redirect(action: 'routing')
-		} else {
-			log.debug "addInternalRoute failed validation [${route.errors}]"
-			def model = routingModel()
-			model.newRoute = route
-			render(view: 'routing', model: model)
-		}
-	}
-
-	def addExtension = {
-		log.debug "addExtension with params [${params}]"
-		def organization = session.organization
-
-		def extInfo = extensionService.create(params, organization);
-
-		if (extInfo.extension?.hasErrors() || extInfo?.sipPhone?.hasErrors()) {
-			log.debug "addExtension failed to be added"
-			log.debug("extInfo extension errors [${extInfo?.extension?.getErrors()}]")
-			log.debug("extInfo sipPhone errors [${extInfo?.sipPhone?.getErrors()}]")
-
-			if (extInfo?.sipPhone) {
-				log.debug("Extension has sipPhone parameters [${extInfo?.sipPhone?.username}]")
-			} else {
-				log.debug("Extension does not have sipPhone parameters, use params [${params?.username}]")
-				extInfo.sipPhone = new SipPhone(params)
-//                extInfo.sipPhone.passwordConfirm = params?.passwordConfirm
-			}
-
-			def model = phonesModel()
-			model.newExtension = extInfo.extension
-			model.newSipPhone = extInfo.sipPhone
-
-			render(view: 'listPhones', model: model)
-		} else if (!extInfo?.extension || !extInfo?.sipPhone) {
-			log.debug("Some error occurred while attempting to create extension")
-		} else {
-			log.debug "addExtension was successfully added"
-			flash.successMessage = message(code: 'extension.created.message')
-			redirect(action: 'listPhones')
 		}
 	}
 
