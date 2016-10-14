@@ -1710,12 +1710,12 @@ class SpotApiController {
         }
 
         String promptBefore = doAction.promptBefore;
-        if(doAction instanceof GoToMenuAction)
+        if(doAction.instanceOf(GoToMenuAction))
         {
             def group = MenuGroup.findByName(doAction.destinationMenuGroupName)
             doAction = Menu.findByMenuGroupAndName(group, doAction.destinationMenuName)
         }
-        else if(doAction instanceof ReplayMenuAction)
+        else if(doAction.instanceOf(ReplayMenuAction))
         {
             doAction = menu
         }
