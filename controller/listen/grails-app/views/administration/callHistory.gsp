@@ -68,11 +68,16 @@
             ////////////////////////////////////////////////////////////////////////////
             // DatePicker Logic
             ////////////////////////////////////////////////////////////////////////////
-            $(".datepicker").datepicker({
+            $("#startDate").datepicker({
+                onSelect: function () {
+                    var startDate = $(this).datepicker('getDate');
+
+                    $("#endDate").datepicker("option", "minDate", startDate);
+                }
             });
 
-            $("#startDate").mask("MM/dd/yyyy", {placeholder: "MM/dd/yyyy"});
-            $("#endDate").mask("MM/dd/yyyy", {placeholder: "MM/dd/yyyy"});
+            $("#endDate").datepicker({
+            });
 
             ////////////////////////////////////////////////////////////////////////////
             // Misc Logic
@@ -88,11 +93,10 @@
         function resetForm() {
             document.form.startDate.value = '${params.startDate}';
             document.form.endDate.value = '${params.endDate}';
-            document.form.campaign.selectedIndex = 0;
-            document.form.phoneNumber.value = '';
-            document.form.timeZone.selectedIndex = 0;
-            document.form.callDisposition.selectedIndex = 0;
-            document.form.milestone.value = '';
+            document.form.user.selectedIndex = 0;
+            document.form.caller.value = '${params.caller}';
+            document.form.callee.value = '${params.callee}';
+            document.form.callResult.value = '${params.callResult}';
         }
 
         function numbersonly(myfield, e, dec) {
@@ -127,6 +131,11 @@
     </script>
 </head>
 <body>
+<g:if test="${flash.errorMessage}">
+    <script type="text/javascript">
+        listen.showErrorMessage('${flash.errorMessage}')
+    </script>
+</g:if>
 
   <g:form action="callHistory" name="form">
       <div class="form">
@@ -135,11 +144,10 @@
               <tr>
                   <th><label for="startDate"><g:message
                           code="callHistory.startDate.label"/></label></th>
-                  <td><input id="startDate" name="startDate" value="${params.startDate}"
-                             class="datepicker"/>
+                  <td><input id="startDate" name="startDate" value="${params.startDate}"/></td>
                   <th><label for="endDate"><g:message code="callHistory.endDate.label"/></label>
                   </th>
-                  <td><input id="endDate" name="endDate" value="${params.endDate}" class="datepicker"/>
+                  <td><input id="endDate" name="endDate" value="${params.endDate}"/></td>
               </tr>
 
               <tr>
@@ -151,7 +159,7 @@
                   <th><label for="callee"><g:message code="callHistory.callee.label"/></label>
                   </th>
                   <td><g:textField name="callee" maxlength="14" onKeyPress="return numbersonly(this, event)"
-                                   value="${params.callee}"/>
+                                   value="${params.callee}"/></td>
               </tr>
 
               <tr>
@@ -210,7 +218,7 @@
     </table>
     <listen:paginateTotal total="${callHistoryTotal}" messagePrefix="paginate.total.callHistories"/>
     <div class="pagination">
-        <g:paginate total="${callHistoryTotal}" maxsteps="10"/>
+        <g:paginate total="${callHistoryTotal}" maxsteps="10" controller="administration" action="callHistory"/>
     </div>
 </sec:ifNotGranted>
 </body>

@@ -12,6 +12,7 @@ import com.interact.listen.pbx.Extension
 import com.interact.listen.pbx.SipPhone
 import com.interact.listen.pbx.NumberRoute
 import com.interact.listen.voicemail.afterhours.AfterHoursConfiguration
+import org.joda.time.DateTime
 import org.joda.time.LocalDateTime
 import org.joda.time.Period
 import org.joda.time.format.DateTimeFormat
@@ -600,6 +601,12 @@ class AdministrationController {
 			endDate = getEndDate(params)
 		}
 
+		if (endDate && startDate && (endDate.isBefore(startDate) || endDate.isEqual(startDate))) {
+			flash.errorMessage = message(code: "callHistory.endDate.before.label", default: "End Date is before Start Date")
+			endDate = null
+			params.remove("endDate")
+		}
+
 		def selectedUsers
 		if (params.user && params.searchButton) {
 			selectedUsers = User.findAllByIdInListAndOrganization([params.user].flatten().collect{ Long.valueOf(it)}, organization)
@@ -786,6 +793,7 @@ class AdministrationController {
 		inputStream.close()
 		outputStream.flush()
 		outputStream.close()
+		response.flushBuffer()
 
 		if (tmpFile.delete() == false) {
 			log.error("Failed to delete temp file [${tmpFile.getName()}]")
@@ -812,6 +820,13 @@ class AdministrationController {
 		if (params.endDate && params.searchButton) {
 			endDate = getEndDate(params)
 		}
+
+		if (endDate && startDate && (endDate.isBefore(startDate) || endDate.isEqual(startDate))) {
+			flash.errorMessage = message(code: "actionHistory.endDate.before.label", default: "End Date is before Start Date")
+			endDate = null
+			params.remove("endDate")
+		}
+
 
 		def selectedUsers
 		if (params.user && params.searchButton) {
@@ -969,6 +984,7 @@ class AdministrationController {
 		inputStream.close()
 		outputStream.flush()
 		outputStream.close()
+		response.flushBuffer()
 
 		if (tmpFile.delete() == false) {
 			log.error("Failed to delete temp file [${tmpFile.getName()}]")
@@ -1573,14 +1589,13 @@ class AdministrationController {
 		]
 	}
 
-	private def getStartDate(def params) {
+	private DateTime getStartDate(def params) {
 		def startDate = null
 
 		try {
 			DateTimeFormatter format = DateTimeFormat.forPattern("MM/dd/yyyy")
 			startDate = format.parseDateTime(params.startDate)
 			startDate = startDate.withTime(0, 0, 0, 0)
-			params.startDate = startDate.toString("MM/dd/yyyy")
 		} catch (Exception e) {
 			log.error("Unable to parse start date: ${params.startDate}: ${e}")
 		}
@@ -1588,14 +1603,13 @@ class AdministrationController {
 		return startDate
 	}
 
-	private def getEndDate(def params) {
+	private DateTime getEndDate(def params) {
 		def endDate = null
 
 		try {
 			DateTimeFormatter format = DateTimeFormat.forPattern("MM/dd/yyyy")
 			endDate = format.parseDateTime(params.endDate)
 			endDate = endDate.withTime(0, 0, 0, 0).plusDays(1)
-			params.endDate = endDate.toString("MM/dd/yyyy")
 		} catch (Exception e) {
 			log.error("Unable to parse end date: ${params.startDate}: ${e}")
 		}

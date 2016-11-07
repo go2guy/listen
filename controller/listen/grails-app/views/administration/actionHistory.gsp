@@ -75,11 +75,17 @@
             ////////////////////////////////////////////////////////////////////////////
             // DatePicker Logic
             ////////////////////////////////////////////////////////////////////////////
-            $(".datepicker").datepicker({
+            $("#startDate").datepicker({
+                onSelect: function () {
+                    var startDate = $(this).datepicker('getDate');
+
+                    $("#endDate").datepicker("option", "minDate", startDate);
+                }
             });
 
-            $("#startDate").mask("MM/dd/yyyy", {placeholder: "MM/dd/yyyy"});
-            $("#endDate").mask("MM/dd/yyyy", {placeholder: "MM/dd/yyyy"});
+            $("#endDate").datepicker({
+                minDate: ${params.startDate ? "new Date(\"${params.startDate}\")" : "undefined"}
+            });
 
             ////////////////////////////////////////////////////////////////////////////
             // Misc Logic
@@ -95,11 +101,7 @@
         function resetForm() {
             document.form.startDate.value = '${params.startDate}';
             document.form.endDate.value = '${params.endDate}';
-            document.form.campaign.selectedIndex = 0;
-            document.form.phoneNumber.value = '';
-            document.form.timeZone.selectedIndex = 0;
-            document.form.callDisposition.selectedIndex = 0;
-            document.form.milestone.value = '';
+            document.form.user.selectedIndex = 0;
         }
 
         function numbersonly(myfield, e, dec) {
@@ -135,6 +137,11 @@
 </head>
 
 <body>
+<g:if test="${flash.errorMessage}">
+    <script type="text/javascript">
+        listen.showErrorMessage('${flash.errorMessage}')
+    </script>
+</g:if>
 
 <g:form action="actionHistory" name="form">
     <div class="form">
@@ -143,12 +150,10 @@
             <tr>
                 <th><label for="startDate"><g:message
                         code="actionHistory.startDate.label"/></label></th>
-                <td><input id="startDate" name="startDate" value="${params.startDate}"
-                           class="datepicker"/>
+                <td><input id="startDate" name="startDate" value="${params.startDate}"/></td>
                 <th><label for="endDate"><g:message code="actionHistory.endDate.label"/></label>
                 </th>
-                <td><input id="endDate" name="endDate" value="${params.endDate}"
-                           class="datepicker"/>
+                <td><input id="endDate" name="endDate" value="${params.endDate}"/></td>
             </tr>
 
             <tr>
@@ -204,7 +209,7 @@
 </table>
 <listen:paginateTotal total="${actionHistoryTotal}" messagePrefix="paginate.total.actionHistories"/>
 <div class="pagination">
-    <g:paginate total="${actionHistoryTotal}" maxsteps="10"/>
+    <g:paginate total="${actionHistoryTotal}" maxsteps="10" controller="administration" action="actionHistory"/>
 </div>
 </body>
 </html>
