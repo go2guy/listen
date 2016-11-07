@@ -15,6 +15,7 @@ class UserService {
     def springSecurityService
     def licenseService
     def dataSource
+	def voicemailNotificationService
 
     User update(User user, def params, boolean byOperator = false)
     {
@@ -34,6 +35,7 @@ class UserService {
         if(user.pass?.trim()?.length() > 0) {
             user.password = springSecurityService.encodePassword(user.pass)
         }
+
         if(user.validate() && user.save()) {
             cloudToDeviceService.sendContactSync()
 
@@ -193,12 +195,13 @@ class UserService {
                 */
             }
 
-
             if(originalEmailAddress != user.emailAddress) {
                 historyService.changedAccountEmailAddress(user, originalEmailAddress)
                 if(user.organization) {
                     ldapService.changeEmailAddress(user, originalEmailAddress, user.emailAddress)
                 }
+
+	            voicemailNotificationService.changeAccountEmailAddress(user, originalEmailAddress, user.emailAddress)
             }
 
             if(originalRealName != user.realName) {

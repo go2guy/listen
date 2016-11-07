@@ -1,5 +1,6 @@
 package com.interact.listen.voicemail
 
+import com.interact.listen.User
 import com.interact.listen.fax.Fax
 import com.interact.listen.pbx.NumberRoute
 import com.interact.listen.stats.Stat
@@ -11,6 +12,32 @@ class VoicemailNotificationService {
     def grailsApplication
     def historyService
     def statWriterService
+
+	void changeAccountEmailAddress(User user, String originalEmailAddress, String newEmailAddress) {
+		def preferences = VoicemailPreferences.findByUser(user)
+
+		if (!preferences) {
+			log.warn "No VoicemailPreferences configured for user [${user.username}]"
+			return
+		}
+
+		if(!preferences.isEmailNotificationEnabled) {
+			log.debug "user is not set to receive e-mail notifications"
+			return
+		}
+
+		if (originalEmailAddress == preferences.emailNotificationAddress) {
+			preferences.emailNotificationAddress = newEmailAddress
+
+			if(preferences.validate() && preferences.save()) {
+				log.debug "Voicemail preferences email successfully updated"
+			} else {
+				log.error "We failed to update voicemail preferences email"
+			}
+		}
+
+		return
+	}
 
     void sendNewVoicemailEmail(Voicemail voicemail) {
         def preferences = VoicemailPreferences.findByUser(voicemail.owner)
