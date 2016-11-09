@@ -9,6 +9,46 @@
 
     <install>
         <pre>
+            <process state="running">
+                <name>MySQL</name>
+                <statusCmd>
+                  <![CDATA[
+                    # This is a check to see if mysql is currently installed. If it is not,
+                    # then assume it is in the installation transaction and continue
+                    if [ `rpm -q --whatprovides mysql-server &amp;>/dev/null; echo $?` -eq 0 ]
+                    then
+                        retval="`ps ax -ww -o args --noheader | egrep -q "^[^\s]*/mysqld([\s]|$)" &>/dev/null; echo $?`"
+                    else
+                        retval=0
+                    fi
+
+                    exit $retval
+                  ]]>
+                </statusCmd>
+                <statusRegex source='retval'>^0$</statusRegex>
+                <start>
+                  <![CDATA[
+                    # This is a check to see if mysql is currently installed. If it is not,
+                    # then assume it is in the installation transaction and continue
+                    if [ `rpm -q --whatprovides mysql-server &>/dev/null; echo $?` -eq 0 ]
+                    then
+                        if [ -f /etc/init.d/mysqld ]
+                        then
+                            /sbin/service mysqld start
+                        elif [ -f /etc/init.d/mysql ]
+                        then
+                            /sbin/service mysql start
+                        else
+                            echo "Unable to run mysql start command"
+                            exit 1
+                        fi
+                    else
+                        echo "Mysql server is not installed. Assuming it is in the current transaction set."
+                    fi
+                  ]]>
+                </start>
+            </process>
+            
             <rpm state="greater-than-or-equal">
                 <name>uia</name>
                 <version>4.8.0</version>
@@ -18,6 +58,23 @@
                 <name>uia</name>
                 <version>5.0.0</version>
             </rpm>
+            
+            <script focus="background" onerror="die">
+                <![CDATA[
+                    if [ `rpm -q --whatprovides mysql-server &>/dev/null; echo $?` -eq 0 ] && [ ! -e /var/lib/mysql/cas ]
+                    then
+                        if [ ! -e /var/lib/mysql/crusade ]
+                        then
+                            # Make sure we can log in as root with no password if we are going to need to.
+                            if [ `mysql --user=root -e "" &>/dev/null; echo $?` -ne 0 ]
+                            then
+                                echo "Unable to log into mysql as root with no password. This ability is needed to load schema information on this machine."
+                                exit 1
+                            fi
+                        fi
+                    fi
+                ]]>
+            </script>
         </pre>
     </install>
 
@@ -33,7 +90,50 @@
                 <version>5.0.0</version>
             </rpm>
         </pre>
+        <post>
+            <script focus="background" onerror="continue">
+                <![CDATA[
+                    if [ ! -e /var/lib/mysql/listen2 ]
+                    then
+                        if [ "`ps ax -ww -o args --noheader | egrep "^[^[:space:]]*/mysqld([[:space:]]|$)"`" == "" ]
+                        then
+                            if [ -f /etc/init.d/mysqld ]
+                            then
+                                /sbin/service mysqld start
+                            elif [ -f /etc/init.d/mysql ]
+                            then
+                                /sbin/service mysql start
+                            fi
+                        fi
 
+                        echo "Installing listen2 database."
+                        /interact/listen/db/scripts/build.sh install
+
+                        if [ $? -ne 0 ]
+                        then
+                            echo "Error installing the db schema."
+                            exit 1
+                        fi
+                        
+                        # We're going to call the installCoordinator to get all of the update sql files in the history so that we establish a good reference point
+                        # We don't care at this point if a user doesn't want to run installCoordinator, because there are no scripts being run at this point
+                        /interact/tools/installCoordinator/installCoordinator --install -n listen -d /interact/listen/db/updates
+                        export ICINSTALL="TRUE"
+                    fi
+                ]]>
+            </script>
+            <script focus="background" onerror="continue" id="INSTALLCOORDINATOR">
+                <![CDATA[
+                    if [ -z "$ICINSTALL" ]
+                    then
+                        # call installCoordinator update as the schema already exists
+                        /interact/tools/installCoordinator/installCoordinator --update -n listen -d /interact/listen/db/updates
+                    else
+                        unset ICINSTALL
+                    fi
+                ]]>
+            </script>
+        </post>
     </rollback>
 
     <uninstall>

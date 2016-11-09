@@ -20,7 +20,7 @@ URL: http://www.newnet.com
 Vendor: NewNet Communication Technologies
 Packager: listen <listenpkg@newnet.com>
 BuildArch: %{_arch}
-Requires: xmlsecurity, iijava, iitomcat
+Requires: xmlsecurity, iijava, iitomcat, installCoordinator
 
 %define __spec_install_pre %{nil}
 %define __spec_install_post /usr/lib/rpm/brp-compress

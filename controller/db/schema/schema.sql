@@ -177,7 +177,7 @@ CREATE TABLE `call_history` (
   `id` bigint(20) NOT NULL auto_increment,
   `version` bigint(20) NOT NULL,
   `ani` varchar(255) NOT NULL,
-  `date_time` datetime NOT NULL,
+  `date_time` datetime NULL,
   `dnis` varchar(255) NOT NULL,
   `duration` varchar(255) NOT NULL,
   `from_user_id` bigint(20) default NULL,
