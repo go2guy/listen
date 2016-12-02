@@ -710,7 +710,7 @@ class AdministrationController {
             log.debug("tmpFile [${tmpFile.getName()}] created.")
         } catch (IOException e) {
             log.error("Failed to create temp file for export: ${e}")
-            flash.errormessage = message(code: 'callHistory.exportCSV.fileCreateFail')
+            flash.errorMessage = message(code: 'callHistory.exportCSV.fileCreateFail')
             redirect(action: "callHistory", params: params)
             return
         }
@@ -757,7 +757,7 @@ class AdministrationController {
             tmpFile << "began,calling party,called party,duration,call result\n"
 
             callHistory.each {
-                tmpFile << "${it.dateTime.toString("yyyy-MM-dd HH:mm:ss")},"
+                tmpFile << "${it.dateTime?.toString("yyyy-MM-dd HH:mm:ss")},"
                 tmpFile << "${listen.numberWithRealName(number: it.ani, user: it.fromUser, personalize: false)},"
                 tmpFile << "${listen.numberWithRealName(number: it.dnis, user: it.toUser, personalize: false)},"
                 tmpFile << "${listen.formatduration(duration: it.duration, millis: true)},"
@@ -765,7 +765,9 @@ class AdministrationController {
             }
         } catch (Exception e) {
             log.error("Exception building csv file: ${e}")
-            return
+	        flash.errorMessage = message(code: 'callHistory.exportCSV.fileCreateFail')
+	        redirect(action: "callHistory", params: params)
+	        return
         }
 
         def filename = "listen-callhistory-${new LocalDateTime().toString('yyyyMMddHHmmss')}.csv"
@@ -910,7 +912,7 @@ class AdministrationController {
             log.debug("tmpFile [${tmpFile.getName()}] created.")
         } catch (IOException e) {
             log.error("Failed to create temp file for export: ${e}")
-            flash.errormessage = message(code: 'actionHistory.exportCSV.fileCreateFail')
+            flash.errorMessage = message(code: 'actionHistory.exportCSV.fileCreateFail')
             redirect(action: "actionHistory", params: params)
             return
         }
@@ -945,7 +947,7 @@ class AdministrationController {
             tmpFile << "date,user,description,channel\n"
 
             actionHistory.each {
-                tmpFile << "${it.dateCreated.toString("yyyy-MM-dd HH:mm:ss")},"
+                tmpFile << "${it.dateCreated?.toString("yyyy-MM-dd HH:mm:ss")},"
                 tmpFile << "${it.byUser.realName}"
                 if (it.byUser && it.onUser && it.byUser != it.onUser) {
                     tmpFile << " > ${it.onUser.realName}"
@@ -956,7 +958,9 @@ class AdministrationController {
             }
         } catch (Exception e) {
             log.error("Exception building csv file: ${e}")
-            return
+	        flash.errorMessage = message(code: 'actionHistory.exportCSV.fileCreateFail')
+	        redirect(action: "actionHistory", params: params)
+	        return
         }
 
         def filename = "listen-actionhistory-${new LocalDateTime().toString('yyyyMMddHHmmss')}.csv"

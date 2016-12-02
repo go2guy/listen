@@ -14,7 +14,7 @@ environments {
         dataSource {
             dialect = 'org.hibernate.dialect.MySQLInnoDBDialect'
             driverClassName = 'org.mariadb.jdbc.Driver'
-            url = System.getProperty('com.interact.listen.db.url', 'jdbc:mysql://localhost/listen2?zeroDateTimeBehavior=convertToNull')
+            url = System.getProperty('com.interact.listen.db.url', 'jdbc:mysql://coreylisten212.newnet.local/listen2?zeroDateTimeBehavior=convertToNull')
             username = System.getProperty('com.interact.listen.db.username', 'root')
             password = System.getProperty('com.interact.listen.db.password', '')
             validationQuery = 'SELECT 1'

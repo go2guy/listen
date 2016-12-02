@@ -91,12 +91,12 @@
         });
 
         function resetForm() {
-            document.form.startDate.value = '${params.startDate}';
-            document.form.endDate.value = '${params.endDate}';
+            document.form.startDate.value = '';
+            document.form.endDate.value = '';
             document.form.user.selectedIndex = 0;
-            document.form.caller.value = '${params.caller}';
-            document.form.callee.value = '${params.callee}';
-            document.form.callResult.value = '${params.callResult}';
+            document.form.caller.value = '';
+            document.form.callee.value = '';
+            document.form.callResult.value = '';
         }
 
         function numbersonly(myfield, e, dec) {
@@ -218,7 +218,7 @@
     </table>
     <listen:paginateTotal total="${callHistoryTotal}" messagePrefix="paginate.total.callHistories"/>
     <div class="pagination">
-        <g:paginate total="${callHistoryTotal}" maxsteps="10" controller="administration" action="callHistory"/>
+        <g:paginate total="${callHistoryTotal}" maxsteps="10" params="${params}" controller="administration" action="callHistory"/>
     </div>
 </sec:ifNotGranted>
 </body>

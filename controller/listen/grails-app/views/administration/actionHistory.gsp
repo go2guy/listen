@@ -99,8 +99,8 @@
         });
 
         function resetForm() {
-            document.form.startDate.value = '${params.startDate}';
-            document.form.endDate.value = '${params.endDate}';
+            document.form.startDate.value = '';
+            document.form.endDate.value = '';
             document.form.user.selectedIndex = 0;
         }
 
@@ -209,7 +209,7 @@
 </table>
 <listen:paginateTotal total="${actionHistoryTotal}" messagePrefix="paginate.total.actionHistories"/>
 <div class="pagination">
-    <g:paginate total="${actionHistoryTotal}" maxsteps="10" controller="administration" action="actionHistory"/>
+    <g:paginate total="${actionHistoryTotal}" maxsteps="10" params="${params}" controller="administration" action="actionHistory"/>
 </div>
 </body>
 </html>
