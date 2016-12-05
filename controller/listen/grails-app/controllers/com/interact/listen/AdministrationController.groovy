@@ -948,7 +948,7 @@ class AdministrationController {
 
             actionHistory.each {
                 tmpFile << "${it.dateCreated?.toString("yyyy-MM-dd HH:mm:ss")},"
-                tmpFile << "${it.byUser.realName}"
+                tmpFile << "${it.byUser?.realName}"
                 if (it.byUser && it.onUser && it.byUser != it.onUser) {
                     tmpFile << " > ${it.onUser.realName}"
                 }
