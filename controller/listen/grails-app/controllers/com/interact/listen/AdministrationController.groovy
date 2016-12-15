@@ -1256,7 +1256,16 @@ class AdministrationController {
             log.debug("Extension number [${extension.number}] doesn't have sipPhone entry")
         }
 
-        render(view: 'editPhone', model: [extension: extension, sipPhone: sipPhone])
+	    def templates = ProvisionerTemplate.getAll()
+	    def userFields = []
+	    def fields = []
+
+	    if (sipPhone.provisionerTemplate) {
+		    fields = ProvisionerTemplateField.findAllByProvisionerTemplate(sipPhone.provisionerTemplate)
+		    userFields = ProvisionerTemplateFieldValue.findAllByProvisionerTemplateFieldInListAndSipPhone(fields, sipPhone)
+	    }
+
+        render(view: 'editPhone', model: [extension: extension, sipPhone: sipPhone, templates: templates, fields: fields, userFields: userFields])
     }
 
     def updateException = {
@@ -1428,6 +1437,108 @@ class AdministrationController {
     def users = {
         render(view: 'users')
     }
+
+	def provisionerTemplates = {
+		def templates = ProvisionerTemplate.getAll()
+		render(view: 'templates', model: [templates: templates])
+	}
+
+	def addTemplate = {
+		log.debug("Adding template with params ${params}")
+
+		def template = new ProvisionerTemplate(params)
+		template.template = "";
+
+		if (!template.validate() || !template.save()) {
+			log.error("Error saving template: ${template.errors}")
+			flash.errorMessage = "Could not save template."
+		}
+
+		redirect(action: "provisionerTemplates")
+	}
+
+	def editTemplate = {
+		log.debug("Attempting to load template ${params.id}")
+
+		def template = ProvisionerTemplate.get(params.id)
+		def fields = template.provisionerTemplateFields.sort { it.name.toLowerCase() }
+
+		render(view: 'editTemplate', model: [template: template, fields: fields])
+	}
+
+	def deleteTemplate = {
+		log.debug("Deleting Template ${params.id}")
+
+		def template = ProvisionerTemplate.get(params.id)
+
+		if (template) {
+			template.delete()
+			flash.successMessage = "Template deleted"
+		} else {
+			flash.errorMessage = "Could not find template to delete"
+		}
+
+		redirect(action: "provisionerTemplates")
+	}
+
+	def provisionerTemplateService
+
+	def updateTemplate = {
+		log.debug("Attempting to update template ${params.id}")
+		log.debug("updateTemplate params are: ${params}")
+
+		def template = ProvisionerTemplate.get(params.id)
+		def fields = ProvisionerTemplateField.findAllByProvisionerTemplate(template)
+		log.debug("Template is ${template}")
+
+		template.name = params.name
+		template.template = params.template
+
+		log.debug("template name is now: ${template.name}")
+		log.debug("template template is now: ${template.template}")
+		if (!template.validate() || !template.save(failOnError: true)) {
+			log.error("Error saving template: ${template.errors}")
+		}
+
+		params.fields.each { k, v ->
+			if (v instanceof org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap) {
+				if (v.id) {
+					def vid = v.id.toInteger()
+					def deleted = v.deleted.toBoolean()
+					def field = fields.find {
+						it.id == vid
+					}
+
+					if (field && deleted) {
+						try {
+							provisionerTemplateService.removeField(field)
+						} catch (Exception e) {
+							log.error("Error removing: ${e}")
+							log.error(template.errors)
+						}
+					}
+
+					if (field && !deleted && !(field.name == v.name && field.defaultValue == v.defaultValue)) {
+						try {
+							provisionerTemplateService.updateField(field, v.name.toString(), v.defaultValue.toString())
+						} catch (Exception e) {
+							log.error("Error Updating ${field}: [${e}]")
+							log.error(field.errors)
+						}
+					}
+				}
+
+				if (!v.id && !v.deleted.toBoolean()) {
+					provisionerTemplateService.addField(template, v.name.toString(), v.defaultValue.toString())
+				}
+			}
+		}
+
+		flash.successMessage = message(code: "page.administration.templates.updated", default: "Template Updated");
+
+		redirect(controller: "administration", action: "editTemplate", id: params.id)
+		return
+	}
 
     private def phonesModel() {
         def organization = session.organization

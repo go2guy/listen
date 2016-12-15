@@ -1,6 +1,9 @@
 package com.interact.listen.pbx
 
 import com.interact.listen.Organization
+import com.interact.listen.ProvisionerTemplate
+import com.interact.listen.ProvisionerTemplateField
+import com.interact.listen.ProvisionerTemplateFieldValue
 import com.interact.listen.User
 import org.joda.time.DateTime
 import javax.servlet.http.HttpServletResponse as HSR
@@ -141,7 +144,6 @@ class ExtensionService {
         cloudToDeviceService.sendContactSync()
         messageLightService.toggle(extension?.sipPhone?.phoneUserId, extension?.sipPhone.ip, false)
     }
-
     Result update( def params, Extension extension, Organization organization ) {
         log.debug("ExtensionService update with params [${params}]")
         def user = springSecurityService.getCurrentUser()
@@ -191,6 +193,37 @@ class ExtensionService {
             // Now lets process the extension domain
             result.extension.sipPhone = result.sipPhone
             result.extension.extLength = organization?.extLength
+	        result.sipPhone.provisionerIdentifier = params?.provisionerIdentifier
+	        result.sipPhone.provisionerTemplate = ProvisionerTemplate.get(params?.provisionerTemplate)
+
+	        // @TODO: Add Custom Fields
+//	        // Check templates...
+//	        if (params?.provisionerTemplate && params.provisionerTemplate.toLong() == result.sipPhone.provisionerTemplate.id) {
+//		        // Same one, update the fields
+//		        result.sipPhone.provisionerTemplate = ProvisionerTemplate.get(params.provisionerTemplate)
+//		        def fields = ProvisionerTemplateFieldValue.findAllBySipPhone(result.sipPhone)
+//	        }
+//
+//	        if (params?.provisionerTemplate && params.provisionerTemplate.toLong() != result.sipPhone.provisionerTemplate.id) {
+//		        // different, remove fields
+//		        ProvisionerTemplateFieldValue.where {sipPhone == result.sipPhone}.deleteAll()
+//		        result.sipPhone.provisionerTemplate = ProvisionerTemplate.get(params.provisionerTemplate)
+//
+//		        def fields = ProvisionerTemplateField.findAllByProvisionerTemplate(result.sipPhone.provisionerTemplate)
+//		        fields.each { field ->
+//			        new ProvisionerTemplateFieldValue(
+//					        provisionerTemplateField: field,
+//					        fieldValue: field.defaultValue,
+//					        sipPhone: result.sipPhone).save(failOnError: true)
+//		        }
+//	        }
+//
+//	        // Update the fields
+
+
+	        fields.each {
+				log.debug("huh...")
+	        }
 
             def originalNumber = extension.number
             def originalForwardedTo = extension.forwardedTo

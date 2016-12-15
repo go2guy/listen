@@ -1,5 +1,6 @@
 package com.interact.listen.pbx
 
+import com.interact.listen.ProvisionerTemplate
 import com.interact.listen.pbx.Extension
 import com.interact.listen.Organization
 import org.joda.time.DateTime
@@ -18,6 +19,9 @@ class SipPhone {
     String userAgent
     DateTime dateRegistered = null
     DateTime dateExpires = null
+	String provisionerIdentifier = null
+	ProvisionerTemplate provisionerTemplate = null
+	DateTime provisionerLastUpdated = null
 
     Integer expires = 0
 
@@ -43,6 +47,9 @@ class SipPhone {
         dateRegistered nullable: true, unique: false
         dateExpires nullable: true, unique: false
         userAgent nullable:true
+	    provisionerTemplate nullable:true
+	    provisionerIdentifier nullable:true
+	    provisionerLastUpdated nullable:true
     }
 
     def isRegistered() {

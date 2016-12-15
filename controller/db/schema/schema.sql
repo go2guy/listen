@@ -1,6 +1,6 @@
-drop database if exists listen2;
-create database if not exists listen2 DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
-use listen2;
+drop database if exists listen3;
+create database if not exists listen3 DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
+use listen3;
 
 DROP TABLE IF EXISTS `primary_node`;
 CREATE TABLE `primary_node` (
@@ -116,8 +116,8 @@ CREATE TABLE `acd_user_status` (
   `onacall_modified` datetime,
   `onacall` bit(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
-  FOREIGN KEY (owner_id) REFERENCES user (id) ON UPDATE CASCADE ON DELETE CASCADE,
-  FOREIGN KEY (contact_number_id) REFERENCES phone_number (id) ON DELETE CASCADE
+  FOREIGN KEY (`owner_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+  FOREIGN KEY (`contact_number_id`) REFERENCES `phone_number` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -768,6 +768,27 @@ CREATE TABLE `acd_call_history` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `provisioner_template`;
+CREATE TABLE `provisioner_template` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `template` longtext NOT NULL,
+  `version` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `provisioner_template_field`;
+CREATE TABLE `provisioner_template_field` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `default_value` varchar(255) DEFAULT NULL,
+  `provisioner_template_id` bigint(20) NOT NULL,
+  `version` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name_template_id` (`provisioner_template_id`,`name`),
+  CONSTRAINT `field_provisioner_template_fk` FOREIGN KEY (`provisioner_template_id`) REFERENCES `provisioner_template` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8;
+
 DROP TABLE IF EXISTS `sip_phone`;
 CREATE TABLE `sip_phone` (
   `id` bigint(20) NOT NULL auto_increment,
@@ -784,12 +805,28 @@ CREATE TABLE `sip_phone` (
   `date_registered` datetime default NULL,
   `date_expires` datetime default NULL,
   `phone_user_id` varchar(50) NOT NULL,
+  `provisioner_identifier` varchar(255) DEFAULT NULL,
+  `provisioner_template_id` bigint(20) DEFAULT NULL,
+  `provisioner_last_updated` datetime default NULL,
   PRIMARY KEY  (`id`),
   KEY `FKC5294l23B3209252` (`extension_id`),
   KEY `FKC510738B56D05B56` (`organization_id`),
   KEY `unique-username` (`organization_id`,`username`),
   KEY `unique-phone-user-id` (`phone_user_id`),
   CONSTRAINT `sip_phone_extension_id_fk` FOREIGN KEY (`extension_id`) REFERENCES `phone_number` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `sip_phone_organization_id_fk` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`)
+  CONSTRAINT `sip_phone_organization_id_fk` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`),
+  CONSTRAINT `sip_phone_provisioner_template_fk` FOREIGN KEY (`provisioner_template_id`) REFERENCES `provisioner_template` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `provisioner_template_field_value`;
+CREATE TABLE `provisioner_template_field_value` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `field_value` varchar(255) DEFAULT NULL,
+  `sip_phone_id` bigint(20) NOT NULL,
+  `provisioner_template_field_id` bigint(20) NOT NULL,
+  `version` bigint(20) DEFAULT 0,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `field_value_provisioner_template_fk` FOREIGN KEY (`provisioner_template_field_id`) REFERENCES `provisioner_template_field` (`id`),
+  CONSTRAINT `sip_phone_field_value_fk` FOREIGN KEY (`sip_phone_id`) REFERENCES `sip_phone` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 

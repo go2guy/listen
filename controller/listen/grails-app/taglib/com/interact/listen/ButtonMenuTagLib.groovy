@@ -31,6 +31,7 @@ class ButtonMenuTagLib {
                 button(attrs.button == 'callHistory', 'administration', 'callHistory', 'button.menu.administration.callHistory')
 	            button(attrs.button == 'actionHistory', 'administration', 'actionHistory', 'button.menu.administration.actionHistory')
                 button(attrs.button == 'reports', 'reports', 'list', 'button.menu.administration.reports')
+	            button(attrs.button == 'provisionerTemplates', 'administration', 'provisionerTemplates', 'button.menu.administration.provisionerTemplates')
                 out << '</ul>'
 
                 break

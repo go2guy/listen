@@ -51,7 +51,7 @@
     <g:form controller="administration" action="updateExtension" method="post">
         <input type="hidden" name="id" type="hidden" value="${fieldValue(bean: extension, field: 'id')}"/>
         <table>
-          <caption><g:message code="page.administration.phones.editPhone.title"/>
+          <caption><g:message code="page.administration.phones.editPhone.title"/></caption>
           <tbody>
             <tr>
                 <td class="col-number"><g:message code="page.administration.phones.column.number"/></td>
@@ -74,12 +74,46 @@
                 <td class="val-password"><g:passwordField name="password" value="${fieldValue(bean: sipPhone, field: 'password')}" class="${listen.validationClass(bean: sipPhone, field: 'password')}" placeholder="${g.message(code: 'page.administration.phones.password.placeholder')}" autocomplete="off"/></td>
             </tr>
             <tr>
+                <td class="col-number"><g:message code="page.administration.phones.column.macAddress" default="Mac Address"/></td>
+                <td class="val-number"><g:textField name="provisionerIdentifier" value="${fieldValue(bean: sipPhone, field: 'provisionerIdentifier')}" class="${listen.validationClass(bean: sipPhone, field: 'provisionerIdentifier')}"/></td>
+            </tr>
+            <tr>
+                <td class="col-number"><g:message code="page.administration.phones.column.Template" default="Config Template"/></td>
+                <td class="val-number"><g:select name="provisionerTemplate"
+                                                 class="filterDropdown"
+                                                 optionKey="id"
+                                                 optionValue="name"
+                                                 from="${templates}"
+                                                 value="${sipPhone.provisionerTemplate ? sipPhone.provisionerTemplate.id : ''}"
+                                                 noSelection="['':'']" /></td>
+            </tr>
+          </tbody>
+        </table>
+
+        %{--<h3>Custom Template Fields</h3>--}%
+        %{--<table>--}%
+            %{--<g:each in="${userFields}" var="field" status="i">--}%
+                %{--<tr>--}%
+                    %{--<td class="col-number">${field?.provisionerTemplateField?.name}</td>--}%
+                    %{--<td class="val-number"><g:textField name="fields.${i}.fieldValue" value="${field.fieldValue}"/><g:hiddenField name="fields.${i}.id" value="${field.id}"/></td>--}%
+                %{--</tr>--}%
+            %{--</g:each>--}%
+        %{--</table>--}%
+
+        <h3>Information</h3>
+        <table>
+          <tbody>
+            <tr>
                 <td class="col-realname"><g:message code="page.administration.phones.column.realName"/></td>
                 <td class="val-realname">${sipPhone?.realName}</td>
             </tr>
             <tr>
                 <td class="col-datereg"><g:message code="page.administration.phones.column.dateRegistered"/></td>
                 <td class="col-datereg" onmouseover="tooltip.show('CSeq:${sipPhone?.cseq}');" onmouseout="tooltip.hide();"><joda:format value="${sipPhone?.dateRegistered}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
+            </tr>
+            <tr>
+                <td class="col-provupdate"><g:message code="page.administration.phones.column.provisionerLastUpdated" default="Last Provisioner Update"/></td>
+                <td class="col-provupdate"><joda:format value="${sipPhone?.provisionerLastUpdated}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
             </tr>
             <tr>
                 <td class="col-ip"><g:message code="page.administration.phones.column.ip"/></td>

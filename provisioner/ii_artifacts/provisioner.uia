@@ -1,0 +1,82 @@
+<?xml version = "1.0"?>
+<uia>
+    <install>
+        <pre>
+            <process state="stopped">
+                <name>provisioner</name>
+                <statusCmd>/sbin/service provisioner status</statusCmd>
+                <statusRegex source='retval'>^0$</statusRegex>
+                <start>/sbin/service provisioner start</start>
+                <stop>/sbin/service provisioner stop</stop>
+            </process>
+
+            <rpm state="greater-than-or-equal">
+                <name>uia</name>
+                <version>4.10.0</version>
+            </rpm>
+
+            <rpm state="less-than-or-equal">
+                <name>uia</name>
+                <version>5.0.0</version>
+            </rpm>
+        </pre>
+
+        <inquiry>
+            <question level="not_in_db" severity="ask">
+                <id>3k2523899j23232g4k788898999jff88</id>
+                <text>Enter your listen mysql host</text>
+                <default>"localhost"</default>
+                <property format="propsh" action="update" comma="yes">
+                    <name>"MYSQL_HOST"</name>
+                    <location>/interact/provisioner/server/config.js</location>
+                </property>
+            </question>
+        </inquiry>
+        <post>
+        </post>
+    </install>
+
+    <rollback>
+        <pre>
+            <process state="stopped">
+                <name>provisioner</name>
+                <statusCmd>/sbin/service provisioner status</statusCmd>
+                <statusRegex source='retval'>^0$</statusRegex>
+                <start>/sbin/service provisioner start</start>
+                <stop>/sbin/service provisioner stop</stop>
+            </process>
+
+            <rpm state="greater-than-or-equal">
+                <name>uia</name>
+                <version>4.10.0</version>
+            </rpm>
+
+            <rpm state="less-than-or-equal">
+                <name>uia</name>
+                <version>5.0.0</version>
+            </rpm>
+        </pre>
+    </rollback>
+
+    <uninstall>
+        <pre>
+            <process state="stopped">
+                <name>provisioner</name>
+                <statusCmd>/sbin/service provisioner status</statusCmd>
+                <statusRegex source='retval'>^0$</statusRegex>
+                <start>/sbin/service provisioner start</start>
+                <stop>/sbin/service provisioner stop</stop>
+            </process>
+
+            <rpm state="greater-than-or-equal">
+                <name>uia</name>
+                <version>4.10.0</version>
+            </rpm>
+
+            <rpm state="less-than-or-equal">
+                <name>uia</name>
+                <version>5.0.0</version>
+            </rpm>
+        </pre>
+    </uninstall>
+</uia>

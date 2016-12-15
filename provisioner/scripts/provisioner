@@ -1,0 +1,67 @@
+#!/bin/bash
+#
+# provisioner      Start/Stop provisioner.
+#
+# chkconfig: 345 65 35
+# description: Provisioner is a TFTP Server used to provision SIP phones
+#
+# processname: provisioner
+#
+
+. /etc/init.d/functions
+
+APPNAME=provisioner
+PIDFILE=/interact/lock/provisioner.pid
+LOGFILE=/interact/logs/provisioner.log
+PRGNAME="/interact/node/bin/node /interact/provisioner/index.js"
+RETVAL=0
+
+start() 
+{
+    echo -n "Starting $APPNAME: "
+    daemon --pidfile $PIDFILE "$PRGNAME >> $LOGFILE 2>> $LOGFILE & [ \$? -eq 0 ] && echo \$! > $PIDFILE"
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && touch /var/lock/subsys/$APPNAME
+    return $RETVAL
+}
+
+stop()
+{
+    echo -n "Stopping $APPNAME: "
+    killproc -p $PIDFILE $APPNAME
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/$APPNAME
+    return $RETVAL
+}
+
+restart()
+{
+    stop
+    start
+}
+
+case "$1" in
+    start)
+        start
+    ;;
+
+    stop)
+        stop
+    ;;
+
+    status)
+        status -p $PIDFILE $APPNAME
+    ;;
+
+    restart)
+        restart
+    ;;
+
+    *)
+        echo "Usage: service `basename $0` [start|stop|status|restart]" 
+        exit 1
+esac
+
+exit $?
