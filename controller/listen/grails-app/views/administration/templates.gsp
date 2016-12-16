@@ -8,7 +8,7 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
-    <title><g:message code="page.administration.provisioner.templates" default="Provisioner Templates"/></title>
+    <title><g:message code="page.administration.templates.title" default="Provisioner Templates"/></title>
     <meta name="layout" content="main"/>
     <meta name="tab" content="administration"/>
     <meta name="button" content="provisionerTemplates"/>
@@ -85,7 +85,7 @@
 <h3><g:message code="page.administration.templates.list.caption" default="Templates"/></h3>
 <table>
     <thead>
-    <th class="col-name"><g:message code="page.administration.templates.name" default="Name"/></th>
+    <th class="col-name"><g:message code="page.administration.templates.column.name" default="Name"/></th>
     </thead>
     <tbody>
     <g:each in="${templates}" var="template">

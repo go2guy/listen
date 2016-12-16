@@ -8,7 +8,7 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
-    <title><g:message code="page.administration.provisioner.templates" default="Edit Provisioner Template"/></title>
+    <title><g:message code="page.administration.templates.edit.title" default="Edit Provisioner Template"/></title>
     <meta name="layout" content="main"/>
     <meta name="tab" content="administration"/>
     <meta name="button" content="provisionerTemplates"/>
@@ -60,9 +60,26 @@
     });
     </script>
     <style type="text/css">
-        td > p {
-            margin-top: 0;
-            margin-bottom: 0;
+        .template-info {
+            background-color: #EBEEF5;
+            border-collapse:separate;
+            border: 1px solid #6DACD6;
+            border-spacing: 0em;
+            padding: 5px;
+            border-radius: 5px;
+            -moz-border-radius: 5px;
+            -webkit-border-radius: 5px;
+            font-size: .9em;
+        }
+
+        .textarea {
+            width: 99%;
+        }
+
+        .buttons {
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
         }
     </style>
 </head>
@@ -73,21 +90,26 @@
 <g:form controller="administration" action="updateTemplate" id="${template.id}">
 <table>
     <tr>
-        <td>Template Name:</td>
+        <td><g:message code="page.administration.templates.column.name" default="Template Name"/>:</td>
         <td><g:textField name="name" value="${template.name}"/></td>
     </tr>
     <tr>
-        <td></td>
-        <td>The accepted variables in a template are:
-            <p>&lt;%=userId%&gt; - Correlates with Sip Phone Extension "User ID"</p>
-            <p>&lt;%=username%&gt; - Correlates with Sip Phone Extension "Username"</p>
-            <p>&lt;%=password%&gt; - Correlates with Sip Phone Extension "Password"</p>
-            <p>&lt;%=organizationId%&gt; - Correlates with Sip Phone Extension Organization Id</p>
+        <td style="vertical-align: text-top;"><g:message code="page.administration.templates.variables.label" default="Variables"/>:</td>
+        <td>
+            <table class="template-info">
+                <tr><td>&lt;%=number%&gt;</td>          <td>Extension number</td></tr>
+                <tr><td>&lt;%=userId%&gt;</td>          <td>"User ID" from extension</td></tr>
+                <tr><td>&lt;%=username%&gt;</td>        <td>"Username" from extension</td></tr>
+                <tr><td>&lt;%=password%&gt;</td>        <td>"Password" from extension</td></tr>
+                <tr><td>&lt;%=organizationId%&gt;</td>  <td>Organization Id of Extension</td></tr>
+                <tr><td>&lt;%=realName%&gt;</td>        <td>Real name of user assigned to the extension</td></tr>
+                <tr><td>&lt;%=macAddress%&gt;</td>      <td>Mac Address assigned to this extension</td></tr>
+            </table>
         </td>
     </tr>
     <tr>
-        <td style="vertical-align: text-top;">Template:</td>
-        <td><g:textArea name="template" value="${template.template}" rows="30" cols="80"/></td>
+        <td style="vertical-align: text-top;"><g:message code="page.administration.templates.column.template" default="Template"/>:</td>
+        <td class="textarea-container"><g:textArea class="textarea" name="template" value="${template.template}" rows="30"/></td>
     </tr>
 </table>
 

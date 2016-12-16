@@ -367,6 +367,7 @@ class Request
 
                                 // Automatically included values
                                 values.number = row.number;
+                                values.macAddress = row.provisioner_identifier;
                                 values.sipPhoneId = row.id;
                                 values.organizationId = row.organization_id;
                                 values.username = row.username;

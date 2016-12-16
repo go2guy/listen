@@ -15,7 +15,7 @@ var getSipPhoneDataByMac = function(mac)
 {
     return new Promise((resolve, reject) =>
     {
-        db.query("SELECT pn.number, sp.id, sp.provisioner_template_id, sp.organization_id, sp.username, sp.password, sp.phone_user_id, u.real_name FROM phone_number AS pn INNER JOIN sip_phone AS sp ON pn.id=sp.extension_id INNER JOIN user AS u ON pn.owner_id=u.id WHERE sp.provisioner_identifier=?", [mac])
+        db.query("SELECT pn.number, sp.id, sp.provisioner_template_id, sp.organization_id, sp.username, sp.password, sp.phone_user_id, sp.provisioner_identifier, u.real_name FROM phone_number AS pn INNER JOIN sip_phone AS sp ON pn.id=sp.extension_id INNER JOIN user AS u ON pn.owner_id=u.id WHERE sp.provisioner_identifier=?", [mac])
             .then((rows) =>
             {
                 if (rows.length !== 1)
