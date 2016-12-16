@@ -10,8 +10,8 @@
 
 Summary: Listen TFTP Provisioning Server
 Name: provisioner
-Version: %(if [ -z $JENKINS_VERSION ]; then echo "99.0"; else echo "${JENKINS_VERSION}"; fi)
-Release: 1
+Version: 2.0%{dist}
+Release: %(svnversion | cut -d ':' -f 1)
 License: Copyright (c) NewNet Communication Technologies. All Rights Reserved.
 Group: Interact
 URL: http://www.newnet.com/
