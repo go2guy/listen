@@ -7,7 +7,7 @@ module.exports =
     TRANSMIT_TIMEOUT: 3000, // In Milliseconds
     MAX_WRITE_FILESIZE: 100000, // In bytes, default set at 100k bytes. Any SIP file should not be greater than that.
     MAX_BLOCK_SIZE: 1468, // Should be set as the smallest MTU value on the system - 32 bytes, Ex: 1500 - 32 = 1468
-    MYSQL_HOST: "coreylisten212.newnet.local",
+    MYSQL_HOST: "localhost",
     MYSQL_USER: "root",
     MYSQL_PASS: "",
     MYSQL_DB: "listen2",
