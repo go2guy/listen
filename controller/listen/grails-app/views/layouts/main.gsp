@@ -314,6 +314,7 @@ ul.tab-menu li.current a {
     font-family: Century Gothic, Arial, sans-serif;
     overflow: hidden;
     padding: 10px 10px 10px 10px; /* top is 15 to offset some border widths */
+    width: 100%;
 }
 
 ul.button-menu  {
