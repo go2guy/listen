@@ -15,35 +15,52 @@ class ApiKeyAuthenticationProvider implements AuthenticationProvider
 
     Authentication authenticate(Authentication auth)
     {
-        if(auth.credentials.signature == grailsApplication.config.com.interact.listen.api.adminSignature)
+        if(auth.credentials.signature &&
+                (auth.credentials.signature == grailsApplication.config.com.interact.listen.api.adminSignature))
         {
             return authenticateAdmin(auth);
         }
 
-        def expected = Signature.create(auth.credentials.date)
-        if(expected != auth.credentials.signature) {
-            log.warn 'API signature did not match expected signature'
-            log.debug "  Expected: [${expected}]"
-            log.debug "  Actual:   [${auth.credentials.signature}]"
-            throw new BadCredentialsException('API signature did not match expected signature')
-        }
-
-        def messageDate = HttpDate.parse(auth.credentials.date)
-        LocalDateTime local = new LocalDateTime(messageDate.time)
-        LocalDateTime now = new LocalDateTime()
-
-        if(local.isBefore(now.minusMinutes(5)) || local.isAfter(now.plusMinutes(5)))
+        if(auth.credentials.date && auth.credentials.signature)
         {
-            log.warn 'API request has expired'
-            throw new BadCredentialsException('API request has expired')
-        }
+            def expected = Signature.create(auth.credentials.date)
+            if(expected != auth.credentials.signature) {
+                log.warn 'API signature did not match expected signature'
+                log.debug "  Expected: [${expected}]"
+                log.debug "  Actual:   [${auth.credentials.signature}]"
+                throw new BadCredentialsException('API signature did not match expected signature')
+            }
 
-        def token = new ApiKeyAuthentication(name: auth.name,
-                                             credentials: auth.credentials,
-                                             principal: [id: ''],
-                                             authenticated: true)
-        token.authorities= [new SimpleGrantedAuthority('ROLE_SPOT_API')]
-        return token
+            def messageDate = HttpDate.parse(auth.credentials.date)
+            LocalDateTime local = new LocalDateTime(messageDate.time)
+            LocalDateTime now = new LocalDateTime()
+
+            if(local.isBefore(now.minusMinutes(5)) || local.isAfter(now.plusMinutes(5)))
+            {
+                log.warn 'API request has expired'
+                throw new BadCredentialsException('API request has expired')
+            }
+
+            def token = new ApiKeyAuthentication(name: auth.name,
+                                                 credentials: auth.credentials,
+                                                 principal: [id: ''],
+                                                 authenticated: true)
+            token.authorities= [new SimpleGrantedAuthority('ROLE_SPOT_API')]
+            return token
+        }
+        else if(auth.credentials.apiKey)
+        {
+            def token = new ApiKeyAuthentication(name: auth.name,
+                    credentials: auth.credentials,
+                    principal: [id: ''],
+                    authenticated: true)
+            token.authorities= [new SimpleGrantedAuthority('ROLE_KEY_API')]
+            return token
+        }
+        else
+        {
+            throw new BadCredentialsException('Invalid API Signature');
+        }
     }
 
     /**

@@ -185,6 +185,9 @@ class OrganizationController {
                 }
             }
 
+            String apiKey = UUID.randomUUID().toString();
+            organization.apiKey = apiKey.replaceAll('-','').substring(0,32);
+
             if(!organization.hasErrors() && organization.save()) {
                 ldapService.addOrganization(organization)
 

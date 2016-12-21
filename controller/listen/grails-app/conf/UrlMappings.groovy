@@ -22,6 +22,14 @@ class UrlMappings {
             ]
         }
 
+        "/api/acd/agent/$id"(controller: 'acdApi')
+        {
+            action = [
+                    PUT: 'updateAgent',
+                    GET: 'getAgent'
+            ]
+        }
+
         "/api/accessNumbers"(controller: 'spotApi') {
             action = [
                     GET: 'listPhoneNumbers'

@@ -16,6 +16,7 @@ class Organization {
     String ldapBasedn;
     String ldapPort;
     String ldapDc;
+    String apiKey;
 
     static hasMany = [users: User, enabledFeatures: ListenFeature]
 

@@ -5,6 +5,10 @@
     <meta name="tab" content="organization"/>
     <meta name="button" content="edit"/>
     <meta name="page-header" content="${g.message(code: 'page.organization.edit.header')}"/>
+
+    <style type="text/css">
+      .apikey-box { width: 275px; }
+    </style>
   </head>
   <body>
     <g:form controller="organization" action="update" method="post">
@@ -50,6 +54,9 @@
             ${feature.displayName}
           </label>
         </g:each>
+
+          <h3><g:message code="organizationConfiguration.apiKey.label"/></h3>
+          <g:textField name="apiKey" value="${fieldValue(bean: organization, field: 'apiKey')}" style="width: 300px;" disabled="disabled"/>
 
         <ul class="form-buttons">
           <li><g:submitButton name="submit" value="${g.message(code: 'default.button.save.label')}"/></li>

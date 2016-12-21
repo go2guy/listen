@@ -568,6 +568,37 @@ class HistoryService {
               description: "Unmuted caller [${participant.displayName()}] in conference [${participant.conference.description}]")
     }
 
+    void acdApiSet(Organization org, User acdUser, String status)
+    {
+        List<User> apiUsers = User.createCriteria().list(){
+            eq('organization', org)
+        }
+
+        User apiUser;
+        for(User thisUser : apiUsers)
+        {
+            if(thisUser.hasRole("ROLE_ORGANIZATION_ADMIN"))
+            {
+                apiUser = thisUser;
+                break;
+            }
+        }
+
+        if(apiUser != null)
+        {
+            write(action: Action.API_UPDATED_AGENT_STATUS,
+                    description: "Updated agent [" + acdUser.getRealName() + "] to status [" + status + "]",
+                    onUser: acdUser,
+                    onOrganization: org,
+                    onChannel: Channel.API,
+                    byUser: apiUser);
+        }
+        else
+        {
+            log.error("Unable to determine user for API action history write.");
+        }
+    }
+
     private void write(Map map)
     {
         try
@@ -580,7 +611,15 @@ class HistoryService {
                 history.organization = history.byUser?.organization ?: history.onUser?.organization
             }
 
-            history.channel = currentChannel()
+            if (map.containsKey('onChannel'))
+            {
+                history.channel = map.onChannel;
+            }
+            else
+            {
+                history.channel = currentChannel();
+            }
+
             if(!(history.validate() && history.save())) {
                 log.error('Unable to save ActionHistory: ' + history.errors.allErrors)
             }

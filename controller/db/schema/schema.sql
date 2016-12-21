@@ -42,6 +42,7 @@ CREATE TABLE `organization` (
   `ldap_basedn` varchar(100),
   `ldap_port` varchar(100),
   `ldap_dc` varchar(100),
+  `api_key` varchar(32),
   PRIMARY KEY  (`id`),
   UNIQUE KEY `name` (`name`),
   UNIQUE KEY `name_unique_1307548966223` (`name`),
