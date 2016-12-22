@@ -103,6 +103,7 @@ class SpotApiController {
     def callRoutingService
     def extensionService
     def springSecurityService
+    def callService
 
     /**
      * Add an acd call to the queue.
@@ -228,10 +229,13 @@ class SpotApiController {
         callHistory.fromUser = User.lookupByPhoneNumberAndOrganization(json.ani, callOrganization);
         callHistory.toUser = User.lookupByPhoneNumberAndOrganization(json.dnis, callOrganization);
         callHistory.organization = callOrganization;
+        callHistory.sessionId = json?.sessionId;
+        callHistory.ivr = request.remoteAddr;
+
         if(json.result) {
-        	callHistory.result = json.result
+            callHistory.result = json.result
         } else {
-        	callHistory.result = ''
+            callHistory.result = ''
         }
 
         if(callHistory.validate() && callHistory.save()) {

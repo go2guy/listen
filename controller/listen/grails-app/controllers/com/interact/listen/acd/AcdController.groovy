@@ -27,7 +27,7 @@ class AcdController
       toggleStatus: 'POST',
       updateNumber: 'POST',
       callQueue: 'GET',
-      callHistory: 'GET',
+      acdCallHistory: 'GET',
       pollQueue: 'GET',
       pollHistory: 'GET',
       pollStatus: 'GET',
@@ -174,6 +174,12 @@ class AcdController
     def pollHistory = {
       def user = springSecurityService.currentUser
 
+      def organization = session.organization
+      if (!organization){
+          log.error("Failed to evaluate organization from [${session.organization}]")
+          redirect(action: 'acdCallHistory')
+          return
+      }
       params.sort = params.sort ?: 'enqueueTime'
       params.order = params.order ?: 'desc'
       params.max = params.max ?: 10
@@ -182,28 +188,41 @@ class AcdController
 
       def json = [:]
 
-      List<AcdCallHistory> calls = []
+      List<AcdCallHistory> acdCalls = []
 
+      def acdCallHistory
       if ( user.hasRole('ROLE_ORGANIZATION_ADMIN') ) { // get all call history
-        calls = AcdCallHistory.createCriteria().list {
-            order(params.sort, params.order)
-            maxResults(params.max.toInteger())
-            firstResult(params.offset.toInteger())
-            ge("enqueueTime",today.toDateTimeAtStartOfDay())
-        }
+          log.debug("Find acdCallHistory for organization [${organization}][${organization.id}]")
+          acdCalls = AcdCallHistory.createCriteria().list {
+              order(params.sort, params.order)
+              maxResults(params.max.toInteger())
+              firstResult(params.offset.toInteger())
+              skill {
+                  eq('organization', organization)
+              }
+              ge("enqueueTime", today.toDateTimeAtStartOfDay())
+          }
+
+      } else { // get call history for current user
+          log.debug("Find acdCallHistory for organization [${organization}] and user [${user}]")
+          acdCallHistory = AcdCallHistory.createCriteria().list {
+              order(params.sort, params.order)
+              maxResults(params.max.toInteger())
+              firstResult(params.offset.toInteger())
+              skill {
+                  eq('organization', organization)
+              }
+              eq("user",user)
+              ge("enqueueTime",today.toDateTimeAtStartOfDay())
+          }
       }
-      else { // get call history for current user
-        calls = AcdCallHistory.createCriteria().list {
-            order(params.sort, params.order)
-            maxResults(params.max.toInteger())
-            firstResult(params.offset.toInteger())
-            eq("user",user)
-            ge("enqueueTime",today.toDateTimeAtStartOfDay())
-        }
+
+      if (acdCallHistory) {
+          log.debug("We've found [${acdCallHistory.size()}] acd records")
       }
 
       def callJson = []
-      for (AcdCallHistory call : calls)
+      for (AcdCallHistory call : acdCalls)
       {
           def c = [:]
           c.id = call.id
@@ -222,7 +241,7 @@ class AcdController
           callJson.add(c)
       }
 
-      json.calls = callJson
+      json.acdCalls = callJson
 
       if (log.isDebugEnabled())
       {
@@ -298,6 +317,13 @@ class AcdController
       }
 
       def user = springSecurityService.currentUser
+
+      def organization = session.organization
+      if (!organization){
+          log.error("Failed to evaluate organization from [${session.organization}]")
+          redirect(action: 'acdCallHistory')
+          return
+      }
 
       // Get Agent Status Details
       def acdUserStatus = AcdUserStatus.findByOwner(user)
@@ -392,33 +418,41 @@ class AcdController
 
       LocalDate today = new LocalDate()
 
-//      def callHistory = AcdCallHistory.createCriteria().list() {
-//        order(params.historySort, params.historyOrder)
-//        eq("user", user)
-//        ge("enqueueTime",today.toDateTimeAtStartOfDay())
-//      }
-      
+      def acdCallHistory
       if ( user.hasRole('ROLE_ORGANIZATION_ADMIN') ) { // get all call history
-        callHistory = AcdCallHistory.createCriteria().list {
-            order(params.historySort, params.historyOrder)
-            ge("enqueueTime",today.toDateTimeAtStartOfDay())
-        }
+          log.debug("Find acdCallHistory for organization [${organization}][${organization.id}]")
+          acdCallHistory = AcdCallHistory.createCriteria().list {
+              order(params.historySort, params.historyOrder)
+              skill {
+                  eq('organization', organization)
+              }
+              ge("enqueueTime",today.toDateTimeAtStartOfDay())
+          }
       } else { // get call history for current user
-        callHistory = AcdCallHistory.createCriteria().list {
-            order(params.historySort, params.historyOrder)
-            eq("user",user)
-            ge("enqueueTime",today.toDateTimeAtStartOfDay())
-        }
+          log.debug("Find acdCallHistory for organization [${organization}] and user [${user}]")
+          acdCallHistory = AcdCallHistory.createCriteria().list {
+              order(params.historySort, params.historyOrder)
+              skill {
+                  eq('organization', organization)
+              }
+              eq("user",user)
+              ge("enqueueTime",today.toDateTimeAtStartOfDay())
+          }
       }
 
-      def historyTotal = callHistory.size()
+      def historyTotal = 0
+      if (acdCallHistory) {
+          historyTotal = acdCallHistory.size()
+      }
+      log.debug("We've found [${historyTotal}] acd records")
+
 
       def model = [
         status: status,
         statusDisabled: statusDisabled,
         phoneNumbers: phoneNumbers,
         contactNumber: contactNumber,
-        callHistory: callHistory,
+        acdCallHistory: acdCallHistory,
         callTotal: callTotal,
         historyTotal: historyTotal,
         calls: calls,
@@ -852,10 +886,7 @@ class AcdController
 
     def exportHistoryToCsv =
     {
-        if (log.isDebugEnabled())
-        {
-            log.debug "AcdController.exportHistoryToCsv: params[${params}]"
-        }
+        log.debug "AcdController.exportHistoryToCsv: params[${params}]"
 
         params.sort = 'enqueueTime'
         params.order = 'desc'
@@ -865,7 +896,7 @@ class AcdController
         DateTime theStart = getStartDate(params.startDate);
         DateTime theEnd = getEndDate(params.endDate);
 
-        def calls = acdService.callHistoryList(params.sort, params.order, params.max, params.offset, theStart, theEnd,
+        def calls = acdService.acdHistoryList(params.sort, params.order, params.max, params.offset, theStart, theEnd,
                 params.agent, params.skill);
 
         String filename = "acdCallHistoryRecords${new LocalDateTime().toString('yyyyMMddHHmmss')}.csv";
@@ -888,18 +919,41 @@ class AcdController
         {
             log.error("Failed to create temp file for export ${e}")
             flash.errorMessage = message(code: 'page.administration.acd.callHistory.exportCSV.fileCreateFailed');
-            redirect(action: "callHistory");
+            redirect(action: "acdCallHistory");
             //TODO perhaps do something to notify system administrators of an important event?
             return
         }
 
         //Create header row
+        tmpfile << "began,calling party,called party,duration,call result,sessionId,ivr,"
         tmpfile << AcdCallHistory.csvHeader();
         tmpfile << "\n";
 
         //Write each row
         for(AcdCallHistory thisHistory : calls)
         {
+            def callHist = CallHistory.findBySessionId(thisHistory.sessionId)
+            if (callHist) {
+                // We start with the rows from the call history table
+                tmpfile << "${callHist.dateTime?.toString("yyyy-MM-dd HH:mm:ss")},"
+                tmpfile << "${listen.numberWithRealName(number: callHist.ani, user: callHist.fromUser, personalize: false)},"
+                tmpfile << "${listen.numberWithRealName(number: callHist.dnis, user: callHist.toUser, personalize: false)},"
+                tmpfile << "${listen.formatduration(duration: callHist.duration, millis: true)},"
+                tmpfile << "${callHist.result.replaceAll(",", " ")}," // This is to prevent anything weird...
+                tmpfile << "${callHist.sessionId},"
+                tmpfile << "${callHist.ivr},"
+            } else {
+                // We start with the rows from the call history table
+                tmpfile << ","
+                tmpfile << "${listen.numberWithRealName(number: thisHistory.ani, user: '', personalize: false)},"
+                tmpfile << "${listen.numberWithRealName(number: thisHistory.dnis, user: '', personalize: false)},"
+                tmpfile << ","
+                tmpfile << ","
+                tmpfile << "${thisHistory.sessionId},"
+                tmpfile << ","
+            }
+
+            // Now we'll add the rows from the acd history record
             tmpfile << thisHistory.csvRow();
             tmpfile << "\n";
         }
@@ -940,7 +994,7 @@ class AcdController
         }
     }
 
-    def callHistory =
+    def acdCallHistory =
     {
         if (!springSecurityService.currentUser) {
             //Redirect to login
@@ -948,10 +1002,7 @@ class AcdController
         }
         def user = springSecurityService.currentUser
 
-        if (log.isDebugEnabled())
-        {
-            log.debug "AcdController.callHistory: params[${params}]";
-        }
+        log.debug "AcdController.acdCallHistory: params[${params}]";
 
         log.debug "params.sort [${params.sort}]"
         log.debug "params.order [${params.order}]"
@@ -968,12 +1019,11 @@ class AcdController
         DateTime theStart = getStartDate(params.startDate);
         DateTime theEnd = getEndDate(params.endDate);
 
-        def calls = []
         if ( !user.hasRole( 'ROLE_ORGANIZATION_ADMIN' ) ) {
             params.agent = params.agent ?: user.id
         }
         params.agent = params.agent ?: ""
-        calls = acdService.callHistoryList(params.sort, params.order, params.max, params.offset, theStart, theEnd,
+        def calls = acdService.acdHistoryList(params.sort, params.order, params.max, params.offset, theStart, theEnd,
                 params.agent.toString(), params.skill);
         def callTotal = calls.totalCount;
 
@@ -1047,7 +1097,7 @@ class AcdController
         json.skillList = skillJson;
         json.agentList = agentJson;
 
-        render(view: 'callHistory', model: json)
+        render(view: 'acdCallHistory', model: json)
     }
 
     def agentStatus =

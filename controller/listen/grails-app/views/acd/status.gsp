@@ -237,7 +237,7 @@
 
             <tbody>
               <g:set var="row_count" value="${0}"/>
-              <g:each in="${callHistory}" var="call">
+              <g:each in="${acdCallHistory}" var="call">
                 <tr class="${++row_count % 2 == 0 ? 'even' : 'odd'}"/>
                   <td class="overflow">${call.ani}</td>
                   <td class="overflow">${call.skill.description}</td>
@@ -675,10 +675,10 @@
     // TODO: Change it up for Call History!!!
 
     $(document).ready( function () {
-      setInterval(callHistory.poll,1000);
+      setInterval(acdCallHistory.poll,1000);
     });
 
-    var callHistory = {
+    var acdCallHistory = {
       poll: function() {
         $.ajax({
           // passing in params to ensure sort and pagination are kept
@@ -750,8 +750,8 @@
             }
           } // success
         }); // $.ajax
-      } // callHistory.poll
-    }; // callHistory
+      } // acdCallHistory.poll
+    }; // acdCallHistory
     
     </script>
   </body>

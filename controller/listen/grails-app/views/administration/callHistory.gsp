@@ -27,11 +27,15 @@
     }
 
     .col-duration {
-        width: 10%;
+        width: 5%;
     }
 
     .col-result {
         width: 20%;
+    }
+
+    .col-acd {
+        width: 5%;
     }
 
     .col-dateCreated {
@@ -200,18 +204,20 @@
         <g:sortableColumn property="dnis" title="Called Party" class="col-dnis"/>
         <g:sortableColumn property="duration" title="Duration" class="col-duration"/>
         <g:sortableColumn property="result" title="Call Result" class="col-result"/>
+        <g:sortableColumn property="acdCallHistory" title="ACD" class="col-acd"/>
         </thead>
         <tbody>
         <g:each in="${callHistoryList}" var="callHistory" status="i">
             <tr class="${i % 2 == 0 ? 'even' : 'odd'}">
-                <td class="col-dateTime"><joda:format value="${callHistory.dateTime}"
-                                                      pattern="yyyy-MM-dd HH:mm:ss"/></td>
+                <td><g:link action="showHistory"
+                            id="${callHistory.id}"><joda:format value="${callHistory.dateTime}" pattern="yyyy-MM-dd HH:mm:ss"/></g:link></td>
                 <td class="col-ani"><listen:numberWithRealName number="${fieldValue(bean: callHistory, field: 'ani')}"
                                                                user="${callHistory.fromUser}" personalize="false"/></td>
                 <td class="col-dnis"><listen:numberWithRealName number="${fieldValue(bean: callHistory, field: 'dnis')}"
                                                                 user="${callHistory.toUser}" personalize="false"/></td>
                 <td class="col-duration"><listen:formatduration duration="${callHistory.duration}" millis="true"/></td>
                 <td class="col-result">${fieldValue(bean: callHistory, field: 'result')}</td>
+                <td><listen:checkMark value="${callHistory?.acdCall}"/></td>
             </tr>
         </g:each>
         </tbody>

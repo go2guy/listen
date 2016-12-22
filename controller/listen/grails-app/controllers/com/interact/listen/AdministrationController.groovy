@@ -1,5 +1,6 @@
 package com.interact.listen
 
+import com.interact.listen.exceptions.ListenExportException
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import com.interact.listen.android.GoogleAuthConfiguration
@@ -12,15 +13,21 @@ import com.interact.listen.pbx.Extension
 import com.interact.listen.pbx.SipPhone
 import com.interact.listen.pbx.NumberRoute
 import com.interact.listen.voicemail.afterhours.AfterHoursConfiguration
+import org.apache.commons.lang.ObjectUtils
 import org.joda.time.DateTime
 import org.joda.time.LocalDateTime
 import org.joda.time.Period
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.format.DateTimeFormatter
+import com.interact.listen.exceptions.ListenExportException
+
+import javax.validation.constraints.Null
+
 
 @Secured(['ROLE_ORGANIZATION_ADMIN'])
 class AdministrationController {
     def applicationService
+    def callService
     def directInwardDialNumberService
     def directMessageNumberService
     def extensionService
@@ -63,7 +70,8 @@ class AdministrationController {
             updateExternalRoute         : 'POST',
             updateInternalRoute         : 'POST',
             updateRestriction           : 'POST',
-            users                       : 'GET'
+            users                       : 'GET',
+            showHistory                 : 'GET'
     ]
 
     def index = {
@@ -161,6 +169,30 @@ class AdministrationController {
             flash.successMessage = message(code: 'directInwardDialNumber.created.message')
             redirect(action: 'routing')
         }
+    }
+
+
+    def showHistory = {
+        log.debug "showHistory with params [${params}]"
+
+        def callHistoryInstance = CallHistory.get(params.id)
+        if (!callHistoryInstance){
+            log.error("Can not find callHistory with id [${params.id}]")
+            redirect("callHistory")
+            return
+        }
+        log.debug("We've found callHistory with id [${callHistoryInstance.id}] and session id [${callHistoryInstance.sessionId}]")
+
+        def acdCallHistoryInstance = AcdCallHistory.findAllBySessionId(callHistoryInstance.sessionId)
+        if (acdCallHistoryInstance) {
+            acdCallHistoryInstance.each { acdCallHistory ->
+                log.debug("We've found acdHistory [${acdCallHistory.id}] for callHistory [${callHistoryInstance.id}]")
+                log.debug("We've found acdHistory for skill [${acdCallHistory.skill}]")
+            }
+        } else {
+            log.debug("We've not found acdCallHistory [${acdCallHistoryInstance.id}] for callHistory [${callHistoryInstance.id}]")
+        }
+        render(view: 'showHistory', model:[callHistoryInstance: callHistoryInstance, acdCallHistoryInstance: acdCallHistoryInstance])
     }
 
     def toggleMsgLight = {
@@ -578,6 +610,137 @@ class AdministrationController {
     }
 
     def callHistory = {
+        log.debug("callHistory with params [${params}]")
+        def organization = session.organization
+        if (!organization){
+            log.error("Failed to evaluate organization from [${session.organization}]")
+            redirect(action: 'callHistory')
+            return
+        }
+
+        log.debug("callHistory for organization [${organization.id}]")
+        def users = User.findAllByOrganization(organization)
+
+        params.offset = params.offset ? params.int('offset') : 0
+        params.max = Math.min(params.max ? params.int('max') : 25, 100)
+
+        def startDate
+        def endDate
+        if (params.startDate && params.searchButton) {
+            startDate = getStartDate(params)
+        }
+
+        if (params.endDate && params.searchButton) {
+            endDate = getEndDate(params)
+        }
+
+        if (endDate && startDate && (endDate.isBefore(startDate) || endDate.isEqual(startDate))) {
+            flash.errorMessage = message(code: "callHistory.endDate.before.label", default: "End Date is before Start Date")
+            endDate = null
+            params.remove("endDate")
+        }
+
+        def selectedUsers
+        if (params.user && params.searchButton) {
+            selectedUsers = User.findAllByIdInListAndOrganization([params.user].flatten().collect{ Long.valueOf(it)}, organization)
+        }
+
+        log.debug("startDate [${startDate}]")
+        log.debug("endDate [${endDate}]")
+        log.debug("selectedUsers [${selectedUsers}]")
+        // call history
+        def callHistory = CallHistory.createCriteria().list([offset: params.offset, max: params.max, sort: 'dateTime', order: 'desc']) {
+            if (startDate && endDate && params.searchButton) {
+                and {
+                    ge('dateTime', startDate)
+                    le('dateTime', endDate)
+                }
+            } else if (startDate && params.searchButton) {
+                ge('dateTime', startDate)
+            } else if (endDate && params.searchButton) {
+                le('dateTime', endDate)
+            }
+
+            if (params.caller && params.searchButton) {
+                ilike('ani', '%'+params.caller.replaceAll("\\D+", "")+'%')
+            }
+
+            if (params.callee && params.searchButton) {
+                ilike('dnis', '%'+params.callee.replaceAll("\\D+", "")+'%')
+            }
+
+            if (selectedUsers && params.searchButton) {
+                or {
+                    'in'('toUser', selectedUsers)
+                    'in'('fromUser', selectedUsers)
+                }
+            }
+
+            if (params.callResult && params.searchButton) {
+                ilike('result', '%'+params.callResult+'%')
+            }
+
+            eq('organization', organization)
+        }
+
+        callHistory.each { callHist ->
+            def acdCallHist = AcdCallHistory.findBySessionId(callHist.sessionId)
+            if (acdCallHist) {
+                log.debug("Found acd call history records for session id [${callHist.sessionId}]")
+                callHist.acdCall = true
+            } else {
+                log.debug("Did not find any acd call history records for session id [${callHist.sessionId}][${callHist?.acdCall}]")
+                callHist.acdCall = false
+            }
+        }
+
+        callHistory.each { callHist ->
+            log.debug("Found [${callHist.id}] call history id [${callHist?.acdCall}]")
+        }
+        log.debug("Now lets get call count")
+        def callHistoryCount = CallHistory.createCriteria().get {
+            projections {
+                count('id')
+            }
+
+            if (startDate && endDate && params.searchButton) {
+                and {
+                    ge('dateTime', startDate)
+                    le('dateTime', endDate)
+                }
+            } else if (startDate && params.searchButton) {
+                ge('dateTime', startDate)
+            } else if (endDate && params.searchButton) {
+                le('dateTime', endDate)
+            }
+
+            if (params.caller && params.searchButton) {
+                ilike('ani', '%'+params.caller.replaceAll("\\D+", "")+'%')
+            }
+
+            if (params.callee && params.searchButton) {
+                ilike('dnis', '%'+params.callee.replaceAll("\\D+", "")+'%')
+            }
+
+            if (selectedUsers && params.searchButton) {
+                or {
+                    'in'('toUser', selectedUsers)
+                    'in'('fromUser', selectedUsers)
+                }
+            }
+
+            if (params.callResult && params.searchButton) {
+                ilike('result', '%'+params.callResult+'%')
+            }
+
+            eq('organization', organization)
+        }
+
+        log.debug("Found [${callHistoryCount}] CDR records")
+        render(view: 'callHistory', model: [callHistoryList: callHistory, callHistoryTotal: callHistoryCount, users: users, selectedUsers: selectedUsers])
+    }
+
+    def callHistory_orig = {
         def organization = session.organization
         def users = User.findAllByOrganization(organization)
 
@@ -681,121 +844,30 @@ class AdministrationController {
     }
 
     def exportCallHistoryToCSV = {
+        log.debug("exportCallHistoryToCSV called with params [${params}]")
         def organization = session.organization
-        def users = User.findAllByOrganization(organization)
+        params.organization = organization
 
-        params.offset = params.offset ? params.int('offset') : 0
-        params.max = Math.min(params.max ? params.int('max') : 25, 100)
-
-        def startDate
-        def endDate
-        if (params.startDate) {
-            startDate = getStartDate(params)
-        }
-
-        if (params.endDate) {
-            endDate = getEndDate(params)
-        }
-
-        def selectedUsers
-        if (params.user) {
-            selectedUsers = User.findAllByIdInListAndOrganization([params.user].flatten().collect{ Long.valueOf(it)}, organization)
-        }
-
-        File tmpFile
         try {
-            log.debug("Creating temp file to extract for action history [${params}]")
-            tmpFile = File.createTempFile("./listen-callhistory-${new LocalDateTime().toString('yyyyMMddHHmmss')}", ".csv")
-            tmpFile.deleteOnExit()
-            log.debug("tmpFile [${tmpFile.getName()}] created.")
-        } catch (IOException e) {
-            log.error("Failed to create temp file for export: ${e}")
+            callService.exportCallHistoryToCSV(organization, params)
+
+        }
+        catch(ListenExportException lae)
+        {
+            log.error("Listen Export Exception: " + lae.getMessage());
+            flash.errorMessage = message(code: 'callHistory.exportCSV.fileCreateFail')
+            redirect(action: "callHistory", params: params)
+            return
+        }
+        catch(Exception e)
+        {
+            log.error("Exception exporting cvs: " + e.getMessage(), e);
             flash.errorMessage = message(code: 'callHistory.exportCSV.fileCreateFail')
             redirect(action: "callHistory", params: params)
             return
         }
 
-        log.debug("Pulling records")
-
-        def callHistory = CallHistory.createCriteria().list([sort: 'dateTime', order: 'desc']) {
-            if (startDate && endDate) {
-                and {
-                    ge('dateTime', startDate)
-                    le('dateTime', endDate)
-                }
-            } else if (startDate) {
-                ge('dateTime', startDate)
-            } else if (endDate) {
-                le('dateTime', endDate)
-            }
-
-            if (params.caller) {
-                ilike('ani', '%'+params.caller.replaceAll("\\D+", "")+'%')
-            }
-
-            if (params.callee) {
-                ilike('dnis', '%'+params.callee.replaceAll("\\D+", "")+'%')
-            }
-
-            if (selectedUsers) {
-                or {
-                    'in'('toUser', selectedUsers)
-                    'in'('fromUser', selectedUsers)
-                }
-            }
-
-            if (params.callResult) {
-                ilike('result', '%'+params.callResult+'%')
-            }
-
-            eq('organization', organization)
-        }
-
-        // Build the data now
-        try {
-            // Build header
-            tmpFile << "began,calling party,called party,duration,call result\n"
-
-            callHistory.each {
-                tmpFile << "${it.dateTime?.toString("yyyy-MM-dd HH:mm:ss")},"
-                tmpFile << "${listen.numberWithRealName(number: it.ani, user: it.fromUser, personalize: false)},"
-                tmpFile << "${listen.numberWithRealName(number: it.dnis, user: it.toUser, personalize: false)},"
-                tmpFile << "${listen.formatduration(duration: it.duration, millis: true)},"
-                tmpFile << "${it.result.replaceAll(",", " ")}\n" // This is to prevent anything weird...
-            }
-        } catch (Exception e) {
-            log.error("Exception building csv file: ${e}")
-	        flash.errorMessage = message(code: 'callHistory.exportCSV.fileCreateFail')
-	        redirect(action: "callHistory", params: params)
-	        return
-        }
-
-        def filename = "listen-callhistory-${new LocalDateTime().toString('yyyyMMddHHmmss')}.csv"
-        response.contentType = "text/csv"
-        response.setHeader("Content-disposition", "attachment;filename=${filename}")
-        response.setHeader("Content-length", "${tmpFile.length()}")
-
-        OutputStream outputStream = new BufferedOutputStream(response.outputStream)
-        InputStream inputStream = tmpFile.newInputStream()
-
-        byte[] bytes = new byte[4096]
-        int bytesRead;
-
-        while ((bytesRead = inputStream.read(bytes)) != -1) {
-            outputStream.write(bytes, 0, bytesRead)
-        }
-
-        inputStream.close()
-        outputStream.flush()
-        outputStream.close()
-        response.flushBuffer()
-
-        if (tmpFile.delete() == false) {
-            log.error("Failed to delete temp file [${tmpFile.getName()}]")
-            return
-        }
-
-        log.debug("temp file deleted")
+        log.debug("completion of exportCallHistoryToCSV")
         return
     }
 

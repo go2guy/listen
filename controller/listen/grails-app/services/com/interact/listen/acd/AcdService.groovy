@@ -1033,7 +1033,7 @@ class AcdService
         return results;
     }
 
-    def callHistoryList(String sort, String order, String max, String offset, DateTime theStart, DateTime theEnd,
+    def acdHistoryList(String sort, String order, String max, String offset, DateTime theStart, DateTime theEnd,
                         String agentId, String skillId)
     {
         def calls = AcdCallHistory.createCriteria().list(
@@ -1057,6 +1057,11 @@ class AcdService
                 }
             }
 
+        if (calls) {
+            log.debug("acd call history list returns [${calls.size()}]")
+        } else {
+            log.debug("acd call history list returns [0]}")
+        }
         return calls;
     }
 

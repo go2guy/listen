@@ -32,6 +32,8 @@ class AcdCallHistory
     DateTime callStart;
     DateTime callEnd;
 
+    static belongsTo = [user: User, skill: Skill ]
+
     public AcdCallHistory(AcdCall callRecord)
     {
         this.ani = callRecord.ani;
@@ -76,12 +78,12 @@ class AcdCallHistory
         StringBuffer returnVal = new StringBuffer();
         returnVal.append(this?.ani)?.append(",");
         returnVal.append(this?.skill?.skillname)?.append(",");
-        returnVal.append(this?.enqueueTime?.toString())?.append(",");
+        returnVal.append(this?.enqueueTime?.toString("yyyy-MM-dd HH:mm:ss"))?.append(",");
         returnVal.append(this?.callStatus?.viewable())?.append(",");
         returnVal.append(this?.user?.username)?.append(",");
-        returnVal.append(this?.dequeueTime?.toString())?.append(",");
-        returnVal.append(this?.callStart?.toString())?.append(",");
-        returnVal.append(this?.callEnd?.toString());
+        returnVal.append(this?.dequeueTime?.toString("yyyy-MM-dd HH:mm:ss"))?.append(",");
+        returnVal.append(this?.callStart?.toString("yyyy-MM-dd HH:mm:ss"))?.append(",");
+        returnVal.append(this?.callEnd?.toString("yyyy-MM-dd HH:mm:ss"));
         return returnVal;
     }
 }

@@ -108,6 +108,27 @@ table {
     width: 100%;
 }
 
+
+#twoColumns {
+    border-collapse: collapse;
+    table-layout:auto;
+    margin-left: auto;
+    margin-right: auto;
+    width:100%;
+}
+
+#twoColumns th {
+    width: 25%;
+    text-align: left;
+    font-style: inherit;
+    font-weight: inherit;
+}
+
+#twoColumns td {
+    width: 75%;
+    text-align: left;
+}
+
 th,
 td {
     padding: 2px;

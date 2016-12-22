@@ -137,7 +137,7 @@
 
       <div id="searchDiv">
           <div id="searchTable" class="search">
-                <g:form controller="acd" action="callHistory" method="get" id="filterForm">
+                <g:form controller="acd" action="acdCallHistory" method="get" id="filterForm">
                     <div style="display: table-row">
                       <div id="startDateSearch" class="searchfield">
                         Start Date:
@@ -220,7 +220,7 @@
 
     <div class="pagination" style="display: 'block';">
       <listen:paginateTotal total="${callTotal}" messagePrefix="paginate.total.acdCallHistories"/>
-      <g:paginate action="callHistory" total="${callTotal}" params="${params}"/>
+      <g:paginate action="acdCallHistory" total="${callTotal}" params="${params}"/>
     </div>
 
     <script type="text/javascript">
@@ -270,7 +270,7 @@
           cache: false,
           success: function(data) {
             // update history table - basically rebuild it...
-            var tbody = $("#callHistory > table > tbody");
+            var tbody = $("#acdCallHistory > table > tbody");
             tbody.empty();
             var tr;
             var row_count = 0;
@@ -281,7 +281,7 @@
 
               tr += '<tr class="' + (++row_count % 2 == 0 ? 'even' : 'odd') + '">';
               tr += '<td>' + call.enqueueTime.toString("yyyy'-'MM'-'dd HH':'mm':'ss") + '</td>';
-              tr += '<td>' + call.ani + '</td>';
+              tr += '<td>' + call.callHistory.ani + '</td>';
               tr += '<td>' + call.skill + '</td>';
               tr += '<td>' + call.user + '</td>';
               tr += '<td>' + getDifference(call.start,call.end) + '</td>';

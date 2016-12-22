@@ -52,7 +52,7 @@ class ButtonMenuTagLib {
                   out << '</li>'
                 }
 
-                button(attrs.button == 'callHistory', 'acd', 'callHistory', 'button.menu.acd.callHistory')
+                button(attrs.button == 'acdCallHistory', 'acd', 'acdCallHistory', 'button.menu.acd.acdCallHistory')
 
                 if( SpringSecurityUtils.ifAnyGranted('ROLE_ORGANIZATION_ADMIN') )
                 {

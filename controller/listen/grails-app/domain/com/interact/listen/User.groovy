@@ -1,5 +1,6 @@
 package com.interact.listen
 
+import com.interact.listen.acd.AcdCallHistory
 import com.interact.listen.acd.AcdUserStatus
 import com.interact.listen.pbx.Extension
 import org.apache.commons.logging.Log
@@ -27,7 +28,7 @@ class User implements Tenant
 
     /* ACD user settings */
     //static hasMany = [phoneNumbers: PhoneNumber, skills: Skill]
-    static hasMany = [phoneNumbers: PhoneNumber]
+    static hasMany = [phoneNumbers: PhoneNumber, acdCallHistory: AcdCallHistory]
     static hasOne = [acdUserStatus: AcdUserStatus]
 
     static transients = ['pass', 'confirm', 'enabledForLogin']
