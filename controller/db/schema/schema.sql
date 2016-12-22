@@ -36,6 +36,7 @@ CREATE TABLE `organization` (
   `enabled` bit(1) NOT NULL default b'1',
   `outbound_callid` VARCHAR(50) NOT NULL,
   `outbound_callid_by_did` BIT(1) NOT NULL,
+  `route` varchar(100) default NULL,
   `ext_length` int(11) NOT NULL,
   `ad_server` varchar(100),
   `ad_domain` varchar(100),

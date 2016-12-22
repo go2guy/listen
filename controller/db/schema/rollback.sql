@@ -8,4 +8,6 @@ alter table sip_phone drop column provisioner_identifier;
 alter table sip_phone drop column provisioner_last_updated;
 drop table provisioner_template;
 
+alter table organization drop column route;
+
 commit;

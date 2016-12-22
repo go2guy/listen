@@ -16,7 +16,8 @@ class Organization {
     String ldapBasedn;
     String ldapPort;
     String ldapDc;
-    String apiKey;
+	String route;
+	String apiKey;
 
     static hasMany = [users: User, enabledFeatures: ListenFeature]
 
@@ -41,6 +42,7 @@ class Organization {
         ldapBasedn nullable: true
         ldapPort nullable: true
         ldapDc nullable: true
+	    route nullable: true
     }
 
     String toString() {

@@ -114,6 +114,11 @@ class OrganizationController {
         {
             log.debug "DID call ID not enabled for organization"
         }
+
+	    if (!organization?.route)
+	    {
+		    organization.route = grailsApplication.config.com.interact.listen.defaultOrganizationRoute
+	    }
         render(view: 'edit', model: [organization: organization, enableableFeatures: licenseService.enableableFeatures()])
     }
 
@@ -168,7 +173,7 @@ class OrganizationController {
 
         Organization.withTransaction { status ->
             def organization = new Organization()
-            organization.properties['name', 'contextPath', 'outboundCallid', 'outboundCallidByDid', 'adServer', 'adDomain', 'ldapBasedn', 'ldapPort', 'ldapDc'] = params
+            organization.properties['name', 'contextPath', 'outboundCallid', 'outboundCallidByDid', 'adServer', 'adDomain', 'ldapBasedn', 'ldapPort', 'ldapDc', 'route'] = params
 
             if(organization?.outboundCallidByDid){
                 log.debug "Outbound call id by DID checked"
@@ -178,6 +183,12 @@ class OrganizationController {
                 log.debug "Outbound call id by DID not checked"
                 organization.outboundCallidByDid=false
             }
+
+	        if (!organization?.route)
+	        {
+		        log.debug("No outbound route provided. Using default")
+		        organization.route = grailsApplication.config.com.interact.listen.defaultOrganizationRoute
+	        }
             
             params.each { k, v ->
                 if(k.startsWith("enabledFeature-")) {
@@ -242,7 +253,7 @@ class OrganizationController {
             organization.outboundCallidByDid=false
         }
 
-        organization.properties['name', 'contextPath', 'outboundCallid', 'outboundCallidByDid', 'extLength', 'adServer', 'adDomain', 'ldapBasedn', 'ldapPort', 'ldapDc'] = params
+        organization.properties['name', 'contextPath', 'outboundCallid', 'outboundCallidByDid', 'extLength', 'adServer', 'adDomain', 'ldapBasedn', 'ldapPort', 'ldapDc', 'route'] = params
         
         if(organization?.outboundCallidByDid){
             log.debug "Outbound call id by DID checked [${organization?.outboundCallidByDid}]"
@@ -252,6 +263,12 @@ class OrganizationController {
             log.debug "Outbound call id by DID NOT checked [${organization?.outboundCallidByDid}]"
             organization.outboundCallidByDid=false
         }
+
+	    if (!organization?.route)
+	    {
+		    log.debug("No outbound route provided. Using default")
+		    organization.route = grailsApplication.config.com.interact.listen.defaultOrganizationRoute
+	    }
         organization.enabledFeatures = []
         params.each { k, v ->
             if(k.startsWith("enabledFeature-")) {

@@ -39,8 +39,9 @@ CREATE TABLE `provisioner_template_field_value` (
 SET foreign_key_checks = 1;
 
 -- 
--- Add templates
+-- Update Organization for route
 --
+alter table organization add column route varchar(100) default null;
 
 --
 -- Alter call history table for IMG work.  Merging of acd and call_history

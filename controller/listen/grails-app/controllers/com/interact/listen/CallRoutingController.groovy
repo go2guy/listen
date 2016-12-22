@@ -44,6 +44,7 @@ class CallRoutingController {
                     id = result?.organization?.id
                     extLength = result?.organization?.extLength
                     outboundCallid = result?.organization?.outboundCallid
+	                outboundRoute = result?.organization?.route ?: grailsApplication.config.com.interact.listen.defaultOrganizationRoute
                 }
                 dmnExtension = result?.dmnExtension
                 callerId = result?.callerId

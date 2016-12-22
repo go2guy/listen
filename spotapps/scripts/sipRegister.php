@@ -100,7 +100,7 @@
             error_log($log, 3, $logFile);
             exit;
         } else {
-            log = $log."Error [$err] while attempting [$method] on [$rsrc] with [$data]\n";
+            $log = $log."Error [$err] while attempting [$method] on [$rsrc] with [$data]\n";
             error_log($log, 3, $logFile);
             exitresult ($objName,$status,$string,$err);
         }
