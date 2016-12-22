@@ -42,5 +42,19 @@ SET foreign_key_checks = 1;
 -- Add templates
 --
 
+--
+-- Alter call history table for IMG work.  Merging of acd and call_history
+--
+ALTER TABLE call_history MODIFY COLUMN `date_time` datetime NOT NULL AFTER `version`;
+ALTER TABLE call_history MODIFY COLUMN `organization_id` bigint(20) NOT NULL AFTER `duration`;
+ALTER TABLE call_history ADD COLUMN `session_id` varchar(255) NOT NULL AFTER `to_user_id`;
+ALTER TABLE call_history ADD COLUMN `ivr` varchar(255) NOT NULL AFTER `session_id`;
+ALTER TABLE call_history ADD COLUMN `last_modified` datetime DEFAULT NULL AFTER  `result`;
+
+--
+-- We need to make session_id unique prior to adding a unique key upon that column
+--
+UPDATE call_history AS U1, call_history AS U2 SET U1.session_id=CONCAT_WS('#',U2.id,U2.date_time) WHERE U2.id=U1.id;
+ALTER TABLE call_history ADD UNIQUE KEY `session_unique` (`session_id`);
 
 commit work;
