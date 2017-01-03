@@ -7,7 +7,7 @@ UNLOCK TABLES;
 
 
 LOCK TABLES `organization` WRITE;
-INSERT INTO `organization` (id,version,name,context_path,enabled,outbound_callid,outbound_callid_by_did) VALUES (1,0,'NewNet','NewNet',1,'4024768786',1);
+INSERT INTO `organization` (id,version,name,context_path,enabled,outbound_callid,outbound_callid_by_did,route,api_key) VALUES (1,0,'NewNet','NewNet',1,'4024768786',1,'64.2.142.93','xxxxxNEWNETxxxxx');
 UNLOCK TABLES;
 
 

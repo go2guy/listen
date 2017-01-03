@@ -26,6 +26,9 @@
         <label for="extLength"><g:message code="organizationConfiguration.extLength.label"/></label>
         <g:textField name="extLength" value="${fieldValue(bean: organization, field: 'extLength')}" class="${listen.validationClass(bean: organization, field: 'extLength')}"/>
 
+          <label for="route"><g:message code="organization.route.label"/></label>
+          <g:textField name="route" value="${organization ? fieldValue(bean: organization, field: 'route') : defaultRoute}" maxlength="100" class="${listen.validationClass(bean: organization, field: 'route')}"/>
+
           <label for="adServer">AD Server</label>
           <g:textField name="adServer" value="${fieldValue(bean: organization, field: 'adServer')}" class="${listen.validationClass(bean: organization, field: 'adServer')}"/>
 

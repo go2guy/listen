@@ -61,7 +61,7 @@ class OrganizationController {
     }
 
     def create = {
-        render(view: 'create', model: [enableableFeatures: licenseService.enableableFeatures()])
+        render(view: 'create', model: [enableableFeatures: licenseService.enableableFeatures(), defaultRoute: grailsApplication.config.com.interact.listen.defaultOrganizationRoute])
     }
 
     def deleteRoute = {
