@@ -35,6 +35,8 @@ class UserCreationService {
         if(isOperator) {
             roles << 'ROLE_ORGANIZATION_ADMIN'
             roles << 'ROLE_ATTENDANT_ADMIN'
+	        roles << 'ROLE_ACD_USER'
+	        roles << 'ROLE_QUEUE_USER'
         }
 
         log.debug "Create standard user with params [${params}]"
