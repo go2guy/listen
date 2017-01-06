@@ -82,16 +82,6 @@
 
             $("#endDate").datepicker({
             });
-
-            ////////////////////////////////////////////////////////////////////////////
-            // Misc Logic
-            ////////////////////////////////////////////////////////////////////////////
-            var width = $(this).width();
-            if (width > 400) {
-                $('#campaign').width(400);
-            } else {
-                $('#campaign').width(width);
-            }
         });
 
         function resetForm() {
@@ -132,6 +122,7 @@
             else
                 return false;
         }
+
     </script>
 </head>
 <body>
@@ -215,7 +206,7 @@
                                                                user="${callHistory.fromUser}" personalize="false"/></td>
                 <td class="col-dnis"><listen:numberWithRealName number="${fieldValue(bean: callHistory, field: 'dnis')}"
                                                                 user="${callHistory.toUser}" personalize="false"/></td>
-                <td class="col-duration"><listen:formatduration duration="${callHistory.duration}" millis="true"/></td>
+                <td class="col-duration"><listen:formatduration duration="${callHistory.duration}" millis="false"/></td>
                 <td class="col-result">${fieldValue(bean: callHistory, field: 'result')}</td>
                 <td><listen:checkMark value="${callHistory?.acdCall}"/></td>
             </tr>

@@ -140,6 +140,31 @@ class SpotCommunicationService {
     }
 
     /**
+     * Send request to SPOT to connect a queued caller to a number.
+     *
+     * @param sessionId The sessionId of the call.
+     * @param number The number to connect to.
+     * @param type The type of number to connect to.
+     * @throws IOException If an IOException.
+     * @throws SpotCommunicationException If
+     */
+    def sendAcdTransferEvent(def sessionId, def number, def type) throws IOException, SpotCommunicationException
+    {
+        if(log.isInfoEnabled())
+        {
+            log.info("Sending AcdConnectEvent, sessionId[" + sessionId + "], number[" + number + "]")
+        }
+
+        Map<String, String> importedValue = new TreeMap<String, String>();
+        importedValue.put("application", "ACD");
+        importedValue.put("customEvent", "TRANSFER");
+        importedValue.put("sessionId", sessionId.toString());
+        importedValue.put("number", number.toString());
+        importedValue.put("type", type.toString());
+        buildAndSendVexRequest(importedValue);
+    }
+
+    /**
      * Send request to SPOT to disconnect a caller.
      *
      * @param sessionId The sessionId of the call.

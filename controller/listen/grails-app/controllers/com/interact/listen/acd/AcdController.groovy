@@ -925,7 +925,7 @@ class AcdController
         }
 
         //Create header row
-        tmpfile << "began,calling party,called party,duration,call result,sessionId,ivr,"
+        tmpfile << "began,calling party,called party,duration,organization,call result,sessionId,ivr,"
         tmpfile << AcdCallHistory.csvHeader();
         tmpfile << "\n";
 
@@ -938,23 +938,33 @@ class AcdController
                 tmpfile << "${callHist.dateTime?.toString("yyyy-MM-dd HH:mm:ss")},"
                 tmpfile << "${listen.numberWithRealName(number: callHist.ani, user: callHist.fromUser, personalize: false)},"
                 tmpfile << "${listen.numberWithRealName(number: callHist.dnis, user: callHist.toUser, personalize: false)},"
-                tmpfile << "${listen.formatduration(duration: callHist.duration, millis: true)},"
+                tmpfile << "${listen.formatduration(duration: callHist.duration, millis: false)},"
+                tmpfile << "${callHist.organization.name},"
                 tmpfile << "${callHist.result.replaceAll(",", " ")}," // This is to prevent anything weird...
                 tmpfile << "${callHist.sessionId},"
                 tmpfile << "${callHist.ivr},"
             } else {
-                // We start with the rows from the call history table
+                // We start with the rows from the call history table, but in this case we didn't find an entry, so fill in what we can
                 tmpfile << ","
                 tmpfile << "${listen.numberWithRealName(number: thisHistory.ani, user: '', personalize: false)},"
                 tmpfile << "${listen.numberWithRealName(number: thisHistory.dnis, user: '', personalize: false)},"
-                tmpfile << ","
-                tmpfile << ","
-                tmpfile << "${thisHistory.sessionId},"
-                tmpfile << ","
+                tmpfile << ","                                                  // duration
+                tmpfile << "${thisHistory?.user?.organization?.name},"          // organization
+                tmpfile << ","                                                  // result
+                tmpfile << ","                                                  // sessionid
+                tmpfile << ","                                                  // ivr
             }
 
             // Now we'll add the rows from the acd history record
-            tmpfile << thisHistory.csvRow();
+            tmpfile << "${thisHistory.skill},"
+            tmpfile << "${thisHistory.enqueueTime?.toString("yyyy-MM-dd HH:mm:ss")},"
+            tmpfile << "${thisHistory.dequeueTime?.toString("yyyy-MM-dd HH:mm:ss")},"
+            tmpfile << "${listen.computeDuration(start: thisHistory.enqueueTime, end:thisHistory.dequeueTime)},"
+            tmpfile << "${thisHistory.callStatus.name()},"
+            tmpfile << "${thisHistory.user.username},"
+            tmpfile << "${thisHistory.callStart?.toString("yyyy-MM-dd HH:mm:ss")},"
+            tmpfile << "${thisHistory.callEnd?.toString("yyyy-MM-dd HH:mm:ss")},"
+            tmpfile << "${listen.computeDuration(start: thisHistory.callStart, end:thisHistory.callEnd)},"
             tmpfile << "\n";
         }
 

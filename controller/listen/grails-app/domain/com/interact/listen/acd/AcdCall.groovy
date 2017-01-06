@@ -62,7 +62,9 @@ enum AcdCallStatus
     CONNECT_FAIL,
     DISCONNECTED,
     VOICEMAIL,
-    ENDED
+    ENDED,
+    TRANSFER_REQUESTED,
+    TRANSFERED
 
     public String viewable()
     {

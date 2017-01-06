@@ -1,6 +1,9 @@
 package com.interact.listen
 
+import org.joda.time.Duration
 import org.joda.time.LocalTime
+import org.joda.time.Period
+import org.joda.time.format.PeriodFormatter
 import org.joda.time.format.PeriodFormatterBuilder
 
 class DateTimeTagLib {
@@ -24,17 +27,49 @@ class DateTimeTagLib {
         out << formatter.print(attrs.duration.toPeriod())
     }
 
+    def computeDuration = { attrs ->
+        if(!attrs.start) throwTagError 'Tag [computeduration] is missing required attribute [start]'
+        if(!attrs.end) throwTagError 'Tag [computeduration] is missing required attribute [end]'
+
+        PeriodFormatter fmt = new PeriodFormatterBuilder()
+                .printZeroAlways()
+                .minimumPrintedDigits(1)
+                .appendHours()
+                .appendSeparator(":")
+                .printZeroAlways()
+                .minimumPrintedDigits(2)
+                .appendMinutes()
+                .appendSeparator(":")
+                .printZeroAlways()
+                .minimumPrintedDigits(2)
+                .appendSeconds()
+                .toFormatter();
+
+        out << fmt.print(new Period(attrs.start, attrs.end))
+    }
+
     def formatduration = { attrs ->
         if(!attrs.duration) throwTagError 'Tag [formatduration] is missing required attribute [duration]'
         boolean millis = attrs.containsKey('millis') ? Boolean.valueOf(attrs.millis) : false
 
-        def builder = builderFor(attrs.duration.millis)
+        Duration tmpDuration = attrs.duration
+        def milliSecs = tmpDuration.millis % 1000
+
+        if ((!millis) && (milliSecs > 500)){
+            // If we don't want to display milliseconds, we'll round if necessary
+            tmpDuration = tmpDuration.plus(1000 - milliSecs)   // This should round up to the nearest second
+        }
+
+        def builder = builderFor(tmpDuration.millis)
+
         if(millis) {
             builder.appendSeparator('.')
-                   .printZeroAlways()
-                   .appendMillis3Digit()
+                    .printZeroAlways()
+                    .minimumPrintedDigits(2)
+                    .appendMillis3Digit()
         }
-        out << builder.toFormatter().print(attrs.duration.toPeriod())
+
+        out << builder.toFormatter().print(tmpDuration.toPeriod())
     }
 
     private def builderFor(long millis) {
@@ -45,7 +80,7 @@ class DateTimeTagLib {
         if(millis < MILLIS_PER_MINUTE) {
             // '0:00' to '0:59'
             return new PeriodFormatterBuilder()
-                .appendLiteral('0:')
+                .appendLiteral('0:00:')
                 .printZeroAlways()
                 .minimumPrintedDigits(2)
                 .appendSeconds()
@@ -53,7 +88,7 @@ class DateTimeTagLib {
             // '1:00' to '9:59'
             return new PeriodFormatterBuilder()
                 .printZeroNever()
-                .minimumPrintedDigits(1)
+                .minimumPrintedDigits(2)
                 .appendMinutes()
                 .appendSeparator(':')
                 .printZeroAlways()
@@ -72,7 +107,7 @@ class DateTimeTagLib {
         } else {
             // '1:00:00' and above, e.g. '12:34:56', '123:45:54'
             return new PeriodFormatterBuilder()
-                .printZeroNever()
+                .printZeroAlways()
                 .minimumPrintedDigits(1)
                 .appendHours()
                 .appendSuffix(':')

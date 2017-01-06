@@ -176,17 +176,21 @@ CREATE TABLE `call_data` (
 
 DROP TABLE IF EXISTS `call_history`;
 CREATE TABLE `call_history` (
-  `id` bigint(20) NOT NULL auto_increment,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `version` bigint(20) NOT NULL,
+  `date_time` datetime NOT NULL,
   `ani` varchar(255) NOT NULL,
-  `date_time` datetime NULL,
   `dnis` varchar(255) NOT NULL,
   `duration` varchar(255) NOT NULL,
-  `from_user_id` bigint(20) default NULL,
   `organization_id` bigint(20) NOT NULL,
-  `to_user_id` bigint(20) default NULL,
+  `from_user_id` bigint(20) DEFAULT NULL,
+  `to_user_id` bigint(20) DEFAULT NULL,
+  `session_id` varchar(255) NOT NULL,
+  `ivr` varchar(255) NOT NULL,
   `result` varchar(255) NOT NULL,
-  PRIMARY KEY  (`id`),
+  `last_modified` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `session_unique` (`session_id`),
   KEY `FKC404C7B356D05B56` (`organization_id`),
   KEY `FKC404C7B388BFFA92` (`to_user_id`),
   KEY `FKC404C7B3F96764C1` (`from_user_id`),
@@ -767,6 +771,7 @@ CREATE TABLE `acd_call_history` (
   `call_start` datetime,
   `call_end` datetime,
   `dequeue_time` datetime NOT NULL,
+  `agent_number` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

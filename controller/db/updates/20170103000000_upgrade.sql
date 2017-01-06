@@ -53,6 +53,11 @@ ALTER TABLE call_history ADD COLUMN `ivr` varchar(255) NOT NULL AFTER `session_i
 ALTER TABLE call_history ADD COLUMN `last_modified` datetime DEFAULT NULL AFTER  `result`;
 
 --
+-- Alter acd call history for IMG work.
+--
+ALTER TABLE acd_call_history ADD COLUMN `agent_number` varchar(255) DEFAULT NULL AFTER `dequeue_time`;
+
+--
 -- We need to make session_id unique prior to adding a unique key upon that column
 --
 UPDATE call_history AS U1, call_history AS U2 SET U1.session_id=CONCAT_WS('#',U2.id,U2.date_time) WHERE U2.id=U1.id;

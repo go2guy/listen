@@ -17,6 +17,7 @@ class AcdCallHistory
         user nullable: true
         callStart nullable: true
         callEnd nullable: true
+        agentNumber nullable: true
     }
 
     String ani;
@@ -27,6 +28,7 @@ class AcdCallHistory
     AcdCallStatus callStatus;
     String ivr;
     User user;
+    String agentNumber;
     DateTime lastModified;
     DateTime dequeueTime;
     DateTime callStart;
@@ -41,10 +43,12 @@ class AcdCallHistory
         this.skill = callRecord.skill;
         this.sessionId = callRecord.sessionId;
         this.enqueueTime = callRecord.enqueueTime;
+        this.dequeueTime = callRecord.callStart;
         this.callStatus = callRecord.callStatus;
         this.ivr = callRecord.ivr;
         if ( callRecord.user != null ) {
             this.user = callRecord.user;
+            this.agentNumber = AcdUserStatus.findByOwner(this.user)?.contactNumber?.number
         }
         this.lastModified = callRecord.lastModified;
         this.callStart = callRecord.callStart;
@@ -54,36 +58,23 @@ class AcdCallHistory
     /**
      * Executed prior to an insert.
      */
-    def beforeInsert()
-    {
-        this.setDequeueTime(new DateTime());
-    }
+    //def beforeInsert()
+    //{
+    //    this.setDequeueTime(new DateTime());
+    //}
 
     static String csvHeader()
     {
         StringBuffer returnVal = new StringBuffer();
-        returnVal.append("caller,");
         returnVal.append("skill,");
         returnVal.append("enqueueTime,");
+        returnVal.append("dequeueTime,");
+        returnVal.append("queueTime,");
         returnVal.append("callStatus,");
         returnVal.append("agent,")
-        returnVal.append("dequeueTime,");
         returnVal.append("callStart,");
-        returnVal.append("callEnd");
-        return returnVal;
-    }
-
-    String csvRow()
-    {
-        StringBuffer returnVal = new StringBuffer();
-        returnVal.append(this?.ani)?.append(",");
-        returnVal.append(this?.skill?.skillname)?.append(",");
-        returnVal.append(this?.enqueueTime?.toString("yyyy-MM-dd HH:mm:ss"))?.append(",");
-        returnVal.append(this?.callStatus?.viewable())?.append(",");
-        returnVal.append(this?.user?.username)?.append(",");
-        returnVal.append(this?.dequeueTime?.toString("yyyy-MM-dd HH:mm:ss"))?.append(",");
-        returnVal.append(this?.callStart?.toString("yyyy-MM-dd HH:mm:ss"))?.append(",");
-        returnVal.append(this?.callEnd?.toString("yyyy-MM-dd HH:mm:ss"));
+        returnVal.append("callEnd,");
+        returnVal.append("agentTime,");
         return returnVal;
     }
 }

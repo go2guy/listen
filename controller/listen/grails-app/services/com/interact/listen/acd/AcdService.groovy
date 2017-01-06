@@ -186,6 +186,8 @@ class AcdService
      */
     def acdCallStatusUpdate(String sessionId, AcdCallStatus thisStatus, String event) throws ListenAcdException
     {
+        log.debug("acdCallStatusUpdate for session [${sessionId}] to status [${thisStatus}]");
+
         if(event != null)
         {
             if(log.isDebugEnabled())
@@ -216,6 +218,9 @@ class AcdService
                     case AcdCallStatus.CONNECTED:
                         //Call was connected
                         acdCallConnected(acdCall);
+                        break;
+                    case AcdCallStatus.TRANSFERED:
+                        acdCallTransferred(acdCall);
                         break;
                     case AcdCallStatus.COMPLETED:
                     case AcdCallStatus.DISCONNECTED:
@@ -320,10 +325,7 @@ class AcdService
 
     public void connectCall(AcdCall thisCall, User agent) throws ListenAcdException
     {
-        if(log.isDebugEnabled())
-        {
-            log.debug("Agent to connect to: " + agent.realName);
-        }
+        log.debug("connectCall - Agent to connect to: " + agent.realName);
 
         if(agent.acdUserStatus.AcdQueueStatus == AcdQueueStatus.VoicemailBox)
         {
@@ -400,10 +402,7 @@ class AcdService
 
     public void transferCall(AcdCall thisCall, User agent) throws ListenAcdException
     {
-        if(log.isDebugEnabled())
-        {
-            log.debug("Agent to connect to: " + agent.realName);
-        }
+        log.debug("transferCall - [${thisCall.ani}] to connect to: [${agent.realName}]");
 
         if(agent.acdUserStatus && agent.acdUserStatus.AcdQueueStatus == AcdQueueStatus.VoicemailBox)
         {
@@ -425,12 +424,13 @@ class AcdService
                 {
                     Extension extension = (Extension)contactNumber;
                     theNumber = extension.sipPhone.phoneUserId;
-                    log.debug("Transferring to user id[" + theNumber + "]");
+                    log.debug("1-Transferring to phone user id[" + theNumber + "]");
                     type = "extension";
                 }
                 else
                 {
                     theNumber = agent.acdUserStatus.contactNumber.number;
+                    log.debug("1-Transferring to external phone number[" + theNumber + "]");
                     type = "external";
                 }
             }
@@ -445,7 +445,7 @@ class AcdService
                         {
                             Extension extension = (Extension)number;
                             theNumber = extension.sipPhone.phoneUserId;
-                            log.debug("Transferring to user id[" + theNumber + "]");
+                            log.debug("2-Transferring to user id[" + theNumber + "]");
                             type = "extension";
                             break;
                         }
@@ -461,7 +461,7 @@ class AcdService
             //Send request to ivr
             try
             {
-                spotCommunicationService.sendAcdConnectEvent(thisCall.sessionId,
+                spotCommunicationService.sendAcdTransferEvent(thisCall.sessionId,
                         theNumber, type);
             }
             catch(SpotCommunicationException sce)
@@ -475,8 +475,10 @@ class AcdService
                 //Free up the agent
                 freeAgent(thisCall.user);
 
+                addAcdHistory(thisCall, AcdCallStatus.TRANSFER_REQUESTED)
+
                 //Set call status to "ivrconnectRequested"
-                thisCall.setCallStatus(AcdCallStatus.CONNECT_REQUESTED);
+                thisCall.setCallStatus(AcdCallStatus.TRANSFER_REQUESTED);
                 thisCall.setUser(agent);
                 thisCall.save(flush: true);
 
@@ -740,6 +742,7 @@ class AcdService
 
         acdCall.callStatus = AcdCallStatus.CONNECTED;
         acdCall.callStart = DateTime.now();
+        acdCall.callStart = DateTime.now();
 
         if(acdCall.validate() && acdCall.save(flush: true))
         {
@@ -754,6 +757,34 @@ class AcdService
         }
     }
 
+    /**
+     * Execute when an ACD Call has transferred.
+     *
+     * @param acdCall The call to set as transferred.
+     * @throws ListenAcdException If unable to set call to completed.
+     */
+    private void acdCallTransferred(AcdCall acdCall) throws ListenAcdException
+    {
+        if(acdCall.callStatus != AcdCallStatus.TRANSFER_REQUESTED)
+        {
+            log.warn("Attempting to Transfer a call in invalid status[" + acdCall.callStatus.toString() + "]");
+        }
+
+        acdCall.callStatus = AcdCallStatus.TRANSFERED;
+        acdCall.callStart = DateTime.now();
+
+        if(acdCall.validate() && acdCall.save(flush: true))
+        {
+            if(log.isDebugEnabled())
+            {
+                log.debug("Call transfer processing completed successfully.")
+            }
+        }
+        else
+        {
+            throw new ListenAcdException(beanErrors(acdCall));
+        }
+    }
     /**
      * Set a call to waiting status.
      *
@@ -914,6 +945,32 @@ class AcdService
 
         //Delete from the queue
         call.delete(flush: true);
+    }
+
+    /**
+     * Add acd history based upon call status
+     *
+     * @param call The call object necessary to create acd history
+     */
+    private void addAcdHistory(AcdCall call, AcdCallStatus lastStatus)
+    {
+        //Set the status so it is preserved in the history
+        if(lastStatus != null)
+        {
+            call.callStatus = lastStatus;
+            call.callEnd = DateTime.now();
+            call.save(flush: true);
+        }
+
+        try
+        {
+            AcdCallHistory history = new AcdCallHistory(call);
+            history.insert(flush: true);
+        }
+        catch(Exception e)
+        {
+            log.error("Exception writing AcdCallHistory record: " + e, e);
+        }
     }
 
     /**

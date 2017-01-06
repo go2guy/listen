@@ -19,7 +19,6 @@
 
 
     </style>
-
 </head>
 
 <body>
@@ -36,39 +35,30 @@
             </tr>
             <tr>
                 <th><g:message code="callHistory.ani.label"/></th>
-                <td>${callHistoryInstance.ani}</td>
+                <td><listen:numberWithRealName number="${fieldValue(bean: callHistoryInstance, field: 'ani')}"
+                                               user="${callHistoryInstance.fromUser}" personalize="false"/></td>
             </tr>
             <tr>
                 <th><g:message code="callHistory.dnis.label"/></th>
-                <td>${callHistoryInstance.dnis}</td>
+                <td><listen:numberWithRealName number="${fieldValue(bean: callHistoryInstance, field: 'dnis')}"
+                                               user="${callHistoryInstance.toUser}" personalize="false"/></td>
             </tr>
             <tr>
                 <th><g:message code="callHistory.duration.label"/></th>
-                <td><listen:formatduration duration="${callHistoryInstance.duration}" millis="true"/></td>
+                <td><listen:formatduration duration="${callHistoryInstance.duration}" millis="false"/></td>
             </tr>
             <tr>
                 <th><g:message code="callHistory.organization.label"/></th>
                 <td>${callHistoryInstance.organization.name}</td>
             </tr>
             <tr>
-                <th><g:message code="callHistory.fromUser.label"/></th>
-                <td><listen:numberWithRealName number="${fieldValue(bean: callHistoryInstance, field: 'ani')}"
-                                               user="${callHistoryInstance.fromUser}" personalize="false"/></td>
-            </tr>
-            <tr>
-                <th><g:message code="callHistory.toUser.label"/></th>
-                <td><listen:numberWithRealName number="${fieldValue(bean: callHistoryInstance, field: 'dnis')}"
-                                               user="${callHistoryInstance.toUser}" personalize="false"/></td>
+                <th><g:message code="callHistory.callResult.label"/></th>
+                <td>${callHistoryInstance.result}</td>
             </tr>
             <tr>
                 <th><g:message code="callHistory.sessionId.label"/></th>
                 <td>${callHistoryInstance.sessionId}</td>
             </tr>
-            <tr>
-                <th><g:message code="callHistory.callResult.label"/></th>
-                <td>${callHistoryInstance.result}</td>
-            </tr>
-
         </tbody>
     </table>
 
@@ -91,12 +81,17 @@
                             <td><joda:format value="${acdCallHistory.dequeueTime}"/></td>
                         </tr>
                         <tr>
+                            <th><g:message code="acdCallHistory.totalQueueTime.label"/></th>
+                            <td><listen:computeDuration start="${acdCallHistory.enqueueTime}" end="${acdCallHistory.dequeueTime}"/></td>
+                        </tr>
+                        <tr>
                             <th><g:message code="acdCallHistory.callStatus.label"/></th>
                             <td>${acdCallHistory.callStatus}</td>
                         </tr>
                         <tr>
                             <th><g:message code="acdCallHistory.user.label"/></th>
-                            <td>${acdCallHistory.user}</td>
+                            <td><listen:numberWithRealName number="${fieldValue(bean: acdCallHistory, field: 'agentNumber')}"
+                                                           user="${acdCallHistory.user}" personalize="false"/></td>
                         </tr>
                         <tr>
                             <th><g:message code="acdCallHistory.callStart.label"/></th>
@@ -105,6 +100,10 @@
                         <tr>
                             <th><g:message code="acdCallHistory.callEnd.label"/></th>
                             <td><joda:format value="${acdCallHistory.callEnd}"/></td>
+                        </tr>
+                        <tr>
+                            <th><g:message code="acdCallHistory.totalAgentTime.label"/></th>
+                            <td><listen:computeDuration start="${acdCallHistory.callStart}" end="${acdCallHistory.callEnd}"/></td>
                         </tr>
                     </tbody>
                     </table>

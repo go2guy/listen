@@ -154,11 +154,7 @@ class SpotApiController {
      */
     def updateAcdCall =
     {
-	log.debug "updateAcdCall request[${request}] with params[${params}]"
-        if(log.isDebugEnabled())
-        {
-            log.debug("Entering updateAcdCall");
-        }
+        log.debug "updateAcdCall request[${request}] with params[${params}]"
 
         try
         {

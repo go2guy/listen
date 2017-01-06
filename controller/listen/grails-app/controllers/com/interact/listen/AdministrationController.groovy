@@ -20,6 +20,8 @@ import org.joda.time.Period
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.format.DateTimeFormatter
 import com.interact.listen.exceptions.ListenExportException
+import org.joda.time.format.PeriodFormatter
+import org.joda.time.format.PeriodFormatterBuilder
 
 import javax.validation.constraints.Null
 
@@ -614,8 +616,21 @@ class AdministrationController {
         def organization = session.organization
         if (!organization){
             log.error("Failed to evaluate organization from [${session.organization}]")
-            redirect(action: 'callHistory')
-            return
+
+            def orgName = session.organizationContext
+            if (orgName) {
+                log.info("Found organization name from name [${orgName}]")
+                organization = Organization.findByName(orgName)
+            }
+
+            if (!organization){
+                log.error("Failed to evaluate organization from session info [${session.organization}]")
+                flash.errorMessage = message(code: "callHistory.organizationFailure.label", default: "There was an error processing this request")
+                redirect(action: 'routing')
+                return
+            }
+
+            log.debug("Found organization from context [${organization}]")
         }
 
         log.debug("callHistory for organization [${organization.id}]")
@@ -737,109 +752,6 @@ class AdministrationController {
         }
 
         log.debug("Found [${callHistoryCount}] CDR records")
-        render(view: 'callHistory', model: [callHistoryList: callHistory, callHistoryTotal: callHistoryCount, users: users, selectedUsers: selectedUsers])
-    }
-
-    def callHistory_orig = {
-        def organization = session.organization
-        def users = User.findAllByOrganization(organization)
-
-        params.offset = params.offset ? params.int('offset') : 0
-        params.max = Math.min(params.max ? params.int('max') : 25, 100)
-
-        def startDate
-        def endDate
-        if (params.startDate && params.searchButton) {
-            startDate = getStartDate(params)
-        }
-
-        if (params.endDate && params.searchButton) {
-            endDate = getEndDate(params)
-        }
-
-        if (endDate && startDate && (endDate.isBefore(startDate) || endDate.isEqual(startDate))) {
-            flash.errorMessage = message(code: "callHistory.endDate.before.label", default: "End Date is before Start Date")
-            endDate = null
-            params.remove("endDate")
-        }
-
-        def selectedUsers
-        if (params.user && params.searchButton) {
-            selectedUsers = User.findAllByIdInListAndOrganization([params.user].flatten().collect{ Long.valueOf(it)}, organization)
-        }
-
-        // call history
-        def callHistory = CallHistory.createCriteria().list([offset: params.offset, max: params.max, sort: 'dateTime', order: 'desc']) {
-            if (startDate && endDate && params.searchButton) {
-                and {
-                    ge('dateTime', startDate)
-                    le('dateTime', endDate)
-                }
-            } else if (startDate && params.searchButton) {
-                ge('dateTime', startDate)
-            } else if (endDate && params.searchButton) {
-                le('dateTime', endDate)
-            }
-
-            if (params.caller && params.searchButton) {
-                ilike('ani', '%'+params.caller.replaceAll("\\D+", "")+'%')
-            }
-
-            if (params.callee && params.searchButton) {
-                ilike('dnis', '%'+params.callee.replaceAll("\\D+", "")+'%')
-            }
-
-            if (selectedUsers && params.searchButton) {
-                or {
-                    'in'('toUser', selectedUsers)
-                    'in'('fromUser', selectedUsers)
-                }
-            }
-
-            if (params.callResult && params.searchButton) {
-                ilike('result', '%'+params.callResult+'%')
-            }
-
-            eq('organization', organization)
-        }
-        def callHistoryCount = CallHistory.createCriteria().get {
-            projections {
-                count('id')
-            }
-
-            if (startDate && endDate && params.searchButton) {
-                and {
-                    ge('dateTime', startDate)
-                    le('dateTime', endDate)
-                }
-            } else if (startDate && params.searchButton) {
-                ge('dateTime', startDate)
-            } else if (endDate && params.searchButton) {
-                le('dateTime', endDate)
-            }
-
-            if (params.caller && params.searchButton) {
-                ilike('ani', '%'+params.caller.replaceAll("\\D+", "")+'%')
-            }
-
-            if (params.callee && params.searchButton) {
-                ilike('dnis', '%'+params.callee.replaceAll("\\D+", "")+'%')
-            }
-
-            if (selectedUsers && params.searchButton) {
-                or {
-                    'in'('toUser', selectedUsers)
-                    'in'('fromUser', selectedUsers)
-                }
-            }
-
-            if (params.callResult && params.searchButton) {
-                ilike('result', '%'+params.callResult+'%')
-            }
-
-            eq('organization', organization)
-        }
-
         render(view: 'callHistory', model: [callHistoryList: callHistory, callHistoryTotal: callHistoryCount, users: users, selectedUsers: selectedUsers])
     }
 

@@ -88,7 +88,7 @@ class CallService {
         // Build the data now
         try {
             //Create header row
-            tmpFile << "began,calling party,called party,duration,call result,sessionId,ivr,"
+            tmpFile << "began,calling party,called party,duration,organization,call result,sessionId,ivr,"
             tmpFile << AcdCallHistory.csvHeader();  // we are adding acd history to the export header
             tmpFile << "\n";
 
@@ -96,16 +96,25 @@ class CallService {
                 tmpFile << "${it.dateTime?.toString("yyyy-MM-dd HH:mm:ss")},"
                 tmpFile << "${listen.numberWithRealName(number: it.ani, user: it.fromUser, personalize: false)},"
                 tmpFile << "${listen.numberWithRealName(number: it.dnis, user: it.toUser, personalize: false)},"
-                tmpFile << "${listen.formatduration(duration: it.duration, millis: true)},"
+                tmpFile << "${listen.formatduration(duration: it.duration, millis: false)},"
+                tmpFile << "${it.organization.name},"
                 tmpFile << "${it.result.replaceAll(",", " ")}," // This is to prevent anything weird...
                 tmpFile << "${it.sessionId},"
                 tmpFile << "${it.ivr},"
 
-                def acdCallHist = AcdCallHistory.findBySessionId(callHistory.sessionId)
+                def acdCallHist = AcdCallHistory.findBySessionId(it?.sessionId)
                 if (acdCallHist) {
                     log.debug("Found acd call history records for session id [${callHistory.sessionId}]")
                     acdCallHist.each { acdCall ->
-                        tmpFile << acdCall.csvRow()
+                        tmpFile << "${acdCall.skill},"
+                        tmpFile << "${acdCall.enqueueTime?.toString("yyyy-MM-dd HH:mm:ss")},"
+                        tmpFile << "${acdCall.dequeueTime?.toString("yyyy-MM-dd HH:mm:ss")},"
+                        tmpFile << "${listen.computeDuration(start: acdCall.enqueueTime, end:acdCall.dequeueTime)},"
+                        tmpFile << "${acdCall.callStatus.name()},"
+                        tmpFile << "${acdCall.user.username},"
+                        tmpFile << "${acdCall.callStart?.toString("yyyy-MM-dd HH:mm:ss")},"
+                        tmpFile << "${acdCall.callEnd?.toString("yyyy-MM-dd HH:mm:ss")},"
+                        tmpFile << "${listen.computeDuration(start: acdCall.callStart, end:acdCall.callEnd)},"
                     }
                 }
                 tmpFile << "\n"
