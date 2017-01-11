@@ -1,7 +1,6 @@
 package com.interact.listen.acd
 
 import com.interact.listen.User
-import com.interact.listen.acd.Skill
 
 import org.joda.time.DateTime
 
@@ -15,8 +14,8 @@ class AcdCallHistory
         autoTimestamp: true
         dequeueTime nullable: true
         user nullable: true
-        callStart nullable: true
-        callEnd nullable: true
+        agentCallStart nullable: true
+        agentCallEnd nullable: true
         agentNumber nullable: true
     }
 
@@ -31,8 +30,8 @@ class AcdCallHistory
     String agentNumber;
     DateTime lastModified;
     DateTime dequeueTime;
-    DateTime callStart;
-    DateTime callEnd;
+    DateTime agentCallStart;
+    DateTime agentCallEnd;
 
     static belongsTo = [user: User, skill: Skill ]
 
@@ -51,8 +50,8 @@ class AcdCallHistory
             this.agentNumber = AcdUserStatus.findByOwner(this.user)?.contactNumber?.number
         }
         this.lastModified = callRecord.lastModified;
-        this.callStart = callRecord.callStart;
-        this.callEnd = callRecord.callEnd;
+        this.agentCallStart = callRecord.callStart;
+        this.agentCallEnd = callRecord.callEnd;
     }
 
     /**
@@ -72,8 +71,8 @@ class AcdCallHistory
         returnVal.append("queueTime,");
         returnVal.append("callStatus,");
         returnVal.append("agent,")
-        returnVal.append("callStart,");
-        returnVal.append("callEnd,");
+        returnVal.append("agentCallStart,");
+        returnVal.append("agentCallEnd,");
         returnVal.append("agentTime,");
         return returnVal;
     }
