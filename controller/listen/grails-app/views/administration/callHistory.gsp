@@ -201,7 +201,7 @@
         <g:each in="${callHistoryList}" var="callHistory" status="i">
             <tr class="${i % 2 == 0 ? 'even' : 'odd'}">
                 <td><g:link action="showHistory"
-                            id="${callHistory.id}"><joda:format value="${callHistory.dateTime}" pattern="yyyy-MM-dd HH:mm:ss"/></g:link></td>
+                            id="${callHistory.id}"><joda:format value="${callHistory.dateTime}" pattern="yyyy-MM-dd HH:mm:ss.SSS"/></g:link></td>
                 <td class="col-ani"><listen:numberWithRealName number="${fieldValue(bean: callHistory, field: 'ani')}"
                                                                user="${callHistory.fromUser}" personalize="false"/></td>
                 <td class="col-dnis"><listen:numberWithRealName number="${fieldValue(bean: callHistory, field: 'dnis')}"

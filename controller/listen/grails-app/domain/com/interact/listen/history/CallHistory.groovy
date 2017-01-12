@@ -18,6 +18,8 @@ class CallHistory {
     String ivr
     String result
     DateTime lastModified;
+    int cdrPostResult
+    int cdrPostCount
 
     Boolean acdCall
 
@@ -28,6 +30,8 @@ class CallHistory {
         toUser nullable: true
         lastModified nullable: true
         acdCall nullable: true
+        // cdrPostResult nullable: false // not supported because int
+        // cdrPostCount nullable: false // not supported because int
     }
 
     /**

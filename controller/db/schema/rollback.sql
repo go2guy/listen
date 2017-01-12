@@ -10,4 +10,10 @@ drop table provisioner_template;
 
 alter table organization drop column route;
 
+alter table organization drop column post_cdr;
+alter table organization drop column cdr_url;
+
+alter table call_history drop column cdr_post_result;
+alter table call_history drop column cdr_post_count;
+
 commit;

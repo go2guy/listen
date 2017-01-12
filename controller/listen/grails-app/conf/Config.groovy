@@ -212,6 +212,9 @@ com.interact.listen.defaultOrganizationRoute = 'Default'
 com.interact.listen.conference.entryTone = true
 com.interact.listen.conference.exitTone = true
 
+// Acd History Post Job parameters
+com.interact.listen.history.postRange = 3
+
 // Enable pretty print for JSON and XML.
 environments {
   development {
