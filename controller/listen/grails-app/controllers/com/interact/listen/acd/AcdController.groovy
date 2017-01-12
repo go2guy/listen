@@ -925,7 +925,7 @@ class AcdController
         }
 
         //Create header row
-        tmpfile << "began,calling party,called party,duration,organization,call result,sessionId,ivr,"
+        tmpfile << "timestamp,began,calling party,called party,duration,organization,call result,sessionId,ivr,"
         tmpfile << AcdCallHistory.csvHeader();
         tmpfile << "\n";
 
@@ -935,6 +935,7 @@ class AcdController
             def callHist = CallHistory.findBySessionId(thisHistory.sessionId)
             if (callHist) {
                 // We start with the rows from the call history table
+                tmpfile << "${callHist.dateTime?.toString("yyyy-MM-dd HH:mm:ss.SSS")},"
                 tmpfile << "${callHist.dateTime?.toString("yyyy-MM-dd HH:mm:ss")},"
                 tmpfile << "${listen.numberWithRealName(number: callHist.ani, user: callHist.fromUser, personalize: false)},"
                 tmpfile << "${listen.numberWithRealName(number: callHist.dnis, user: callHist.toUser, personalize: false)},"

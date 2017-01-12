@@ -88,11 +88,12 @@ class CallService {
         // Build the data now
         try {
             //Create header row
-            tmpFile << "began,calling party,called party,duration,organization,call result,sessionId,ivr,"
+            tmpFile << "timestamp,began,calling party,called party,duration,organization,call result,sessionId,ivr,"
             tmpFile << AcdCallHistory.csvHeader();  // we are adding acd history to the export header
             tmpFile << "\n";
 
             callHistory.each {
+                tmpFile << "${it.dateTime?.toString("yyyy-MM-dd HH:mm:ss.SSS")},"
                 tmpFile << "${it.dateTime?.toString("yyyy-MM-dd HH:mm:ss")},"
                 tmpFile << "${listen.numberWithRealName(number: it.ani, user: it.fromUser, personalize: false)},"
                 tmpFile << "${listen.numberWithRealName(number: it.dnis, user: it.toUser, personalize: false)},"

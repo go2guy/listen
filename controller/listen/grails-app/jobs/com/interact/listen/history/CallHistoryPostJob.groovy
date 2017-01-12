@@ -33,14 +33,10 @@ class CallHistoryPostJob {
         // get our call records
         // callRecords = CallHistory.findByCdrPostResult(null)
         // get all call history records that don't currently have a 200 result for cdr post
-        log.debug "postRange[${Holders.config.com.interact.listen.history.postRange}]"
         def callRecords = CallHistory.createCriteria().list {
           ne('cdrPostResult',200)
-          // and {
-            lt('cdrPostCount',3)
-            // gt('dateTime',new LocalDate().minusDays(Long.parseLong((String)Holders.config.com.interact.listen.history.postRange)))
-            gt('dateTime',new LocalDate().toDateTimeAtCurrentTime().minusDays(Integer.parseInt((String)Holders.config.com.interact.listen.history.postRange)))
-          // }
+          lt('cdrPostCount',3)
+          gt('dateTime',new LocalDate().toDateTimeAtCurrentTime().minusDays(Integer.parseInt((String)Holders.config.com.interact.listen.history.postRange)))
         }
         log.debug "callRecords[${callRecords}]"
 
@@ -61,14 +57,14 @@ class CallHistoryPostJob {
             def json = [:]
 
             json.sessionId = callRecord.sessionId
-            // json.callReceived =
+            json.callReceived = callRecord.dateTime?.toString("yyyy-MM-dd HH:mm:ss")
+            json.timeStamp = callRecord.dateTime?.toString("yyyy-MM-dd HH:mm:ss.SSS")
             json.ani = callRecord.ani
             json.dnis = callRecord.dnis
             json.agent = acdCallRecord.agentNumber
             json.enqueueTime = acdCallRecord.enqueueTime
             json.callStart = acdCallRecord.callStart
             json.callEnd = acdCallRecord.callEnd
-            json.debug = callRecord.dateTime
 
             post.setEntity(new StringEntity("${json as JSON}"))
             log.debug "body[${json as JSON}]"
@@ -92,7 +88,6 @@ class CallHistoryPostJob {
               log.debug "Internal Server Error [${e}] occurred updating  result details for call record."
             }
 
-            log.debug "statuscode[${statusCode}]"
             callRecord.cdrPostResult = statusCode
             callRecord.cdrPostCount++
 
