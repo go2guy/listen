@@ -742,7 +742,6 @@ class AcdService
 
         acdCall.callStatus = AcdCallStatus.CONNECTED;
         acdCall.callStart = DateTime.now();
-        acdCall.callStart = DateTime.now();
 
         if(acdCall.validate() && acdCall.save(flush: true))
         {

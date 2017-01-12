@@ -42,7 +42,12 @@ class AcdCallHistory
         this.skill = callRecord.skill;
         this.sessionId = callRecord.sessionId;
         this.enqueueTime = callRecord.enqueueTime;
-        this.dequeueTime = callRecord.callStart;
+        if (callRecord.callStart != null) {
+            this.dequeueTime = callRecord.callStart;
+        } else {
+            this.dequeueTime = DateTime.now();
+        }
+
         this.callStatus = callRecord.callStatus;
         this.ivr = callRecord.ivr;
         if ( callRecord.user != null ) {
@@ -50,8 +55,18 @@ class AcdCallHistory
             this.agentNumber = AcdUserStatus.findByOwner(this.user)?.contactNumber?.number
         }
         this.lastModified = callRecord.lastModified;
-        this.agentCallStart = callRecord.callStart;
+
+        if (callRecord.callStart != null) {
+            this.agentCallStart = callRecord.callStart;
+        } else if ((callRecord.callStart == null) && (callRecord.callEnd != null)) {
+            // if we don't have a call start,but have a call end, we'll set start to end
+            this.agentCallStart = callRecord.callEnd;
+        } else {
+            this.agentCallStart = callRecord.callStart;
+        }
+
         this.agentCallEnd = callRecord.callEnd;
+
     }
 
     /**

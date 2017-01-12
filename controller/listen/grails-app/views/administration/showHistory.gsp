@@ -103,7 +103,7 @@
                         </tr>
                         <tr>
                             <th><g:message code="acdCallHistory.totalAgentTime.label"/></th>
-                            <td><listen:computeDuration start="${acdCallHistory.callStart}" end="${acdCallHistory.callEnd}"/></td>
+                            <td><listen:computeDuration start="${acdCallHistory.callStart ? acdCallHistory.callStart : 0}" end="${acdCallHistory.callEnd ? acdCallHistory.callEnd : 0}"/></td>
                         </tr>
                     </tbody>
                     </table>
