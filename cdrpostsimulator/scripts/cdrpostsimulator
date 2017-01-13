@@ -1,0 +1,67 @@
+#!/bin/bash
+#
+# cdrpostsimulator      Start/Stop cdrpostsimulator.
+#
+# chkconfig: 345 65 35
+# description: cdrpostsimulator is a basic http server that logs the request and returns a pre configured response code
+#
+# processname: cdrpostsimulator
+#
+
+. /etc/init.d/functions
+
+APPNAME=cdrpostsimulator
+PIDFILE=/interact/lock/cdrpostsimulator.pid
+LOGFILE=/interact/logs/cdrpostsimulator.log
+PRGNAME="/interact/node/bin/node /interact/cdrpostsimulator/index.js"
+RETVAL=0
+
+start() 
+{
+    echo -n "Starting $APPNAME: "
+    daemon --pidfile $PIDFILE "$PRGNAME >> $LOGFILE 2>> $LOGFILE & [ \$? -eq 0 ] && echo \$! > $PIDFILE"
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && touch /var/lock/subsys/$APPNAME
+    return $RETVAL
+}
+
+stop()
+{
+    echo -n "Stopping $APPNAME: "
+    killproc -p $PIDFILE $APPNAME
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/$APPNAME
+    return $RETVAL
+}
+
+restart()
+{
+    stop
+    start
+}
+
+case "$1" in
+    start)
+        start
+    ;;
+
+    stop)
+        stop
+    ;;
+
+    status)
+        status -p $PIDFILE $APPNAME
+    ;;
+
+    restart)
+        restart
+    ;;
+
+    *)
+        echo "Usage: service `basename $0` [start|stop|status|restart]" 
+        exit 1
+esac
+
+exit $?

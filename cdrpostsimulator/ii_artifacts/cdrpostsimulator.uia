@@ -1,0 +1,70 @@
+<?xml version = "1.0"?>
+<uia>
+    <install>
+        <pre>
+            <process state="stopped">
+                <name>cdrpostsimulator</name>
+                <statusCmd>/sbin/service cdrpostsimulator status</statusCmd>
+                <statusRegex source='retval'>^0$</statusRegex>
+                <start>/sbin/service cdrpostsimulator start</start>
+                <stop>/sbin/service cdrpostsimulator stop</stop>
+            </process>
+
+            <rpm state="greater-than-or-equal">
+                <name>uia</name>
+                <version>4.10.0</version>
+            </rpm>
+
+            <rpm state="less-than-or-equal">
+                <name>uia</name>
+                <version>5.0.0</version>
+            </rpm>
+        </pre>
+        <post>
+        </post>
+    </install>
+
+    <rollback>
+        <pre>
+            <process state="stopped">
+                <name>cdrpostsimulator</name>
+                <statusCmd>/sbin/service cdrpostsimulator status</statusCmd>
+                <statusRegex source='retval'>^0$</statusRegex>
+                <start>/sbin/service cdrpostsimulator start</start>
+                <stop>/sbin/service cdrpostsimulator stop</stop>
+            </process>
+
+            <rpm state="greater-than-or-equal">
+                <name>uia</name>
+                <version>4.10.0</version>
+            </rpm>
+
+            <rpm state="less-than-or-equal">
+                <name>uia</name>
+                <version>5.0.0</version>
+            </rpm>
+        </pre>
+    </rollback>
+
+    <uninstall>
+        <pre>
+            <process state="stopped">
+                <name>cdrpostsimulator</name>
+                <statusCmd>/sbin/service cdrpostsimulator status</statusCmd>
+                <statusRegex source='retval'>^0$</statusRegex>
+                <start>/sbin/service cdrpostsimulator start</start>
+                <stop>/sbin/service cdrpostsimulator stop</stop>
+            </process>
+
+            <rpm state="greater-than-or-equal">
+                <name>uia</name>
+                <version>4.10.0</version>
+            </rpm>
+
+            <rpm state="less-than-or-equal">
+                <name>uia</name>
+                <version>5.0.0</version>
+            </rpm>
+        </pre>
+    </uninstall>
+</uia>

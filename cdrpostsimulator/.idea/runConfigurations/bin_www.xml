@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="bin\www" type="NodeJSConfigurationType" factoryName="Node.js" path-to-node="C:/Program Files/nodejs/node" path-to-js-file="src/index.js" working-dir="$PROJECT_DIR$">
+    <envs>
+      <env name="DEBUG" value="cdrpostsimulator" />
+    </envs>
+    <browser url="http://localhost:3000/" />
+    <RunnerSettings RunnerId="NodeJS.run" />
+    <ConfigurationWrapper RunnerId="NodeJS.run" />
+    <method />
+  </configuration>
+</component>
