@@ -236,10 +236,8 @@ class SpotApiController {
 
         if(callHistory.validate() && callHistory.save()) {
             response.flushBuffer()
-	        statWriterService.send(Stat.SPOT_POST_CDR_SUCCESS)
         } else {
             response.sendError(HSR.SC_BAD_REQUEST, beanErrors(callHistory))
-	        statWriterService.send(Stat.SPOT_POST_CDR_FAILURE)
         }
     }
 
