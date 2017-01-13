@@ -45,6 +45,8 @@ enum Stat {
     SPOT_RECORD_STOP                      ('5008'),
     SPOT_MSG_LIGHT_ON                     ('5009'),
     SPOT_MSG_LIGHT_OFF                    ('5010'),
+    SPOT_POST_CDR_SUCCESS                 ('5011'),
+    SPOT_POST_CDR_FAILURE                 ('5012'),
 
     // C2DM (Android)
     C2DM_DISCARD_DUE_TO_RETRYS            ('3100'),
