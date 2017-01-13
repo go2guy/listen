@@ -6,6 +6,8 @@ const C = require('./config').config;
 const inspect = require('util').inspect;
 const log = require('winston');
 const logUtil = require('./logUtil');
+const os = require('os');
+const cluster = require('cluster');
 
 /**
  * Logging Setup
@@ -64,20 +66,32 @@ const getStatusCode = function()
 /**
  * Set up server application
  */
-const app = express();
 
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
+if (cluster.isMaster)
+{
+    for (var i = 0; i < os.cpus().length; i++)
+    {
+        cluster.fork();
+    }
+}
+else
+{
+    log.debug(`Starting worker [${cluster.worker.id}]`);
+    const app = express();
 
-app.use(bodyParser.json());
+    app.use(bodyParser.urlencoded({
+        extended: true
+    }));
 
-app.post('/post', function (req, res) {
-    res.status(getStatusCode());
-    log.debug(`Got a /post request with data [${JSON.stringify(req.body)}]. Returning status code [${res.statusCode}]`);
-    res.send();
-});
+    app.use(bodyParser.json());
 
-app.listen(C.HTTP_PORT, function() {
-    log.debug(`CDR Post Simulator running on port ${C.HTTP_PORT}`);
-});
+    app.post('/post', function (req, res) {
+        res.status(getStatusCode());
+        log.debug(`Got a /post request on worker [${cluster.worker.id}] with data [${JSON.stringify(req.body)}]. Returning status code [${res.statusCode}]`);
+        res.send();
+    });
+
+    app.listen(C.HTTP_PORT, function() {
+        log.debug(`CDR Post Simulator running on port ${C.HTTP_PORT}`);
+    });
+}
