@@ -113,9 +113,9 @@ class CallService {
                         tmpFile << "${listen.computeDuration(start: acdCall.enqueueTime, end:acdCall.dequeueTime)},"
                         tmpFile << "${acdCall.callStatus.name()},"
                         tmpFile << "${acdCall.user.username},"
-                        tmpFile << "${acdCall.callStart?.toString("yyyy-MM-dd HH:mm:ss")},"
-                        tmpFile << "${acdCall.callEnd?.toString("yyyy-MM-dd HH:mm:ss")},"
-                        tmpFile << "${listen.computeDuration(start: acdCall.callStart, end:acdCall.callEnd)},"
+                        tmpFile << "${acdCall.agentCallStart?.toString("yyyy-MM-dd HH:mm:ss")},"
+                        tmpFile << "${acdCall.agentCallEnd?.toString("yyyy-MM-dd HH:mm:ss")},"
+                        tmpFile << "${listen.computeDuration(start: acdCall.agentCallStart, end:acdCall.agentCallEnd)},"
                     }
                 }
                 tmpFile << "\n"

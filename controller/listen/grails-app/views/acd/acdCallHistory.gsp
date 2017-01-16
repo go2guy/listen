@@ -228,7 +228,7 @@
               <td>${call.skill}</td>
               <td>${call.user != null ? call.user : ''}</td>
               <script type="text/javascript">
-                  var callDuration = getDifference('${call.callStart}','${call.callEnd}');
+                  var callDuration = getDifference('${call.agentCallStart}','${call.agentCallEnd}');
                   document.write('<td>' + callDuration + '</td>');
                   document.write('<td>' + getDifference('${call.enqueueTime.toString("yyyy'-'MM'-'dd HH':'mm':'ss")}',
                           '${call.dequeueTime.toString("yyyy'-'MM'-'dd HH':'mm':'ss")}') + '</td>');

@@ -8,6 +8,8 @@ import grails.plugin.springsecurity.annotation.Secured
 
 import org.joda.time.format.PeriodFormatterBuilder
 
+import javax.servlet.http.HttpServletRequest
+
 @Secured(['ROLE_VOICEMAIL_USER', 'ROLE_FAX_USER'])
 class MessagesController {
     static allowedMethods = [
@@ -193,6 +195,14 @@ class MessagesController {
 
     // ajax
     def newCount = {
+        HttpServletRequest theRequest = request;
+        boolean isAjax = theRequest.xhr;
+
+        if(!isAjax)
+        {
+            redirect(action: 'index');
+        }
+
         render(contentType: 'application/json') {
             count = inboxMessageService.newMessageCount()
         }
@@ -200,6 +210,15 @@ class MessagesController {
 
     // ajax
     def newAcdCount = {
+
+        HttpServletRequest theRequest = request;
+        boolean isAjax = theRequest.xhr;
+
+        if(!isAjax)
+        {
+            redirect(action: 'index');
+        }
+
       render(contentType: 'application/json') {
         count = inboxMessageService.newAcdMessageCount(params.currentSkill)
       }

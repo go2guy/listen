@@ -35,6 +35,11 @@ class PromptOverride
         def result = c.listDistinct() {
             ge('startDate', today)
             eq('eventType', type)
+            useMenu
+                {
+                    eq('organization', organization)
+                }
+
             order 'startDate', 'asc'
         }
 

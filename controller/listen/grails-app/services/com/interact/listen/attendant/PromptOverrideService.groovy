@@ -1,5 +1,6 @@
 package com.interact.listen.attendant
 
+import com.interact.listen.Organization
 import com.interact.listen.util.FileTypeDetector
 import org.joda.time.LocalDateTime
 import org.springframework.web.multipart.MultipartFile
@@ -84,7 +85,7 @@ class PromptOverrideService
      *
      * @return List of active events.
      */
-    PromptOverride getCurrentEvent(EventType type)
+    PromptOverride getCurrentEvent(Organization organization, EventType type)
     {
         LocalDateTime currentTime = new LocalDateTime();
         def c = PromptOverride.createCriteria()
@@ -94,6 +95,10 @@ class PromptOverrideService
             if(type)
             {
                 eq('eventType', type)
+            }
+            useMenu
+            {
+                eq('organization', organization)
             }
             order 'startDate', 'asc'
         }
@@ -113,12 +118,17 @@ class PromptOverrideService
      *
      * @return The last event of the event type.
      */
-    PromptOverride getLastEvent(EventType type)
+    PromptOverride getLastEvent(Organization organization, EventType type)
     {
         def c = PromptOverride.createCriteria()
         def results = c.list(max: 1) {
             eq('eventType', type)
+            useMenu
+            {
+                eq('organization', organization)
+            }
             order 'startDate', 'desc'
+
         }
 
         def override;
@@ -136,12 +146,16 @@ class PromptOverrideService
      *
      * @return Event that overlaps.
      */
-    PromptOverride getOverlap(LocalDateTime start, LocalDateTime end, EventType type)
+    PromptOverride getOverlap(LocalDateTime start, LocalDateTime end, EventType type, Organization organization)
     {
         PromptOverride returnVal = null;
 
         def c = PromptOverride.createCriteria()
         def results = c.list(max: 1) {
+            useMenu
+            {
+                eq('organization', organization)
+            }
             if(type)
             {
                 eq('eventType', type)

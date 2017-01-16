@@ -17,20 +17,41 @@ class IndexController {
 
         // profile is a good fallback, it will always be there
         def controller = 'profile'
+        String action = null;
 
         // TODO make this use the new roles
-        if(has('ROLE_CUSTODIAN')) {
+        if(has('ROLE_CUSTODIAN'))
+        {
             controller = 'organization'
-        } else if((has('ROLE_VOICEMAIL_USER') && can(ListenFeature.VOICEMAIL)) ||
-                  (has('ROLE_FAX_USER') && can(ListenFeature.FAX))) {
-            controller = 'messages'
-        } else if(can(ListenFeature.CONFERENCING)) {
+        }
+        else if((has('ROLE_VOICEMAIL_USER') && can(ListenFeature.VOICEMAIL)) ||
+                  (has('ROLE_FAX_USER') && can(ListenFeature.FAX)))
+        {
+            controller = 'messages';
+            action = 'index';
+        }
+        else if(has('ROLE_ACD_USER'))
+        {
+            controller = 'acd';
+            action = 'index';
+        }
+        else if(can(ListenFeature.CONFERENCING))
+        {
             controller = 'conferencing'
-        } else if (can(ListenFeature.FINDME)) {
+        }
+        else if (can(ListenFeature.FINDME))
+        {
             controller = 'findme'
         }
 
-        redirect(controller: controller)
+        if(action != null)
+        {
+            redirect(controller: controller, action: action);
+        }
+        else
+        {
+            redirect(controller: controller);
+        }
     }
 
     private has(def authority) {

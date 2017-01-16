@@ -66,12 +66,12 @@
           <div>
               <label for="optionsPrompt" class="or-option">
                   <g:message code="page.attendant.holidays.select.prompt.label"/>
-                  <listen:rawAttendantPromptSelect name="optionsPrompt" value="${currentEvent ? currentEvent.optionsPrompt : lastEvent.optionsPrompt}" disabled="${currentEvent ? 'true' : 'false'}"/>
+                  <listen:rawAttendantPromptSelect name="optionsPrompt" value="${currentEvent ? currentEvent.optionsPrompt : lastEvent?.optionsPrompt}" disabled="${currentEvent ? 'true' : 'false'}"/>
               </label>
           </div>
 
           <label for="useMenu.id"><g:message code="promptOverride.useMenu.label"/></label>
-          <listen:menuGroupSelect name="useMenu.id" value="${currentEvent ? currentEvent.useMenu?.id : lastEvent.useMenu?.id}" disabled="${currentEvent ? 'true' : 'false'}"/>
+          <listen:menuGroupSelect name="useMenu.id" value="${currentEvent ? currentEvent.useMenu?.id : lastEvent?.useMenu?.id}" disabled="${currentEvent ? 'true' : 'false'}"/>
 
           <div id="currentEventDetails" class="eventDetail ${currentEvent ? '' : 'hidden'}">
             <h3>Current Event</h3>

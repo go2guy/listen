@@ -95,15 +95,15 @@
                         </tr>
                         <tr>
                             <th><g:message code="acdCallHistory.callStart.label"/></th>
-                            <td><joda:format value="${acdCallHistory.callStart}"/></td>
+                            <td><joda:format value="${acdCallHistory.agentCallStart}"/></td>
                         </tr>
                         <tr>
                             <th><g:message code="acdCallHistory.callEnd.label"/></th>
-                            <td><joda:format value="${acdCallHistory.callEnd}"/></td>
+                            <td><joda:format value="${acdCallHistory.agentCallEnd}"/></td>
                         </tr>
                         <tr>
                             <th><g:message code="acdCallHistory.totalAgentTime.label"/></th>
-                            <td><listen:computeDuration start="${acdCallHistory.callStart ? acdCallHistory.callStart : 0}" end="${acdCallHistory.callEnd ? acdCallHistory.callEnd : 0}"/></td>
+                            <td><listen:computeDuration start="${acdCallHistory.agentCallStart ? acdCallHistory.agentCallStart : 0}" end="${acdCallHistory.agentCallEnd ? acdCallHistory.agentCallEnd : 0}"/></td>
                         </tr>
                     </tbody>
                     </table>

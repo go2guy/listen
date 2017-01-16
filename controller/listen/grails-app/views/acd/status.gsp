@@ -242,7 +242,7 @@
                   <td class="overflow">${call.ani}</td>
                   <td class="overflow">${call.skill.description}</td>
                   <script type="text/javascript">
-                    document.write('<td class="overflow">' + getDifference('${call.callStart}','${call.callEnd}') + '</td>');
+                    document.write('<td class="overflow">' + getDifference('${call.agentCallStart}','${call.agentCallEnd}') + '</td>');
                     document.write('<td class="overflow">' + getDifference('${call.enqueueTime}','${call.dequeueTime}') + '</td>');
                   </script>
                 </tr>

@@ -18,6 +18,9 @@ import org.joda.time.LocalDate
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.format.DateTimeFormatter
 
+import javax.servlet.AsyncContext
+import javax.servlet.http.HttpServletRequest
+
 @Secured(['ROLE_ACD_USER'])
 class AcdController
 {
@@ -191,8 +194,10 @@ class AcdController
       List<AcdCallHistory> acdCalls = []
 
       def acdCallHistory
-      if ( user.hasRole('ROLE_ORGANIZATION_ADMIN') ) { // get all call history
-          log.debug("Find acdCallHistory for organization [${organization}][${organization.id}]")
+      if ( user.hasRole('ROLE_ORGANIZATION_ADMIN') )
+      {
+          // get all call history
+          log.info("Find acdCallHistory for organization [${organization}][${organization.id}]");
           acdCalls = AcdCallHistory.createCriteria().list {
               order(params.sort, params.order)
               maxResults(params.max.toInteger())
@@ -203,8 +208,11 @@ class AcdController
               ge("enqueueTime", today.toDateTimeAtStartOfDay())
           }
 
-      } else { // get call history for current user
-          log.debug("Find acdCallHistory for organization [${organization}] and user [${user}]")
+      }
+      else
+      {
+          // get call history for current user
+          log.info("Find acdCallHistory for organization [${organization}] and user [${user}]");
           acdCallHistory = AcdCallHistory.createCriteria().list {
               order(params.sort, params.order)
               maxResults(params.max.toInteger())
@@ -233,8 +241,8 @@ class AcdController
               c.user = call.user.realName
           }
           c.skill = call.skill.description
-          c.start = call.callStart
-          c.end = call.callEnd
+          c.start = call.agentCallStart
+          c.end = call.agentCallEnd
           c.callStatus = call.callStatus.viewable()
           c.enqueueTime = call.enqueueTime
           c.dequeueTime = call.dequeueTime
@@ -243,9 +251,9 @@ class AcdController
 
       json.acdCalls = callJson
 
-      if (log.isDebugEnabled())
+      if (log.isInfoEnabled())
       {
-          log.debug "Rendering call queue as json [${json.toString()}]"
+          log.info("Rendering call queue as json [${json.toString()}]");
       }
 
       render(contentType: 'application/json') {
@@ -254,6 +262,15 @@ class AcdController
     }
 
     def pollStatus = {
+
+        HttpServletRequest theRequest = request;
+        boolean isAjax = theRequest.xhr;
+
+        if(!isAjax)
+        {
+            redirect(action: 'index');
+        }
+
       def user = springSecurityService.currentUser
 
       params.queueSort = params.queueSort ?: 'enqueueTime'
@@ -640,6 +657,14 @@ class AcdController
         {
             List<AcdCall> calls = AcdCall.findAllByUser(springSecurityService.currentUser)
 
+            HttpServletRequest theRequest = request;
+            boolean isAjax = theRequest.xhr;
+
+            if(!isAjax)
+            {
+                redirect(action: 'index');
+            }
+
             def json = [:]
 
             def callJson = [];
@@ -963,9 +988,9 @@ class AcdController
             tmpfile << "${listen.computeDuration(start: thisHistory.enqueueTime, end:thisHistory.dequeueTime)},"
             tmpfile << "${thisHistory.callStatus.name()},"
             tmpfile << "${thisHistory.user.username},"
-            tmpfile << "${thisHistory.callStart?.toString("yyyy-MM-dd HH:mm:ss")},"
-            tmpfile << "${thisHistory.callEnd?.toString("yyyy-MM-dd HH:mm:ss")},"
-            tmpfile << "${listen.computeDuration(start: thisHistory.callStart, end:thisHistory.callEnd)},"
+            tmpfile << "${thisHistory.agentCallStart?.toString("yyyy-MM-dd HH:mm:ss")},"
+            tmpfile << "${thisHistory.agentCallEnd?.toString("yyyy-MM-dd HH:mm:ss")},"
+            tmpfile << "${listen.computeDuration(start: thisHistory.agentCallStart, end:thisHistory.agentCallEnd)},"
             tmpfile << "\n";
         }
 
@@ -1046,8 +1071,8 @@ class AcdController
             c.ani = call.ani
             c.skill = call.skill.description
             c.callStatus = call.callStatus.viewable()
-            c.callStart = call.callStart
-            c.callEnd = call.callEnd
+            c.callStart = call.agentCallStart
+            c.callEnd = call.agentCallEnd
             c.enqueueTime = call.enqueueTime
             c.dequeueTime = call.dequeueTime
             c.user = ""
