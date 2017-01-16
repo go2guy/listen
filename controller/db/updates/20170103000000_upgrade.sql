@@ -63,4 +63,16 @@ ALTER TABLE acd_call_history ADD COLUMN `agent_number` varchar(255) DEFAULT NULL
 UPDATE call_history AS U1, call_history AS U2 SET U1.session_id=CONCAT_WS('#',U2.id,U2.date_time) WHERE U2.id=U1.id;
 ALTER TABLE call_history ADD UNIQUE KEY `session_unique` (`session_id`);
 
+-- Update organization for Libery work
+--
+alter table organization add column post_cdr bit(1) NOT NULL default b'0';
+alter table organization add column cdr_url varchar(100) default null;
+
+--
+-- Update call history for Libery work
+--
+alter table call_history add column cdr_post_result bigint(3) default null;
+alter table call_history add column cdr_post_count int(1) default 0;
+ALTER TABLE call_history MODIFY COLUMN `date_time` DATETIME(3) NOT NULL AFTER `version`;
+
 commit work;

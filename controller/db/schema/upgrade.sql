@@ -73,6 +73,6 @@ alter table organization add column cdr_url varchar(100) default null;
 --
 alter table call_history add column cdr_post_result bigint(3) default null;
 alter table call_history add column cdr_post_count int(1) default 0;
-alter table `call_history` change `date_time` `date_time` DATETIME(3)
+ALTER TABLE call_history MODIFY COLUMN `date_time` DATETIME(3) NOT NULL AFTER `version`;
 
 commit work;
