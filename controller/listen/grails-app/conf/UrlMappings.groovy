@@ -117,6 +117,10 @@ class UrlMappings {
         "/$organizationContext/$controller?/$action?/$id?"{
             controller = { controller ?: 'login' }
         }
+	    name internalApi: "/i/$controller/$action?/$id?"{
+		    constraints {
+		    }
+	    }
         "/$controller/$action?/$id?"{
             constraints {
             }

@@ -110,7 +110,7 @@ var listen = {
         var displayedCount = $("#new-acd-message-count");
         var newCount = '(0)';
         $.ajax({
-            url: '${request.contextPath}/messages/newAcdCount',
+            url: '${createLink(controller: 'messages', action: 'newAcdCount', mapping: 'internalApi')}',
             dataType: 'json',
             cache: false,
             success: function(data) {
@@ -521,7 +521,7 @@ $(document).ready(function() {
 <sec:ifAnyGranted roles="ROLE_VOICEMAIL_USER,ROLE_FAX_USER">
     setInterval(function() {
         $.ajax({
-            url: '${request.contextPath}/messages/newCount',
+            url: '${createLink(controller: 'messages', action: 'newCount', mapping: 'internalApi')}',
             dataType: 'json',
             cache: false,
             success: function(data) {

@@ -1,3 +1,4 @@
+import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.util.Holders
 
 // Place your Spring DSL code here
@@ -22,6 +23,9 @@ beans = {
     headerDetailsFilter(com.interact.listen.authentication.HeaderDetailsFilter) {
         authenticationManager = ref('authenticationManager')
     }
+
+	internalApiFilter(com.interact.listen.authentication.InternalApiFilter) {
+	}
 
     apiKeyAuthenticationProvider(com.interact.listen.authentication.ApiKeyAuthenticationProvider){
         grailsApplication = ref('grailsApplication')

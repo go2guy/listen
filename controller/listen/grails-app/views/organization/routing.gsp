@@ -93,7 +93,7 @@ $(document).ready(function() {
             appSelect.val(selectedApp);
         };
 
-        $.get('${request.contextPath}/organization/allowedApplications', function(data) {
+        $.get('${createLink(controller: 'organization', action: 'allowedApplications')}', function(data) {
             update($('.add-organization-select'), data);
             $('.organization-select').change(function(e) {
                 var orgSelect = $(e.target);

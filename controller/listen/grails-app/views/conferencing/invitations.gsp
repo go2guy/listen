@@ -187,7 +187,7 @@ $(document).ready(function() {
 
     $('.date-fields select').change(invitations.checkAndWarnHistoricDate);
 
-    $.get('${request.contextPath}/autocomplete/contacts', function(data) {
+    $.get('${createLink(controller: 'autocomplete', action: 'contacts')}', function(data) {
         function split(val) {
             return val.split(/,\s*/);
         }

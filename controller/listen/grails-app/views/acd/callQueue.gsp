@@ -156,7 +156,7 @@
     function disconnectClicked(e, callId) {
         alert("Transfer the call to Voicemail?");
         $.ajax({
-            url: '${createLink(action: 'disconnectCaller')}?id=' + callId,
+            url: '${createLink(action: 'disconnectCaller', mapping: 'internalApi')}?id=' + callId,
             dataType: 'json',
             cache: false,
             success: function(data)
@@ -178,7 +178,7 @@
     var queue = {
       poll: function() {
         $.ajax({
-          url: '${createLink(action: 'pollQueue')}?sort=' + $("#sort").val() + '&order=' + $("#order").val() +
+          url: '${createLink(action: 'pollQueue', mapping: 'internalApi')}?sort=' + $("#sort").val() + '&order=' + $("#order").val() +
                 '&max=' + $("#max").val() + '&offset=' + $("#offset").val(),
           dataType: 'json',
           cache: false,

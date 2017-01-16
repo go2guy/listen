@@ -235,7 +235,7 @@
         $.ajax({
           type: "POST",
           data: postData,
-          url: '${createLink(action: 'pollAvailableUsers')}',
+          url: '${createLink(action: 'pollAvailableUsers', mapping: 'internalApi')}',
           success: function(data) {
             var voicemailUserSelect = $("#vmUserId");
             var option = "";

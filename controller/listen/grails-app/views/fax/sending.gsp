@@ -110,7 +110,7 @@ table.fax-information tbody th {
 $(document).ready(function() {
     var interval = setInterval(function() {
         $.ajax({
-            url: '${createLink(action: 'status', params: [id: fax.id])}',
+            url: '${createLink(action: 'status', mapping: 'internalApi', params: [id: fax.id])}',
             dataType: 'json',
             cache: false,
             success: function(data) {

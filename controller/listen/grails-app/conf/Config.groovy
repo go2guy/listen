@@ -129,8 +129,15 @@ grails.plugin.springsecurity.filterChain.chainMap = [
         '/faxApi/**': 'authenticationProcessingFilter,headerDetailsFilter,exceptionTranslationFilter,filterInvocationInterceptor',
         '/spotApi/**': 'authenticationProcessingFilter,headerDetailsFilter,exceptionTranslationFilter,filterInvocationInterceptor',
         '/meta/**': 'authenticationProcessingFilter,headerDetailsFilter,exceptionTranslationFilter,filterInvocationInterceptor',
+		'/i/**': 'securityContextPersistenceFilter,internalApiFilter,authenticationProcessingFilter,rememberMeAuthenticationFilter,anonymousAuthenticationFilter',
+		'/css/**': 'JOINED_FILTERS,-exceptionTranslationFilter,-authenticationProcessingFilter,-securityContextPersistenceFilter,-rememberMeAuthenticationFilter',
+		'/images/**': 'JOINED_FILTERS,-exceptionTranslationFilter,-authenticationProcessingFilter,-securityContextPersistenceFilter,-rememberMeAuthenticationFilter',
+		'/img/**': 'JOINED_FILTERS,-exceptionTranslationFilter,-authenticationProcessingFilter,-securityContextPersistenceFilter,-rememberMeAuthenticationFilter',
+		'/js/**': 'JOINED_FILTERS,-exceptionTranslationFilter,-authenticationProcessingFilter,-securityContextPersistenceFilter,-rememberMeAuthenticationFilter',
+		'/static/**': 'JOINED_FILTERS,-exceptionTranslationFilter,-authenticationProcessingFilter,-securityContextPersistenceFilter,-rememberMeAuthenticationFilter',
         '/**': 'JOINED_FILTERS'
 ]
+
 grails.plugin.springsecurity.onInteractiveAuthenticationSuccessEvent = { e, context ->
     com.interact.listen.User.withTransaction {
         def user = context.springSecurityService.getCurrentUser()

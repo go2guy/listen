@@ -163,7 +163,7 @@
 
       function setMessageStatus(id, newStatus) {
          $.ajax({
-           url: '${request.contextPath}/messages/setStatus?id=' + id + '&newStatus=' + status,
+           url: '${createLink(controller: 'messages', action: 'setStatus', mapping: 'internalApi')}?id=' + id + '&newStatus=' + status,
            dataType: 'json',
            cache: 'false',
            success: function(data, textStatus, xhr) {
@@ -185,7 +185,7 @@
         visibleIds = visibleIds.substring(0, visibleIds.length - 1);
 
         $.ajax({
-          url: '${request.contextPath}/messages/acdPollingList?visibleIds=' + visibleIds + '${(request.queryString?.length() > 0) ? "&" + request.queryString : ""}',
+          url: '${createLink(controller: 'messages', action: 'acdPollingList', mapping: 'internalApi')}?visibleIds=' + visibleIds + '${(request.queryString?.length() > 0) ? "&" + request.queryString : ""}',
           dataType: 'json',
           cache: false,
           success: function(data, textStatus, xhr) {

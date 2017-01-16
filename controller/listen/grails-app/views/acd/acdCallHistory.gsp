@@ -285,7 +285,7 @@
       poll: function() {
         $.ajax({
           // passing in params to ensure sort and pagination are kept
-          url: '${createLink(action: 'pollHistory')}?sort=' + $("#sort").val() + '&order=' + $("#order").val() +
+          url: '${createLink(action: 'pollHistory', mapping: 'internalApi')}?sort=' + $("#sort").val() + '&order=' + $("#order").val() +
                 '&max=' + $("#max").val() + '&offset=' + $("#offset").val(),
           dataType: 'json',
           cache: false,

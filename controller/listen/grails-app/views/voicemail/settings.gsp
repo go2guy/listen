@@ -174,7 +174,7 @@ $(document).ready(function() {
     });
 
     $('#sendTestEmail').click(function() {
-        $.post('${request.contextPath + '/voicemail/sendTestEmail'}', {
+        $.post('${createLink(controller: 'voicemail', action: 'sendTestEmail')}', {
             address: $('#emailNotificationAddress').val()
         });
         message('A test email has been sent', $(this));
@@ -187,7 +187,7 @@ $(document).ready(function() {
         var provider = $('#smsNotificationProvider').val();
         if($.trim(number) != '') {
             var address = number + '@' + provider
-            $.post('${request.contextPath + '/voicemail/sendTestSms'}', {
+            $.post('${createLink(controller: 'voicemail', action: 'sendTestSms')}', {
                 address: address
             });
             message('A test SMS has been sent', $(this));

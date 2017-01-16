@@ -138,7 +138,7 @@ Graph.prototype.render = function(canvas, time) {
 
 function poll(moveRows) {
     $.ajax({
-        url: '${createLink(action: 'callsData')}',
+        url: '${createLink(action: 'callsData', mapping: 'internalApi')}',
         dataType: 'json',
         cache: false,
         success: function(data) {

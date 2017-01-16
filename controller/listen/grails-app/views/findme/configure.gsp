@@ -276,7 +276,7 @@ var findme = {
         var forwardedTo = '';
         $.ajax({
             type: 'GET',
-            url: '${request.contextPath}/findme/numberDetails',
+            url: '${createLink(controller: 'findme', action: 'numberDetails', mapping: 'internalApi')}',
             data: {
                 number: number
             },

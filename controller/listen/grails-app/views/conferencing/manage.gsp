@@ -410,7 +410,7 @@ span.recording-status.started {
 var conference = {
     poll: function() {
         $.ajax({
-            url: '${createLink(action: 'polledConference', params: [id: conference.id, sort: params.sort, order: params.order, max: params.max, offset: params.offset])}',
+            url: '${createLink(action: 'polledConference', mapping: 'internalApi', params: [id: conference.id, sort: params.sort, order: params.order, max: params.max, offset: params.offset])}',
             dataType: 'json',
             cache: false,
             success: function(data) {
@@ -570,7 +570,7 @@ var conference = {
 
     redrawPagination: function(total, max, offset, sort, order) {
         $.ajax({
-            url: '${createLink(action: 'ajaxPagination')}?c=conferencing&a=manage&total=' + total + '&max=' + max + '&offset=' + offset + '&sort=' + sort + '&order=' + order,
+            url: '${createLink(action: 'ajaxPagination', mapping: 'internalApi')}?c=conferencing&a=manage&total=' + total + '&max=' + max + '&offset=' + offset + '&sort=' + sort + '&order=' + order,
             dataType: 'html',
             cache: false,
             success: function(data) {

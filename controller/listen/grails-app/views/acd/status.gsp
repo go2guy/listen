@@ -333,7 +333,7 @@
       poll: function() {
         $.ajax({
           // passing in params to ensure sort and pagination are kept
-          url: '${createLink(action: 'pollStatus')}',
+          url: '${createLink(action: 'pollStatus', mapping: 'internalApi')}',
           dataType: 'json',
           cache: false,
           success: function(data) {
@@ -414,7 +414,7 @@
         $('#transferHeader')[0].innerHTML = "Transfer";
 
         $.ajax({
-            url: '${createLink(action: 'availableTransferAgents')}?id=' + callId,
+            url: '${createLink(action: 'availableTransferAgents', mapping: 'internalApi')}?id=' + callId,
             dataType: 'json',
             cache: false,
             success: function(data)
@@ -444,7 +444,7 @@
             var callId = $('#hiddenCallId')[0].value;
 
             $.ajax({
-                url: '${createLink(action: 'transferCaller')}?id=' + callId + '&userId=' + userId,
+                url: '${createLink(action: 'transferCaller', mapping: 'internalApi')}?id=' + callId + '&userId=' + userId,
                 dataType: 'json',
                 cache: false,
                 success: function(data)
@@ -492,7 +492,7 @@
             var callId = $('#hiddenCallId')[0].value;
 
             $.ajax({
-                url: '${createLink(action: 'disconnectCaller')}?id=' + callId,
+                url: '${createLink(action: 'disconnectCaller', mapping: 'internalApi')}?id=' + callId,
                 dataType: 'json',
                 cache: false,
                 success: function(data)
@@ -526,7 +526,7 @@
         if(element.checked)
         {
             $.ajax({
-                url: '${createLink(action: 'callerOnHold')}?id=' + callId,
+                url: '${createLink(action: 'callerOnHold', mapping: 'internalApi')}?id=' + callId,
                 dataType: 'json',
                 cache: false,
                 success: function(data)
@@ -541,7 +541,7 @@
         else
         {
             $.ajax({
-                url: '${createLink(action: 'callerOffHold')}?id=' + callId,
+                url: '${createLink(action: 'callerOffHold', mapping: 'internalApi')}?id=' + callId,
                 dataType: 'json',
                 cache: false,
                 success: function(data)
@@ -559,7 +559,7 @@
     {
         poll: function() {
             $.ajax({
-                url: '${createLink(action: 'polledCalls')}',
+                url: '${createLink(action: 'polledCalls', mapping: 'internalApi')}',
                 dataType: 'json',
                 cache: false,
                 success: function(data)
@@ -682,7 +682,7 @@
       poll: function() {
         $.ajax({
           // passing in params to ensure sort and pagination are kept
-          url: '${createLink(action: 'pollHistory')}',
+          url: '${createLink(action: 'pollHistory', mapping: 'internalApi')}',
           dataType: 'json',
           cache: false,
           success: function(data) {

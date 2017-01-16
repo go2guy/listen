@@ -242,7 +242,7 @@ td.col-public {
             var number = field.val();
             $.ajax({
                 type: 'GET',
-                url: '${request.contextPath}/profile/canDial',
+                url: '${createLink(controller: 'profile', action: 'canDial', mapping: 'internalApi')}',
                 data: {
                     number: number
                 },
