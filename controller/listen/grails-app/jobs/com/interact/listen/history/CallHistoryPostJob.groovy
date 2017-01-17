@@ -66,8 +66,8 @@ class CallHistoryPostJob {
 				json.dnis = callRecord.dnis
 				json.agent = acdCallRecord?.agentNumber ?: null
 				json.enqueueTime = acdCallRecord?.enqueueTime ?: null
-				json.callStart = acdCallRecord?.agentCallStart ?: null
-				json.callEnd = acdCallRecord?.agentCallEnd ?: null
+				json.agentCallStart = acdCallRecord?.agentCallStart ?: null
+				json.agentCallEnd = acdCallRecord?.agentCallEnd ?: null
 
 				post.setEntity(new StringEntity("${json as JSON}"))
 				log.debug "body[${json as JSON}]"
