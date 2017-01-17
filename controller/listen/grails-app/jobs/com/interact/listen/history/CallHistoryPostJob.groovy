@@ -1,5 +1,6 @@
 package com.interact.listen.history
 
+import com.google.gson.JsonNull
 import org.joda.time.LocalDateTime
 import com.interact.listen.PrimaryNode
 import com.interact.listen.acd.AcdCallHistory
@@ -63,10 +64,10 @@ class CallHistoryPostJob {
 				json.timeStamp = callRecord.dateTime?.toString("yyyy-MM-dd HH:mm:ss.SSS")
 				json.ani = callRecord.ani
 				json.dnis = callRecord.dnis
-				json.agent = acdCallRecord.agentNumber
-				json.enqueueTime = acdCallRecord.enqueueTime
-				json.callStart = acdCallRecord.agentCallStart
-				json.callEnd = acdCallRecord.agentCallEnd
+				json.agent = acdCallRecord?.agentNumber ?: null
+				json.enqueueTime = acdCallRecord?.enqueueTime ?: null
+				json.callStart = acdCallRecord?.agentCallStart ?: null
+				json.callEnd = acdCallRecord?.agentCallEnd ?: null
 
 				post.setEntity(new StringEntity("${json as JSON}"))
 				log.debug "body[${json as JSON}]"
