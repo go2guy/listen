@@ -99,7 +99,7 @@ class CallService {
                     acdCallHist.each { acdCall ->
                         log.debug("Exporting call and acd history for session id [${it.sessionId}] [${acdCall.user.username}]")
                         // first we'll add the call history domain
-                        tmpFile << "${it.dateTime?.toString("yyyy-MM-dd HH:mm:ss.SSS")},"
+                        tmpFile << "${it.dateTime?.getMillis()/1000},"
                         tmpFile << "${it.dateTime?.toString("yyyy-MM-dd HH:mm:ss")},"
                         tmpFile << "${listen.numberWithRealName(number: it.ani, user: it.fromUser, personalize: false)},"
                         tmpFile << "${listen.numberWithRealName(number: it.dnis, user: it.toUser, personalize: false)},"
@@ -123,7 +123,7 @@ class CallService {
                 } else {
                     // we don't have any acd call history, so lets just output the call history domain
                     log.debug("Exporting call history for session id [${it.sessionId}]")
-                    tmpFile << "${it.dateTime?.toString("yyyy-MM-dd HH:mm:ss.SSS")},"
+                    tmpFile << "${it.dateTime?.getMillis()/1000},"
                     tmpFile << "${it.dateTime?.toString("yyyy-MM-dd HH:mm:ss")},"
                     tmpFile << "${listen.numberWithRealName(number: it.ani, user: it.fromUser, personalize: false)},"
                     tmpFile << "${listen.numberWithRealName(number: it.dnis, user: it.toUser, personalize: false)},"

@@ -960,7 +960,7 @@ class AcdController
             def callHist = CallHistory.findBySessionId(thisHistory.sessionId)
             if (callHist) {
                 // We start with the rows from the call history table
-                tmpfile << "${callHist.dateTime?.toString("yyyy-MM-dd HH:mm:ss.SSS")},"
+                tmpfile << "${callHist.dateTime?.getMillis()/1000},"
                 tmpfile << "${callHist.dateTime?.toString("yyyy-MM-dd HH:mm:ss")},"
                 tmpfile << "${listen.numberWithRealName(number: callHist.ani, user: callHist.fromUser, personalize: false)},"
                 tmpfile << "${listen.numberWithRealName(number: callHist.dnis, user: callHist.toUser, personalize: false)},"
@@ -971,9 +971,10 @@ class AcdController
                 tmpfile << "${callHist.ivr},"
             } else {
                 // We start with the rows from the call history table, but in this case we didn't find an entry, so fill in what we can
-                tmpfile << ","
-                tmpfile << "${listen.numberWithRealName(number: thisHistory.ani, user: '', personalize: false)},"
-                tmpfile << "${listen.numberWithRealName(number: thisHistory.dnis, user: '', personalize: false)},"
+                tmpfile << ","                                                  // timestamp
+                tmpfile << ","                                                  // began
+                tmpfile << "${listen.numberWithRealName(number: thisHistory.ani, user: '', personalize: false)},"   // calling party
+                tmpfile << "${listen.numberWithRealName(number: thisHistory.dnis, user: '', personalize: false)},"  // called party
                 tmpfile << ","                                                  // duration
                 tmpfile << "${thisHistory?.user?.organization?.name},"          // organization
                 tmpfile << ","                                                  // result
