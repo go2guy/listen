@@ -51,26 +51,16 @@ class CallHistoryPostJob {
 
 			log.debug "cdrPostResult[${callRecord.cdrPostResult}]"
 			log.debug "cdrPostCount[${callRecord.cdrPostCount}]"
-			def acdCallRecord = AcdCallHistory.findAllBySessionId(callRecord.sessionId)
+			def acdCallRecords = AcdCallHistory.findAllBySessionId(callRecord.sessionId)
 			def url = callRecord.organization.cdrUrl
 			// only do the post if it's configured for the organization
 			if (callRecord.organization.postCdr && callRecord.organization.cdrUrl) {
 				HttpPost post = new HttpPost(url)
 
-				def json = [:]
+				def json = generateJson(callRecord, acdCallRecords)
 
-				json.sessionId = callRecord.sessionId
-				json.callReceived = callRecord.dateTime?.toString("yyyy-MM-dd HH:mm:ss")
-				json.timeStamp = callRecord.dateTime?.toString("yyyy-MM-dd HH:mm:ss.SSS")
-				json.ani = callRecord.ani
-				json.dnis = callRecord.dnis
-				json.agent = acdCallRecord?.agentNumber ?: null
-				json.enqueueTime = acdCallRecord?.enqueueTime ?: null
-				json.agentCallStart = acdCallRecord?.agentCallStart ?: null
-				json.agentCallEnd = acdCallRecord?.agentCallEnd ?: null
-
-				post.setEntity(new StringEntity("${json as JSON}"))
-				log.debug "body[${json as JSON}]"
+				post.setEntity(new StringEntity("${json}"))
+				log.debug "body[${json}]"
 
 				int statusCode = 0
 
@@ -102,5 +92,44 @@ class CallHistoryPostJob {
 				statWriterService.send(statusCode.toString().charAt(0) == "2" ? Stat.SPOT_POST_CDR_SUCCESS : Stat.SPOT_POST_CDR_FAILURE)
 			}
 		}
+	}
+
+	def generateJson(def callRecord, def acdCallRecords)
+	{
+		def jsonArr = []
+
+		if (acdCallRecords.size() > 0)
+		{
+			acdCallRecords.each { record ->
+				def json = [:]
+				json.sessionId = callRecord.sessionId
+				json.callReceived = callRecord.dateTime?.toString("yyyy-MM-dd HH:mm:ss")
+				json.timeStamp = callRecord.dateTime?.toString("yyyy-MM-dd HH:mm:ss.SSS")
+				json.ani = callRecord.ani
+				json.dnis = callRecord.dnis
+				json.agent = record.agentNumber ?: null
+				json.enqueueTime = record.enqueueTime ?: null
+				json.agentCallStart = record.agentCallStart ?: null
+				json.agentCallEnd = record.agentCallEnd ?: null
+				jsonArr.push(json)
+			}
+		}
+		else
+		{
+			def json = [:]
+			json.sessionId = callRecord.sessionId
+			json.callReceived = callRecord.dateTime?.toString("yyyy-MM-dd HH:mm:ss")
+			json.timeStamp = callRecord.dateTime?.toString("yyyy-MM-dd HH:mm:ss.SSS")
+			json.ani = callRecord.ani
+			json.dnis = callRecord.dnis
+			json.agent = null
+			json.enqueueTime = null
+			json.agentCallStart = null
+			json.agentCallEnd = null
+
+			jsonArr.push(json)
+		}
+
+		return (jsonArr as JSON)
 	}
 }
