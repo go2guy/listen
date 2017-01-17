@@ -924,7 +924,7 @@ class AcdController
         def calls = acdService.acdHistoryList(params.sort, params.order, params.max, params.offset, theStart, theEnd,
                 params.agent, params.skill);
 
-        String filename = "acdCallHistoryRecords${new LocalDateTime().toString('yyyyMMddHHmmss')}.csv";
+        String filename = "listen-acdcallhistory-${new LocalDateTime().toString('yyyyMMddHHmmss')}.csv";
 
         File tmpfile
         try
