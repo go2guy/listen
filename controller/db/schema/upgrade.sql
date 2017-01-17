@@ -78,4 +78,10 @@ alter table call_history add column cdr_post_result bigint(3) default null;
 alter table call_history add column cdr_post_count int(1) default 0;
 ALTER TABLE call_history MODIFY COLUMN `date_time` DATETIME(3) NOT NULL AFTER `version`;
 
+--
+-- changing names of call times to make relative to acd call
+--
+alter table acd_call_history change column call_start agent_call_start datetime;
+alter table acd_call_history change column call_end agent_call_end datetime;
+
 commit work;

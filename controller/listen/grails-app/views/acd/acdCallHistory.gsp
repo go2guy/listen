@@ -206,11 +206,11 @@
               params.sort = sort
               params.order = order
             %>
-            <g:sortableColumn property="callStart" id="call_start_column" width="20%" title="Call Start"/>
+            <g:sortableColumn property="agentCallStart" id="call_start_column" width="20%" title="Call Start"/>
             <g:sortableColumn property="ani" id="caller_column" title="Caller"/>
             <g:sortableColumn property="skill" id="skill_column" title="Skill"/>
             <g:sortableColumn property="user" id="agent_column" title="Agent"/>
-            <g:sortableColumn property="callEnd" id="time_with_agent_column" title="Time With Agent"/>
+            <g:sortableColumn property="agentCallEnd" id="time_with_agent_column" title="Time With Agent"/>
             <g:sortableColumn property="dequeueTime" id="time_on_call_column" title="Time On Call"/>
           </tr>
           %{-- Using hidden input to persist data from grails to ajax requests (see records.poll) --}%
