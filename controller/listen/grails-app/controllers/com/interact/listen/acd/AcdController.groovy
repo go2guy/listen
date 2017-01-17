@@ -960,7 +960,7 @@ class AcdController
             def callHist = CallHistory.findBySessionId(thisHistory.sessionId)
             if (callHist) {
                 // We start with the rows from the call history table
-                tmpfile << "${callHist.dateTime?.getMillis()/1000},"
+                tmpfile << "${callHist.dateTime?.getMillis()},"
                 tmpfile << "${callHist.dateTime?.toString("yyyy-MM-dd HH:mm:ss")},"
                 tmpfile << "${listen.numberWithRealName(number: callHist.ani, user: callHist.fromUser, personalize: false)},"
                 tmpfile << "${listen.numberWithRealName(number: callHist.dnis, user: callHist.toUser, personalize: false)},"
