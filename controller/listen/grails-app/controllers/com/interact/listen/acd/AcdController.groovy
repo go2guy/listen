@@ -1072,8 +1072,8 @@ class AcdController
             c.ani = call.ani
             c.skill = call.skill.description
             c.callStatus = call.callStatus.viewable()
-            c.callStart = call.agentCallStart
-            c.callEnd = call.agentCallEnd
+            c.agentCallStart = call.agentCallStart
+            c.agentCallEnd = call.agentCallEnd
             c.enqueueTime = call.enqueueTime
             c.dequeueTime = call.dequeueTime
             c.user = ""

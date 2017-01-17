@@ -94,11 +94,11 @@
                                                            user="${acdCallHistory.user}" personalize="false"/></td>
                         </tr>
                         <tr>
-                            <th><g:message code="acdCallHistory.callStart.label"/></th>
+                            <th><g:message code="acdCallHistory.agentCallStart.label"/></th>
                             <td><joda:format value="${acdCallHistory.agentCallStart}"/></td>
                         </tr>
                         <tr>
-                            <th><g:message code="acdCallHistory.callEnd.label"/></th>
+                            <th><g:message code="acdCallHistory.agnetCallEnd.label"/></th>
                             <td><joda:format value="${acdCallHistory.agentCallEnd}"/></td>
                         </tr>
                         <tr>

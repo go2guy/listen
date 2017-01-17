@@ -79,7 +79,7 @@
                                     ${agent.lastCall ? agent.lastCall.toString("MM'/'dd'/'yyyy' 'HH':'mm':'ss"): ""}
                                 </td>
                                 <td class="currentCallColumn">
-                                    ${agent.callStart ? agent.callStart.toString("MM'/'dd'/'yyyy' 'HH':'mm':'ss") : ""}
+                                    ${agent.agentCallStart ? agent.agentCallStart.toString("MM'/'dd'/'yyyy' 'HH':'mm':'ss") : ""}
                                 </td>
                             </tr>
                         </g:each>
