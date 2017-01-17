@@ -15,15 +15,15 @@
     }
 
     .col-dateTime {
-        width: 18%;
+        width: 20%;
     }
 
     .col-ani {
-        width: 18%;
+        width: 25%;
     }
 
     .col-dnis {
-        width: 18%;
+        width: 25%;
     }
 
     .col-duration {
@@ -31,7 +31,7 @@
     }
 
     .col-result {
-        width: 18%;
+        width: 20%;
     }
 
     .col-acd {
@@ -190,7 +190,6 @@
         <caption><g:message code="callHistory.label"/><span style="float: right;"><g:link action="exportCallHistoryToCSV"
                                                                                           params="${params}">${message(code: 'callHistory.exportCSV.label')}</g:link></span></caption>
         <thead>
-        <g:sortableColumn property="timestamp" title="Timestamp" class="col-dateTime"/>
         <g:sortableColumn property="dateTime" title="Began" class="col-dateTime"/>
         <g:sortableColumn property="ani" title="Calling Party" class="col-ani"/>
         <g:sortableColumn property="dnis" title="Called Party" class="col-dnis"/>
@@ -201,8 +200,6 @@
         <tbody>
         <g:each in="${callHistoryList}" var="callHistory" status="i">
             <tr class="${i % 2 == 0 ? 'even' : 'odd'}">
-                <td><g:link action="showHistory"
-                            id="${callHistory.id}"><joda:format value="${callHistory.dateTime}" pattern="yyyy-MM-dd HH:mm:ss.SSS"/></g:link></td>
                 <td><g:link action="showHistory"
                             id="${callHistory.id}"><joda:format value="${callHistory.dateTime}" pattern="yyyy-MM-dd HH:mm:ss"/></g:link></td>
                 <td class="col-ani"><listen:numberWithRealName number="${fieldValue(bean: callHistory, field: 'ani')}"

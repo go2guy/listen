@@ -30,6 +30,10 @@
     <tbody>
         <tbody>
             <tr>
+                <th><g:message code="callHistory.timeStamp.label"/></th>
+                <td>${callHistoryInstance.dateTime.getMillis()}</td>
+            </tr>
+            <tr>
                 <th><g:message code="callHistory.startDate.label"/></th>
                 <td><joda:format value="${callHistoryInstance.dateTime}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
             </tr>
