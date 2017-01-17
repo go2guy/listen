@@ -93,32 +93,47 @@ class CallService {
             tmpFile << "\n";
 
             callHistory.each {
-                tmpFile << "${it.dateTime?.toString("yyyy-MM-dd HH:mm:ss.SSS")},"
-                tmpFile << "${it.dateTime?.toString("yyyy-MM-dd HH:mm:ss")},"
-                tmpFile << "${listen.numberWithRealName(number: it.ani, user: it.fromUser, personalize: false)},"
-                tmpFile << "${listen.numberWithRealName(number: it.dnis, user: it.toUser, personalize: false)},"
-                tmpFile << "${listen.formatduration(duration: it.duration, millis: false)},"
-                tmpFile << "${it.organization.name},"
-                tmpFile << "${it.result.replaceAll(",", " ")}," // This is to prevent anything weird...
-                tmpFile << "${it.sessionId},"
-                tmpFile << "${it.ivr},"
-
-                def acdCallHist = AcdCallHistory.findBySessionId(it?.sessionId)
+                def acdCallHist = AcdCallHistory.findAllBySessionId(it?.sessionId)
                 if (acdCallHist) {
-                    log.debug("Found acd call history records for session id [${callHistory.sessionId}]")
+                    log.debug("Found acd call history records for session id [${it.sessionId}]")
                     acdCallHist.each { acdCall ->
+                        log.debug("Exporting call and acd history for session id [${it.sessionId}] [${acdCall.user.username}]")
+                        // first we'll add the call history domain
+                        tmpFile << "${it.dateTime?.toString("yyyy-MM-dd HH:mm:ss.SSS")},"
+                        tmpFile << "${it.dateTime?.toString("yyyy-MM-dd HH:mm:ss")},"
+                        tmpFile << "${listen.numberWithRealName(number: it.ani, user: it.fromUser, personalize: false)},"
+                        tmpFile << "${listen.numberWithRealName(number: it.dnis, user: it.toUser, personalize: false)},"
+                        tmpFile << "${listen.formatduration(duration: it.duration, millis: false)},"
+                        tmpFile << "${it.organization.name},"
+                        tmpFile << "${it.result.replaceAll(",", " ")}," // This is to prevent anything weird...
+                        tmpFile << "${it.sessionId},"
+                        tmpFile << "${it.ivr},"
+                        // Now we'll add the acd call domain portion
                         tmpFile << "${acdCall.skill},"
                         tmpFile << "${acdCall.enqueueTime?.toString("yyyy-MM-dd HH:mm:ss")},"
                         tmpFile << "${acdCall.dequeueTime?.toString("yyyy-MM-dd HH:mm:ss")},"
-                        tmpFile << "${listen.computeDuration(start: acdCall.enqueueTime, end:acdCall.dequeueTime)},"
+                        tmpFile << "${listen.computeDuration(start: acdCall.enqueueTime, end: acdCall.dequeueTime)},"
                         tmpFile << "${acdCall.callStatus.name()},"
                         tmpFile << "${acdCall.user.username},"
                         tmpFile << "${acdCall.agentCallStart?.toString("yyyy-MM-dd HH:mm:ss")},"
                         tmpFile << "${acdCall.agentCallEnd?.toString("yyyy-MM-dd HH:mm:ss")},"
-                        tmpFile << "${listen.computeDuration(start: acdCall.agentCallStart, end:acdCall.agentCallEnd)},"
+                        tmpFile << "${listen.computeDuration(start: acdCall.agentCallStart, end: acdCall.agentCallEnd)},"
+                        tmpFile << "\n"
                     }
+                } else {
+                    // we don't have any acd call history, so lets just output the call history domain
+                    log.debug("Exporting call history for session id [${it.sessionId}]")
+                    tmpFile << "${it.dateTime?.toString("yyyy-MM-dd HH:mm:ss.SSS")},"
+                    tmpFile << "${it.dateTime?.toString("yyyy-MM-dd HH:mm:ss")},"
+                    tmpFile << "${listen.numberWithRealName(number: it.ani, user: it.fromUser, personalize: false)},"
+                    tmpFile << "${listen.numberWithRealName(number: it.dnis, user: it.toUser, personalize: false)},"
+                    tmpFile << "${listen.formatduration(duration: it.duration, millis: false)},"
+                    tmpFile << "${it.organization.name},"
+                    tmpFile << "${it.result.replaceAll(",", " ")}," // This is to prevent anything weird...
+                    tmpFile << "${it.sessionId},"
+                    tmpFile << "${it.ivr},"
+                    tmpFile << "\n"
                 }
-                tmpFile << "\n"
             }
         } catch (Exception e) {
             log.error("Exception building csv file: ${e}")
