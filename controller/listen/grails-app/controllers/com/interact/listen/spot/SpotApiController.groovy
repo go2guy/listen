@@ -699,6 +699,10 @@ class SpotApiController {
 
     def canDial = {
         log.debug("canDial invoked with params [${params}]")
+
+        boolean canDial = false;
+        String outboundCallerId = "";
+
         def user = User.get(getIdFromHref(params.subscriber))
         if(!user.enabled()) {
             response.sendError(HSR.SC_FORBIDDEN)
@@ -711,12 +715,44 @@ class SpotApiController {
             return
         }
 
-        def outboundCallid = callRoutingService.determineOutboundCallId(user)
-        log.debug "Returned value from outbound callid check [${outboundCallid}]"
-        
+        Organization callersOrg = user.organization;
+
+        //If this is to an "extension", make sure it's in their org
+        if(destination.size() < 10)
+        {
+            //Make sure there's an extension for this number
+            List<PhoneNumber> list = PhoneNumber.createCriteria().list() {
+                eq('number', destination)
+                owner {
+                    eq('organization', callersOrg)
+                }
+            }
+
+            if(list != null && list.size() == 1)
+            {
+                PhoneNumber dest = list.get(0);
+                log.debug("User is calling [" + dest.owner.getRealName() + "]");
+                canDial = true;
+            }
+            else
+            {
+                //No extension
+                log.debug("No extension[" + destination + "] in org[" + callersOrg.id + "]");
+                canDial = false;
+            }
+        }
+        else
+        {
+            outboundCallerId = callRoutingService.determineOutboundCallId(user);
+            log.debug "Returned value from outbound callid check [${outboundCallerId}]";
+            canDial = user.canDial(destination);
+            log.debug("CanDial: " + canDial);
+        }
+
+        log.debug("Returning canDial[" + canDial + "], outboundCallid[" + outboundCallerId + "].");
         render(contentType: 'application/json') {
-            delegate.canDial = user.canDial(destination)
-            delegate.outboundCallid = outboundCallid 
+            delegate.canDial = canDial
+            delegate.outboundCallid = outboundCallerId
         }
     }
 
