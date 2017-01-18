@@ -1,5 +1,6 @@
 package com.interact.listen.acd
 
+import com.interact.listen.Organization
 import com.interact.listen.PhoneNumber
 import com.interact.listen.User
 import com.interact.listen.exceptions.ListenAcdException
@@ -1074,12 +1075,12 @@ class AcdService
      *
      * @return Users.
      */
-    List<User> getAcdAgentList()
+    List<User> getAcdAgentList(Organization organization)
     {
         def userCriteria = User.createCriteria();
         def results = userCriteria.list(sort: "realName")
         {
-            isNotNull("organization")
+            eq("organization", organization)
             acdUserStatus {
                 ne("acdQueueStatus",AcdQueueStatus.VoicemailBox)
             }
@@ -1092,13 +1093,18 @@ class AcdService
     }
 
     def acdHistoryList(String sort, String order, String max, String offset, DateTime theStart, DateTime theEnd,
-                        String agentId, String skillId)
+                        String agentId, String skillId, Organization organization)
     {
         def calls = AcdCallHistory.createCriteria().list(
             sort: sort, order: order, max: max, offset: offset)
             {
                 ge("enqueueTime", theStart)
                 le("enqueueTime", theEnd)
+
+                skill
+                {
+                    eq('organization', organization);
+                }
 
                 if(agentId && !agentId.isEmpty())
                 {

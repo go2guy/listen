@@ -55,10 +55,12 @@ class AcdController
     }
 
     def callQueue = {
-      if (!springSecurityService.currentUser) {
-        //Redirect to login
-        redirect(controller: 'login', action: 'auth');
+      if (!springSecurityService.currentUser)
+      {
+          //Redirect to login
+          redirect(controller: 'login', action: 'auth');
       }
+
       def user = springSecurityService.currentUser
 
       params.sort = params.sort ?: 'enqueueTime'
@@ -70,13 +72,23 @@ class AcdController
       def allCalls = []
       def callTotal = 0
 
-      if ( user.hasRole('ROLE_ORGANIZATION_ADMIN') || user.hasRole('ROLE_QUEUE_USER') ) { // get all calls
+      if ( user.hasRole('ROLE_ORGANIZATION_ADMIN') || user.hasRole('ROLE_QUEUE_USER') )
+      { // get all calls
         calls = AcdCall.createCriteria().list() {
+            skill
+            {
+                eq('organization', user.organization);
+            }
             order(params.sort, params.order)
             maxResults(params.max.toInteger())
             firstResult(params.offset.toInteger())
         }
-        callTotal = AcdCall.findAll().size()
+        callTotal = AcdCall.createCriteria().list() {
+            skill
+            {
+                eq('organization', user.organization);
+            }
+        }.size();
       }
       // else { // Get calls for the current user
         // def skills = []
@@ -126,13 +138,22 @@ class AcdController
 
       if ( user.hasRole('ROLE_ORGANIZATION_ADMIN') || user.hasRole('ROLE_QUEUE_USER') ) { // get all calls
         calls = AcdCall.createCriteria().list {
-          order(params.sort, params.order)
-          maxResults(params.max.toInteger())
-          firstResult(params.offset.toInteger())
+            skill
+            {
+                eq('organization', user.organization);
+            }
+            order(params.sort, params.order)
+            maxResults(params.max.toInteger())
+            firstResult(params.offset.toInteger())
         }
       }
 
-      json.callTotal = AcdCall.findAll().size()
+      json.callTotal = AcdCall.createCriteria().list {
+          skill
+          {
+              eq('organization', user.organization);
+          }
+      }.size();
 
       // else { // get calls for current users skillset
         // def skills = []
@@ -826,13 +847,15 @@ class AcdController
                 log.debug "AcdController.availableTransferAgents: params[${params}]"
             }
 
+            def user = springSecurityService.currentUser;
+
             def users;
 
             AcdCall thisCall = AcdCall.get(params.id);
 
             if (thisCall)
             {
-                users = acdService.getAcdAgentList();
+                users = acdService.getAcdAgentList(user.organization);
             }
 
             def json = [:]
@@ -840,7 +863,11 @@ class AcdController
             def userJson = [];
 
             //First add the other queues
-            List<Skill> skills = Skill.listOrderBySkillname();
+            List<Skill> skills = Skill.createCriteria().list(sort: "skillname")
+            {
+                eq('organization', user.organization)
+            };
+
             for(Skill thisSkill : skills)
             {
                 def c = [:];
@@ -1061,7 +1088,7 @@ class AcdController
         }
         params.agent = params.agent ?: ""
         def calls = acdService.acdHistoryList(params.sort, params.order, params.max, params.offset, theStart, theEnd,
-                params.agent.toString(), params.skill);
+                params.agent.toString(), params.skill, user.organization);
         def callTotal = calls.totalCount;
 
         def json = [:]
@@ -1097,12 +1124,16 @@ class AcdController
 
         def agentJson = [];
         List<User> agents = []
-        if ( user.hasRole('ROLE_ORGANIZATION_ADMIN') ) { // find all agents
-            agents = acdService.acdAgentList;
+        if ( user.hasRole('ROLE_ORGANIZATION_ADMIN') )
+        {
+            // find all agents
+            agents = acdService.getAcdAgentList(user.organization);
         }
-        else { // list only the current user
+        else
+        { // list only the current user
             agents.add(user)
         }
+
         for (User agent : agents)
         {
             def d = [:]
@@ -1114,11 +1145,19 @@ class AcdController
         json.skill = params.skill;
 
         def skillJson = [];
-        List<Skill> skills = []
-        if ( user.hasRole('ROLE_ORGANIZATION_ADMIN') ) { // find all skills
-            skills = Skill.list(sort: "skillname");
+        List<Skill> skills = [];
+
+        if ( user.hasRole('ROLE_ORGANIZATION_ADMIN') )
+        {
+            // find all skills
+            skills = Skill.createCriteria().list(sort: "skillname")
+            {
+                eq('organization', user.organization)
+            }
         }
-        else { // find only skills associated with current user
+        else
+        {
+            // find only skills associated with current user
             UserSkill.findAllByUser(user).each() { userSkill ->
                 skills.add(userSkill.skill)
             }
