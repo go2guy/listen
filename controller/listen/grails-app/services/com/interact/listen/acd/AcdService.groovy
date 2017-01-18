@@ -708,7 +708,7 @@ class AcdService
         }
 
         //Delete call from queue.
-        removeCall(acdCall, AcdCallStatus.VOICEMAIL);
+        //removeCall(acdCall, AcdCallStatus.VOICEMAIL); commented out as the build app is now sending an update event back to controller.
     }
 
 
@@ -924,6 +924,8 @@ class AcdService
      */
     private void removeCall(AcdCall call, AcdCallStatus lastStatus)
     {
+        log.debug("removeCall for session id [" + call.sessionId + "]");
+
         //Set the status so it is preserved in the history
         if(lastStatus != null)
         {

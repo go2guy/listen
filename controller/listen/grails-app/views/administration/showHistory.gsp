@@ -102,7 +102,7 @@
                             <td><joda:format value="${acdCallHistory.agentCallStart}"/></td>
                         </tr>
                         <tr>
-                            <th><g:message code="acdCallHistory.agnetCallEnd.label"/></th>
+                            <th><g:message code="acdCallHistory.agentCallEnd.label"/></th>
                             <td><joda:format value="${acdCallHistory.agentCallEnd}"/></td>
                         </tr>
                         <tr>
