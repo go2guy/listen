@@ -33,7 +33,9 @@ class CallHistory {
         // cdrPostResult nullable: false // not supported because int
         // cdrPostCount nullable: false // not supported because int
     }
-
+    static mapping = {
+        dateTime column: "date_time", sqlType: "DATETIME(3)", precision: 3
+    }
     /**
      * Executed prior to an insert.
      */
