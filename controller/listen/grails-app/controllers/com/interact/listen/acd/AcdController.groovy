@@ -948,8 +948,10 @@ class AcdController
         DateTime theStart = getStartDate(params.startDate);
         DateTime theEnd = getEndDate(params.endDate);
 
+        def user = springSecurityService.currentUser;
+
         def calls = acdService.acdHistoryList(params.sort, params.order, params.max, params.offset, theStart, theEnd,
-                params.agent, params.skill);
+                params.agent, params.skill, user.organization);
 
         String filename = "listen-acdcallhistory-${new LocalDateTime().toString('yyyyMMddHHmmss')}.csv";
 
@@ -1015,10 +1017,25 @@ class AcdController
             tmpfile << "${thisHistory.dequeueTime?.toString("yyyy-MM-dd HH:mm:ss")},"
             tmpfile << "${listen.computeDuration(start: thisHistory.enqueueTime, end:thisHistory.dequeueTime)},"
             tmpfile << "${thisHistory.callStatus.name()},"
-            tmpfile << "${thisHistory.user.username},"
+            if(thisHistory.user != null)
+            {
+                tmpfile << "${thisHistory.user.username},";
+            }
+            else
+            {
+                tmpfile << ",";
+            }
             tmpfile << "${thisHistory.agentCallStart?.toString("yyyy-MM-dd HH:mm:ss")},"
             tmpfile << "${thisHistory.agentCallEnd?.toString("yyyy-MM-dd HH:mm:ss")},"
-            tmpfile << "${listen.computeDuration(start: thisHistory.agentCallStart, end:thisHistory.agentCallEnd)},"
+            if(thisHistory.agentCallEnd != null && thisHistory.agentCallEnd != null)
+            {
+                tmpfile << "${listen.computeDuration(start: thisHistory.agentCallStart, end:thisHistory.agentCallEnd)},"
+            }
+            else
+            {
+                DateTime now = DateTime.now();
+                tmpfile << "${listen.computeDuration(start: now, end: now)},"
+            }
             tmpfile << "\n";
         }
 
