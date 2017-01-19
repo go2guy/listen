@@ -109,7 +109,7 @@ Requires: xmlsecurity, iijava, iitomcat, installCoordinator
 
     # Remove everything from the /work directory so that the cache's are cleared.
     cd /interact/tomcat/work
-    find -type d -name "listen-controller" -delete; true
+    find -type d -name "listen-controller" -exec rm -rf {} \; > /dev/null 2>&1
 
     # Remove the war directory from webapps.
     for warpkg in `rpm -ql %{name}-%{version}-%{release} | grep "\.war"`
