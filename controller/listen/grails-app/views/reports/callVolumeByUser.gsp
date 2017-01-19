@@ -93,6 +93,7 @@ form input[type=submit] {
 ul.download-options {
     float: right;
     font: bold 11px Courier New, monospace;
+    display: none;
 }
 
 ul.download-options li {
