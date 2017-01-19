@@ -97,7 +97,7 @@ class CallService {
                 if (acdCallHist) {
                     log.debug("Found acd call history records for session id [${it.sessionId}]")
                     acdCallHist.each { acdCall ->
-                        log.debug("Exporting call and acd history for session id [${it.sessionId}] [${acdCall.user.username}]")
+                        log.debug("Exporting call and acd history for session id [${it.sessionId}]")
                         // first we'll add the call history domain
                         tmpFile << "${it.dateTime?.getMillis()},"
                         tmpFile << "${it.dateTime?.toString("yyyy-MM-dd HH:mm:ss")},"
@@ -114,10 +114,27 @@ class CallService {
                         tmpFile << "${acdCall.dequeueTime?.toString("yyyy-MM-dd HH:mm:ss")},"
                         tmpFile << "${listen.computeDuration(start: acdCall.enqueueTime, end: acdCall.dequeueTime)},"
                         tmpFile << "${acdCall.callStatus.name()},"
-                        tmpFile << "${acdCall.user.username},"
+                        if(acdCall.user != null)
+                        {
+                            tmpFile << "${acdCall.user.username},"
+                        }
+                        else
+                        {
+                            tmpFile << ","
+                        }
                         tmpFile << "${acdCall.agentCallStart?.toString("yyyy-MM-dd HH:mm:ss")},"
                         tmpFile << "${acdCall.agentCallEnd?.toString("yyyy-MM-dd HH:mm:ss")},"
-                        tmpFile << "${listen.computeDuration(start: acdCall.agentCallStart, end: acdCall.agentCallEnd)},"
+                        if(acdCall.agentCallEnd != null && acdCall.agentCallEnd != null)
+                        {
+                            tmpFile << "${listen.computeDuration(start: acdCall.agentCallStart, end: acdCall.agentCallEnd)},"
+                        }
+                        else
+                        {
+                            //need a zero duration then
+                            DateTime now = DateTime.now();
+                            tmpFile << "${listen.computeDuration(start: now, end: now)},"
+                        }
+
                         tmpFile << "\n"
                     }
                 } else {
