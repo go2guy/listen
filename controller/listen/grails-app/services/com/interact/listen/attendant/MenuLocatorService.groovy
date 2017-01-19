@@ -29,6 +29,10 @@ class MenuLocatorService {
         List<PromptOverride> override = c.listDistinct() {
             le('startDate', currentTime)
             ge('endDate', currentTime)
+            useMenu
+                    {
+                        eq('organization', organization)
+                    }
             order 'eventType', 'asc'
         }
 
