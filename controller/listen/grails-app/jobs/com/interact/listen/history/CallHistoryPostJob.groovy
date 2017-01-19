@@ -41,7 +41,6 @@ class CallHistoryPostJob {
       lt('cdrPostCount', 3)
       gt('dateTime', new LocalDate().toDateTimeAtCurrentTime().minusDays(Integer.parseInt((String) Holders.config.com.interact.listen.history.postRange)))
     }
-    log.debug "callRecords[${callRecords}]"
 
     callRecords.each { callRecord ->
       // set up our http client
