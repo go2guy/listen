@@ -52,7 +52,7 @@
           <label for="cdrUrl"><g:message code="organization.cdrUrl.label" defaut="CDR Post Url"/></label>
           <g:textField name="cdrUrl" value="${fieldValue(bean: organization, field: 'cdrUrl')}" maxlength="100" class="${listen.validationClass(bean: organization, field: 'cdrUrl')}"/>
           
-          <input type="checkbox" id="postCdr" name="postCdr" value="${false}" ${organization?.postCdr ? "checked=checked" : ""}/>
+          <input type="checkbox" id="postCdr" name="postCdr" value="${true}" ${organization?.postCdr ? "checked=checked" : ""}/>
           <g:message code="organization.postCdr.label" default="Enable cdr post to external server"/>
 
           <h3><g:message code="page.organization.edit.features.header"/></h3>

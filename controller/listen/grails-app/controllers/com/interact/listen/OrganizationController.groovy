@@ -253,6 +253,10 @@ class OrganizationController {
             organization.outboundCallidByDid=false
         }
 
+        if(!params?.postCdr){
+            organization.postCdr=false
+        }
+
         organization.properties['name', 'contextPath', 'outboundCallid', 'outboundCallidByDid', 'extLength', 'adServer', 'adDomain', 'ldapBasedn', 'ldapPort', 'ldapDc', 'route', 'cdrUrl', 'postCdr'] = params
         
         if(organization?.outboundCallidByDid){
@@ -263,6 +267,20 @@ class OrganizationController {
             log.debug "Outbound call id by DID NOT checked [${organization?.outboundCallidByDid}]"
             organization.outboundCallidByDid=false
         }
+
+      log.debug "organization.postCdr[${organization.postCdr}]"
+
+      if(organization?.postCdr){
+        // log.debug "Outbound call id by DID checked [${organization?.postCdr}]"
+          organization.postCdr=true
+      }
+      else {
+          // log.debug "Outbound call id by DID NOT checked [${organization?.outboundCallidByDid}]"
+          organization.postCdr=false
+      }
+
+      // organization.postCdr = organization?.postCdr ? true : false
+      log.debug "organization.postCdr[${organization.postCdr}]"
 
       if (!organization?.route)
       {
