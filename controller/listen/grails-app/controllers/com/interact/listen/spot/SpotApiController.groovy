@@ -854,10 +854,10 @@ class SpotApiController {
             return
         }
 
-        if(destination.size() == organization.extLength + 1)
+        if(destination.size() == (organization.extLength + organization.id.toString().size()))
         {
             String numberBefore = destination;
-            destination = destination.substring(1);
+            destination = destination.substring(organization.id.toString().size());
             log.debug("Set destination to " + destination + " from " + numberBefore);
         }
 
@@ -1633,10 +1633,10 @@ class SpotApiController {
             return
         }
 
-        if(number.size() == organization.extLength + 1)
+        if(number.size() == organization.extLength + organization.id.toString().size())
         {
             String numberBefore = number;
-            number = number.substring(1);
+            number = number.substring(organization.id.toString().size());
             log.debug("Set number to " + number + " from " + numberBefore);
         }
 

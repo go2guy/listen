@@ -83,9 +83,9 @@ class User implements Tenant
             LOG.debug("Looking up User by number[" + number + "], organization[" + organization.getName() + "]");
         }
 
-        if(number.size() == organization.extLength + 1)
+        if(number.size() == (organization.extLength + organization.id.toString().size()))
         {
-            number = number.substring(1);
+            number = number.substring(organization.id.toString().size());
 
             if(LOG.isDebugEnabled())
             {
