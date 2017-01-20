@@ -1,6 +1,7 @@
 package com.interact.listen.history
 
 import com.google.gson.JsonNull
+import org.apache.http.conn.HttpHostConnectException
 import org.joda.time.LocalDateTime
 import com.interact.listen.PrimaryNode
 import com.interact.listen.acd.AcdCallHistory
@@ -74,9 +75,19 @@ class CallHistoryPostJob {
           statusCode = 504
           log.debug "Socket timeout occurred updating post result details for call record."
         }
+        catch (HttpHostConnectException hhce)
+        {
+            statusCode = 504;
+            log.warn("HttpHostConnectionException occurred updating post result details for call record : " + hhce);
+        }
+        catch (UnknownHostException uhe)
+        {
+            statusCode = 504;
+            log.warn("UnknownHostException occurred updating post result details for call record : " + uhe);
+        }
         catch (Exception e) {
           statusCode = 500
-          log.debug "Internal Server Error [${e}] occurred updating  result details for call record."
+          log.warn("Internal Server Error [${e}] occurred updating  result details for call record.");
         }
 
         callRecord.cdrPostResult = statusCode

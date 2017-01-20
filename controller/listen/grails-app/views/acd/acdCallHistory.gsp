@@ -114,8 +114,13 @@
             var endAsJDate = new Date(endAsJDate_[0], endAsJDate_[1]-1, endAsJDate_[2], endAsJDate_[3], endAsJDate_[4], endAsJDate_[5]);
 
             var difference = (endAsJDate.valueOf() - startAsJDate.valueOf());
-            if ( difference > 0 ) {
-              difference = Math.floor(difference / 1000);
+            if ( difference > 0 )
+            {
+                difference = Math.floor(difference / 1000);
+            }
+            else if(difference < 0)
+            {
+                return 'N/A';
             }
           }
 
