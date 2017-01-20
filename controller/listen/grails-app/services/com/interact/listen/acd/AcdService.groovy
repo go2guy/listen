@@ -689,16 +689,19 @@ class AcdService
     private void acdCallVoicemailPrivate(AcdCall acdCall, String number) throws ListenAcdException
     {
         //Send request to the IVR
+        Boolean requestFailed = false
         try
         {
             spotCommunicationService.sendAcdVoicemailEvent(acdCall.sessionId, number);
         }
         catch(IOException ioe)
         {
+            requestFailed = true
             log.error("IOException sending ACD Voicemail Event: " + ioe, ioe);
         }
         catch(SpotCommunicationException sce)
         {
+            requestFailed = true
             log.error("SPOT Communication Exception sending ACD Voicemail Event: " + sce, sce);
         }
 
@@ -708,8 +711,12 @@ class AcdService
             freeAgent(acdCall.user);
         }
 
-        //Delete call from queue.
-        //removeCall(acdCall, AcdCallStatus.VOICEMAIL); commented out as the build app is now sending an update event back to controller.
+        if (requestFailed) {
+            //Delete call from queue.
+            // normal call scenarios the build app should send an update that will remove this from queue
+            removeCall(acdCall, AcdCallStatus.VOICEMAIL);
+        }
+
     }
 
 
