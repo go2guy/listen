@@ -70,6 +70,10 @@
         <label for="emailAddress"><g:message code="user.emailAddress.label"/></label>
         <g:textField name="emailAddress" value="${fieldValue(bean: user, field: 'emailAddress')}" class="${listen.validationClass(bean: user, field: 'emailAddress')}"/>
 
+        <h3><g:message code="organizationConfiguration.apiKey.label"/></h3>
+        <g:textField name="apiKey" value="${organization?.apiKey ? organization.apiKey : uuid}" style="width: 300px;" />
+          %{--<input type="text" name="apiKey" class="apiKeyText" style="display: inline;width: 300px;" value="${organization?.apiKey ? organization.apiKey : uuid}" id="apiKey" disabled=disabled } />--}%
+
         <ul class="form-buttons">
           <li><g:submitButton name="submit" value="${g.message(code: 'default.button.create.label')}"/></li>
         </ul>

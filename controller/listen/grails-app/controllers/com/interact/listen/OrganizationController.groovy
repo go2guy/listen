@@ -61,7 +61,12 @@ class OrganizationController {
     }
 
     def create = {
-        render(view: 'create', model: [enableableFeatures: licenseService.enableableFeatures(), defaultRoute: grailsApplication.config.com.interact.listen.defaultOrganizationRoute])
+
+        UUID uuid = UUID.randomUUID();
+        String tempUuid = String.valueOf(uuid).replaceAll('-', '').substring(0,32);;
+
+        render(view: 'create', model: [enableableFeatures: licenseService.enableableFeatures(),
+                defaultRoute: grailsApplication.config.com.interact.listen.defaultOrganizationRoute, uuid: tempUuid]);
     }
 
     def deleteRoute = {
@@ -121,7 +126,7 @@ class OrganizationController {
         }
 
         UUID uuid = UUID.randomUUID();
-        String tempUuid = String.valueOf(uuid).replaceAll('-', '');
+        String tempUuid = String.valueOf(uuid).replaceAll('-', '').substring(0,32);
 
         render(view: 'edit', model: [organization: organization,
                 enableableFeatures: licenseService.enableableFeatures(), uuid: tempUuid]);
@@ -178,7 +183,8 @@ class OrganizationController {
 
         Organization.withTransaction { status ->
             def organization = new Organization()
-            organization.properties['name', 'contextPath', 'outboundCallid', 'outboundCallidByDid', 'adServer', 'adDomain', 'ldapBasedn', 'ldapPort', 'ldapDc', 'route'] = params
+            organization.properties['name', 'contextPath', 'outboundCallid', 'outboundCallidByDid', 'adServer',
+                    'adDomain', 'ldapBasedn', 'ldapPort', 'ldapDc', 'route', 'apiKey'] = params
 
             if(organization?.outboundCallidByDid){
                 log.debug "Outbound call id by DID checked"
@@ -201,10 +207,14 @@ class OrganizationController {
                 }
             }
 
-            String apiKey = UUID.randomUUID().toString();
-            organization.apiKey = apiKey.replaceAll('-','').substring(0,32);
+            if(organization.getApiKey() == null || organization.apiKey.isEmpty())
+            {
+                String apiKey = UUID.randomUUID().toString();
+                organization.apiKey = apiKey.replaceAll('-','').substring(0,32);
+            }
 
-            if(!organization.hasErrors() && organization.save()) {
+            if(!organization.hasErrors() && organization.save())
+            {
                 ldapService.addOrganization(organization)
 
                 def user = userCreationService.createOperator(params, organization)
@@ -218,7 +228,9 @@ class OrganizationController {
 
                 flash.successMessage = 'Organization created'
                 redirect(action: 'edit', id: organization.id)
-            } else {
+            }
+            else
+            {
                 status.setRollbackOnly()
                 // create a temporary User object so results can be displayed back in the form
                 def u = new User()
