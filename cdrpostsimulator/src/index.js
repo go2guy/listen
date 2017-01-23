@@ -36,7 +36,7 @@ const returnValues = new Array(100);
 log.debug("Setting up request percentages");
 var totalPercentage = 0;
 var low = 0;
-var high = 0;
+var high = -1;
 for (var i = 0; i < C.REQUESTS.length; i++)
 {
     var data = C.REQUESTS[i];
