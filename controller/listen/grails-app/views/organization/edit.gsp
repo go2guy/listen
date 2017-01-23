@@ -7,7 +7,9 @@
     <meta name="page-header" content="${g.message(code: 'page.organization.edit.header')}"/>
 
     <style type="text/css">
-      .apikey-box { width: 275px; }
+      #generateUuid { padding-left: 10px; }
+
+      #apiKeyText { display: inline;}
     </style>
   </head>
   <body>
@@ -65,7 +67,11 @@
         </g:each>
 
           <h3><g:message code="organizationConfiguration.apiKey.label"/></h3>
-          <g:textField name="apiKey" value="${fieldValue(bean: organization, field: 'apiKey')}" style="width: 300px;" disabled="disabled"/>
+          <div>
+              <input type="text" name="apiKey" class="apiKeyText" style="display: inline;width: 300px;" value="${fieldValue(bean: organization, field: 'apiKey')}" id="apiKey" ${organization?.apiKey ? "disabled=disabled" : ""} />
+              %{--<g:textField name="apiKey" value="${fieldValue(bean: organization, field: 'apiKey')}" style="width: 300px;" disabled=${organization?.postCdr ? "disabled" : ""}"/>--}%
+              <a href="javascript:insertUuid()" title="Generate UUID" id="generateUuid" style="${organization?.apiKey ? "display: none;" : ""}" >Generate</a>
+          </div>
 
         <ul class="form-buttons">
           <li><g:submitButton name="submit" value="${g.message(code: 'default.button.save.label')}"/></li>
@@ -76,6 +82,14 @@
 $(document).ready(function() {
     $('#name').focus();
 });
+    var el = document.getElementById('generateUuid');
+    el.onclick = insertUuid;
+
+
+    function insertUuid() {
+        var k = document.getElementById('apiKey');
+        k.setAttribute('value', '${uuid}');
+    }
     </script>
   </body>
 </html>

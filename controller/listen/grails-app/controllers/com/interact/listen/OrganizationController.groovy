@@ -115,11 +115,16 @@ class OrganizationController {
             log.debug "DID call ID not enabled for organization"
         }
 
-      if (!organization?.route)
-      {
-        organization.route = grailsApplication.config.com.interact.listen.defaultOrganizationRoute
-      }
-        render(view: 'edit', model: [organization: organization, enableableFeatures: licenseService.enableableFeatures()])
+        if (!organization?.route)
+        {
+            organization.route = grailsApplication.config.com.interact.listen.defaultOrganizationRoute
+        }
+
+        UUID uuid = UUID.randomUUID();
+        String tempUuid = String.valueOf(uuid).replaceAll('-', '');
+
+        render(view: 'edit', model: [organization: organization,
+                enableableFeatures: licenseService.enableableFeatures(), uuid: tempUuid]);
     }
 
     def enable = {
@@ -257,7 +262,8 @@ class OrganizationController {
             organization.postCdr=false
         }
 
-        organization.properties['name', 'contextPath', 'outboundCallid', 'outboundCallidByDid', 'extLength', 'adServer', 'adDomain', 'ldapBasedn', 'ldapPort', 'ldapDc', 'route', 'cdrUrl', 'postCdr'] = params
+        organization.properties['name', 'contextPath', 'outboundCallid', 'outboundCallidByDid', 'extLength', 'adServer',
+                'adDomain', 'ldapBasedn', 'ldapPort', 'ldapDc', 'route', 'cdrUrl', 'postCdr', 'apiKey'] = params
         
         if(organization?.outboundCallidByDid){
             log.debug "Outbound call id by DID checked [${organization?.outboundCallidByDid}]"

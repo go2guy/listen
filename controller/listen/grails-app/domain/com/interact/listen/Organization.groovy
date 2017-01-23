@@ -46,6 +46,7 @@ class Organization {
         ldapDc nullable: true
         route nullable: true
         cdrUrl nullable: true
+        apiKey nullable: true
     }
 
     String toString() {
