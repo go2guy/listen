@@ -4,7 +4,7 @@ final class FilterUtil
 {
     public boolean shouldLog(def controller, def action)
     {
-        if(controller.equals('messages') && ['pollingList', 'newCount', 'newAcdCount'].contains(action)) {
+        if(controller.equals('messages') && ['pollingList', 'newCount', 'newAcdCount', 'acdPollingList'].contains(action)) {
             return false
         }
         if(controller.equals('login') && action.equals('authAjax')) {

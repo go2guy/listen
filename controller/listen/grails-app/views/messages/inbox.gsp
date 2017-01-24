@@ -173,7 +173,7 @@
             visibleIds = visibleIds.substring(0, visibleIds.length - 1);
 
             $.ajax({
-              url: '${createLink(controller: 'messages', action: 'acdPollingList', mapping: 'internalApi')}?visibleIds=' + visibleIds + '${(request.queryString?.length() > 0) ? "&" + request.queryString : ""}',
+              url: '${createLink(controller: 'messages', action: 'pollingList', mapping: 'internalApi')}?visibleIds=' + visibleIds + '${(request.queryString?.length() > 0) ? "&" + request.queryString : ""}',
               dataType: 'json',
               cache: false,
               success: function(data, textStatus, xhr) {
