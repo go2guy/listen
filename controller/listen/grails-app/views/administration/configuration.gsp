@@ -8,6 +8,10 @@
 .transcriptionDetails {
     margin-left: 20px;
 }
+        .form-buttons
+        {
+            padding-top: 12px;
+        }
     </style>
   </head>
   <body>

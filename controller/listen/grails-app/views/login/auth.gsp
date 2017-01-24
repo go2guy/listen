@@ -5,6 +5,13 @@
     <link rel="stylesheet" href="${resource(dir: 'resources/yui-2.8.0r4', file: 'reset-fonts.css')}">
     <link rel="stylesheet" href="${resource(dir: 'resources/app/css', file: 'login.css')}">
     <script type="text/javascript" src="${resource(dir: 'resources/jquery', file: 'jquery-1.4.2.min.js')}"></script>
+
+    <style type="text/css">
+    .inputbox
+    {
+        width: 100%;
+    }
+    </style>
   </head>
   <body>
     <div id="left">
@@ -23,10 +30,10 @@
             <g:hiddenField name="organization" value="${listen.contextOrganizationProperty(field: 'id', defaultValue: '-1')}"/>
 
             <label for="username"><g:message code="page.login.auth.username.label"/></label>
-            <g:textField name="username" placeholder="${g.message(code: 'page.login.auth.username.label')}"/>
+            <g:textField class="inputbox" name="username" placeholder="${g.message(code: 'page.login.auth.username.label')}"/>
 
             <label for="j_password"><g:message code="page.login.auth.password.label"/></label>
-            <g:passwordField name="j_password" placeholder="${g.message(code: 'page.login.auth.password.label')}"/>
+            <g:passwordField class="inputbox"  name="j_password" placeholder="${g.message(code: 'page.login.auth.password.label')}"/>
 
             <g:hiddenField name="j_username" value=""/>
             <g:submitButton name="loginButton" value="${g.message(code: 'page.login.auth.button.login')}" class="button"/>

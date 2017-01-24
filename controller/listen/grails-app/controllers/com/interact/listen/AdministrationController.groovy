@@ -1,6 +1,5 @@
 package com.interact.listen
 
-import com.interact.listen.exceptions.ListenExportException
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import com.interact.listen.android.GoogleAuthConfiguration
@@ -13,18 +12,12 @@ import com.interact.listen.pbx.Extension
 import com.interact.listen.pbx.SipPhone
 import com.interact.listen.pbx.NumberRoute
 import com.interact.listen.voicemail.afterhours.AfterHoursConfiguration
-import org.apache.commons.lang.ObjectUtils
 import org.joda.time.DateTime
 import org.joda.time.LocalDateTime
 import org.joda.time.Period
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.format.DateTimeFormatter
 import com.interact.listen.exceptions.ListenExportException
-import org.joda.time.format.PeriodFormatter
-import org.joda.time.format.PeriodFormatterBuilder
-
-import javax.validation.constraints.Null
-
 
 @Secured(['ROLE_ORGANIZATION_ADMIN'])
 class AdministrationController {
@@ -1071,7 +1064,8 @@ class AdministrationController {
         }
 
         def afterHours = AfterHoursConfiguration.findByOrganization(organization)
-        if (!afterHours) {
+        if (!afterHours)
+        {
             afterHours = new AfterHoursConfiguration(organization: organization)
         }
 
@@ -1080,12 +1074,16 @@ class AdministrationController {
         def originalRealizeUrl = afterHours.realizeUrl
         def originalRealizeAlertName = afterHours.realizeAlertName
 
-        if (licenseService.canAccess(ListenFeature.AFTERHOURS)) {
+        if (licenseService.canAccess(ListenFeature.AFTERHOURS))
+        {
             log.debug "After hours is licensed, saving configuration"
 
-            if (params['afterHours.mobilePhone.id'] == '') {
+            if (params['afterHours.mobilePhone.id'] == '')
+            {
                 afterHours.mobilePhone = null
-            } else {
+            }
+            else
+            {
                 bindData(afterHours, params['afterHours'], [include: ['mobilePhone']])
             }
             bindData(afterHours, params['afterHours'], [include: ['realizeAlertName']])
@@ -1095,6 +1093,26 @@ class AdministrationController {
             } else {
                 afterHours.alternateNumber = params['afterHours'].alternateNumber + '@' + params['afterHours'].provider
             }
+        }
+
+        boolean afterHoursChanged = true;
+        boolean afterHoursRemoved = false;
+        if((originalMobilePhone == null && afterHours.mobilePhone == null) &&
+                (originalAlternateNumber == null && (afterHours.alternateNumber == null || afterHours.alternateNumber.isEmpty())) &&
+                (originalRealizeUrl == null && afterHours.realizeUrl == null) &&
+                (originalRealizeAlertName == null && afterHours.realizeAlertName == null))
+        {
+            log.debug("No changes to after hours configuration");
+            afterHoursChanged = false;
+        }
+        else if(afterHours.mobilePhone == null &&
+                (afterHours.alternateNumber == null || afterHours.alternateNumber.isEmpty()) &&
+                afterHours.realizeUrl == null &&
+                afterHours.realizeAlertName == null)
+        {
+            log.debug("Looks like we're removing after hours configuration");
+            afterHoursRemoved = true;
+            afterHoursChanged = false;
         }
 
         def conferencing = ConferencingConfiguration.findByOrganization(organization)
@@ -1112,39 +1130,66 @@ class AdministrationController {
             bindData(conferencing, params['conferencing'], [include: ['pinLength']])
         }
 
-        def originalExtLength = organization.extLength
-        if (licenseService.canAccess(ListenFeature.IPPBX)) {
-            log.debug "IPPBX is licensed, saving configuration [${params['organization'].extLength}]"
+        int originalExtLength = organization.extLength;
+        def newExtLength = null;
+        if (licenseService.canAccess(ListenFeature.IPPBX))
+        {
             if (params['organization'].extLength == '' || !params['organization'].extLength.matches('^[0-9]*$')) {
                 flash.errorMessage = message(code: 'organizationConfiguration.extLength.pattern.matches.invalid')
                 render(view: 'configuration', model: [transcription: transcription, afterHours: afterHours, conferencing: conferencing, organization: organization])
             }
-            bindData(organization, params['organization'], [include: ['extLength']])
+
+            int tempExtLength = Integer.parseInt(params['organization'].extLength);
+            if(tempExtLength == originalExtLength)
+            {
+                log.debug("Ext Length Did not change");
+            }
+            else
+            {
+                newExtLength = tempExtLength;
+            }
         }
 
+        boolean saveError = false;
         // TODO use a transaction
-        if (licenseService.canAccess(ListenFeature.AFTERHOURS) && afterHours.validate() && afterHours.save()) {
-            log.debug "Saving after hours configuration successful"
-            if (originalMobilePhone != afterHours.mobilePhone) {
-                historyService.changedAfterHoursMobileNumber(afterHours, originalMobilePhone)
-            }
+        if (afterHoursChanged && licenseService.canAccess(ListenFeature.AFTERHOURS))
+        {
+            if(afterHours.validate() && afterHours.save())
+            {
+                log.debug "Saving after hours configuration successful"
+                if (originalMobilePhone != afterHours.mobilePhone) {
+                    historyService.changedAfterHoursMobileNumber(afterHours, originalMobilePhone)
+                }
 
-            if (originalAlternateNumber != afterHours.alternateNumber) {
-                realizeAlertUpdateService.sendUpdate(afterHours, originalAlternateNumber)
-                historyService.changedAfterHoursAlternateNumber(afterHours, originalAlternateNumber)
-            }
+                if (originalAlternateNumber != afterHours.alternateNumber) {
+                    realizeAlertUpdateService.sendUpdate(afterHours, originalAlternateNumber)
+                    historyService.changedAfterHoursAlternateNumber(afterHours, originalAlternateNumber)
+                }
 
-            if (originalRealizeUrl != afterHours.realizeUrl || originalRealizeAlertName != afterHours.realizeAlertName) {
-                historyService.changedRealizeConfiguration(afterHours)
+                if (originalRealizeUrl != afterHours.realizeUrl || originalRealizeAlertName != afterHours.realizeAlertName) {
+                    historyService.changedRealizeConfiguration(afterHours)
+                }
             }
-        } else if (licenseService.canAccess(ListenFeature.AFTERHOURS)) {
-            log.debug "Didn't save the after hours configuration"
-            render(view: 'configuration', model: [transcription: transcription, afterHours: afterHours, conferencing: conferencing, organization: organization])
+            else
+            {
+                log.warn("Unable to save after hours configuration.");
+                saveError = true;
+            }
+        }
+        else if (afterHoursRemoved && licenseService.canAccess(ListenFeature.AFTERHOURS))
+        {
+            afterHours.delete();
+            log.debug("After Hours configuration removed");
+            historyService.changedAfterHoursMobileNumber(afterHours, originalMobilePhone);
+            historyService.changedAfterHoursAlternateNumber(afterHours, originalAlternateNumber);
+            historyService.changedRealizeConfiguration(afterHours);
         }
 
-        if (transcription.validate() && transcription.save() && conferencing.validate() && conferencing.save() && organization.validate() && organization.save()) {
-            log.debug "Saving transcription, conferencing, and organization configuration successful"
-            if (licenseService.canAccess(ListenFeature.VOICEMAIL) && licenseService.canAccess(ListenFeature.TRANSCRIPTION)) {
+        if (!saveError && licenseService.canAccess(ListenFeature.TRANSCRIPTION))
+        {
+            if(transcription.validate() && transcription.save())
+            {
+                log.debug("Saved transcription configuration successful");
                 boolean wasJustEnabled = false
                 if (oldTranscriptionIsEnabled != transcription.isEnabled) {
                     if (transcription.isEnabled) {
@@ -1159,24 +1204,61 @@ class AdministrationController {
                     historyService.enabledTranscription(transcription)
                 }
             }
+            else
+            {
+                log.warn("Unable to save transcription configuration.");
+                saveError = true;
+            }
+        }
 
-            if (licenseService.canAccess(ListenFeature.CONFERENCING)) {
-                if (originalPinLength != conferencing.pinLength) {
+        if (!saveError && licenseService.canAccess(ListenFeature.CONFERENCING))
+        {
+            if (conferencing.validate() && conferencing.save())
+            {
+                log.debug("Saved conferencing configuration");
+
+                if (originalPinLength != conferencing.pinLength)
+                {
                     historyService.changedNewConferencePinLength(conferencing, originalPinLength)
                 }
             }
+            else
+            {
+                log.warn("Unable to save conferencing configuration.");
+                saveError = true;
+            }
+        }
 
-            if (licenseService.canAccess(ListenFeature.IPPBX)) {
-                if (originalExtLength != organization.extLength) {
-                    historyService.changedOrganizationExtLength(organization, originalExtLength)
-                }
+        Organization newOrganization = Organization.get(session.organization.id);
+        if (!saveError && newExtLength != null && licenseService.canAccess(ListenFeature.IPPBX))
+        {
+            newOrganization.setExtLength(newExtLength);
+
+            if (newOrganization.validate() && newOrganization.save())
+            {
+                log.debug("Saved organization configuration successful");
+
+                historyService.changedOrganizationExtLength(newOrganization, originalExtLength)
+            }
+            else
+            {
+                log.warn("Unable to save ippbx configuration.");
+                saveError = true;
             }
 
+        }
+
+        if(!saveError)
+        {
             flash.successMessage = message(code: 'organizationConfiguration.saved.message')
             redirect(action: 'configuration')
-        } else {
-            log.debug "Didn't save any of the configuration"
-            render(view: 'configuration', model: [transcription: transcription, afterHours: afterHours, conferencing: conferencing, organization: organization])
+        }
+        else
+        {
+            flash.errorMessage = "Error saving configuration.";
+            log.warn("Error saving configuration.");
+            render(view: 'configuration', model: [transcription: transcription, afterHours: afterHours,
+                    conferencing: conferencing, organization: organization])
         }
     }
 
