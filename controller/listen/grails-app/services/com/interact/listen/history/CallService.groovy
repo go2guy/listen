@@ -9,6 +9,8 @@ import org.apache.commons.logging.LogFactory
 import org.joda.time.DateTime
 import org.joda.time.LocalDateTime
 import org.codehaus.groovy.grails.web.util.WebUtils
+import org.joda.time.format.DateTimeFormat
+import org.joda.time.format.DateTimeFormatter
 
 class CallService {
     def grailsApplication
@@ -24,11 +26,11 @@ class CallService {
         def startDate
         def endDate
         if (params.startDate) {
-            startDate = getStartDate(params)
+            startDate = getStartDate(params.startDate)
         }
 
         if (params.endDate) {
-            endDate = getEndDate(params)
+            endDate = getEndDate(params.endDate)
         }
 
         def selectedUsers
@@ -205,4 +207,47 @@ class CallService {
 
         return returnVal;
     }
+
+    private def getStartDate(String inputStart)
+    {
+        DateTimeFormatter dtf = DateTimeFormat.forPattern("MM/dd/yyyy");
+        DateTime theStart;
+
+        if(inputStart && !inputStart.isEmpty())
+        {
+            theStart = DateTime.parse(inputStart, dtf);
+        }
+        else
+        {
+            theStart = DateTime.now().minusDays(1);
+        }
+
+        theStart = theStart.withHourOfDay(0);
+        theStart = theStart.withMinuteOfHour(0);
+        theStart = theStart.withSecondOfMinute(0);
+
+        return theStart;
+    }
+
+    private def getEndDate(String inputEnd)
+    {
+        DateTimeFormatter dtf = DateTimeFormat.forPattern("MM/dd/yyyy");
+        DateTime theEnd;
+
+        if(inputEnd && !inputEnd.isEmpty())
+        {
+            theEnd = DateTime.parse(inputEnd, dtf);
+        }
+        else
+        {
+            theEnd = DateTime.now();
+        }
+
+        theEnd = theEnd.withHourOfDay(23);
+        theEnd = theEnd.withMinuteOfHour(59);
+        theEnd = theEnd.withSecondOfMinute(59);
+
+        return theEnd;
+    }
+
 }
