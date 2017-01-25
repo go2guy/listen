@@ -1633,12 +1633,13 @@ class SpotApiController {
             return
         }
 
-        if(number.size() == organization.extLength + organization.id.toString().size())
+        //KN (1/25/17) : Removed ability to dial the org and extension
+/*        if(number.size() == organization.extLength + organization.id.toString().size())
         {
             String numberBefore = number;
             number = number.substring(organization.id.toString().size());
             log.debug("Set number to " + number + " from " + numberBefore);
-        }
+        }*/
 
         def phoneNumbers = PhoneNumber.withCriteria() {
             eq('number', number)
