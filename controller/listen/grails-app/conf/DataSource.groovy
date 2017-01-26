@@ -14,7 +14,7 @@ environments {
         dataSource {
             dialect = 'org.hibernate.dialect.MySQLInnoDBDialect'
             driverClassName = 'org.mariadb.jdbc.Driver'
-            url = System.getProperty('com.interact.listen.db.url', 'jdbc:mysql://coreylisten/listen3?zeroDateTimeBehavior=convertToNull')
+            url = System.getProperty('com.interact.listen.db.url', 'jdbc:mysql://coreylisten/listen2?zeroDateTimeBehavior=convertToNull')
             username = System.getProperty('com.interact.listen.db.username', 'root')
             password = System.getProperty('com.interact.listen.db.password', '')
             validationQuery = 'SELECT 1'
@@ -30,7 +30,7 @@ environments {
         dataSource {
             dialect = 'org.hibernate.dialect.MySQLInnoDBDialect'
             driverClassName = 'org.mariadb.jdbc.Driver'
-            url = System.getProperty('com.interact.listen.db.url', 'jdbc:mysql://coreylisten/listen3?zeroDateTimeBehavior=convertToNull')
+            url = System.getProperty('com.interact.listen.db.url', 'jdbc:mysql://coreylisten/listen2?zeroDateTimeBehavior=convertToNull')
             username = System.getProperty('com.interact.listen.db.username', 'root')
             password = System.getProperty('com.interact.listen.db.password', '')
             validationQuery = 'SELECT 1'
