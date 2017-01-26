@@ -84,7 +84,7 @@
                                                  optionKey="id"
                                                  optionValue="name"
                                                  from="${templates}"
-                                                 value="${sipPhone.provisionerTemplate ? sipPhone.provisionerTemplate.id : ''}"
+                                                 value="${sipPhone?.provisionerTemplate ? sipPhone?.provisionerTemplate.id : ''}"
                                                  noSelection="['':'']" /></td>
             </tr>
           </tbody>
