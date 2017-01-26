@@ -36,7 +36,7 @@
       <file leaf-file-name="index.js" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/index.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.44504896" vertical-offset="832" max-vertical-offset="1751">
+            <state vertical-scroll-proportion="0.45593035" vertical-offset="822" max-vertical-offset="1751">
               <caret line="73" column="22" selection-start-line="73" selection-start-column="22" selection-end-line="73" selection-end-column="22" />
               <folding />
             </state>
@@ -390,12 +390,12 @@
       <changelist id="cfa588e2-6975-4b32-ba7b-47618f26f032" name="Default" comment="" />
       <created>1485450822501</created>
       <updated>1485450822501</updated>
-      <workItem from="1485450822583" duration="1008000" />
+      <workItem from="1485450822583" duration="1012000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="1008000" />
+    <option name="totallyTimeSpent" value="1012000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -659,7 +659,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/index.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.44504896" vertical-offset="832" max-vertical-offset="1751">
+        <state vertical-scroll-proportion="0.45593035" vertical-offset="822" max-vertical-offset="1751">
           <caret line="73" column="22" selection-start-line="73" selection-start-column="22" selection-end-line="73" selection-end-column="22" />
           <folding />
         </state>

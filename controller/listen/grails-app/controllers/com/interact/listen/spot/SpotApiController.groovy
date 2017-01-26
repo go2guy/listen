@@ -721,6 +721,14 @@ class SpotApiController {
         if(destination.size() < 10)
         {
             //Make sure there's an extension for this number
+	        // Check if extension is orgId+extensionLength
+	        def length = callersOrg.id.toString().length() + callersOrg.extLength
+
+	        if (destination.length() == length)
+	        {
+				destination = destination.substring(callersOrg.id.toString().length())
+	        }
+
             List<PhoneNumber> list = PhoneNumber.createCriteria().list() {
                 eq('number', destination)
                 owner {
