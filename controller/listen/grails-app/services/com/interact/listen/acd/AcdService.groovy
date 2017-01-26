@@ -223,6 +223,9 @@ class AcdService
                     case AcdCallStatus.TRANSFERED:
                         acdCallTransferred(acdCall);
                         break;
+                    case AcdCallStatus.TRANSFER_REQUESTED:
+                        acdCallTransferred(acdCall);
+                        break;
                     case AcdCallStatus.COMPLETED:
                     case AcdCallStatus.DISCONNECTED:
                     case AcdCallStatus.VOICEMAIL:
@@ -401,50 +404,64 @@ class AcdService
         }
     }
 
-    public void transferCall(AcdCall thisCall, User agent) throws ListenAcdException
+    public void transferCallFromIVR(String sessionId, String toAgentId) throws ListenAcdException
     {
-        log.debug("transferCall - [${thisCall.ani}] to connect to: [${agent.realName}]");
+        log.debug("transferCallFromIVR - session [${sessionId}] to agent id: [${toAgentId}]");
+
+        // find acd call record based upon session id
+        AcdCall acdCall = AcdCall.findBySessionId(sessionId);
+        if(acdCall != null) {
+            log.debug("transferCallFromIVR found acd call record from session id")
+        }
+        else {
+            throw new ListenAcdException("Unable to locate call sessionId[" + sessionId + "]");
+        }
+
+        User toAgent = User.findById(toAgentId.toBigInteger())
+        if (toAgent != null) {
+            log.debug("transferCallFromIVR found toAgent [${toAgent.username}]")
+        } else {
+            throw new ListenAcdException("Unable to locate to agent[" + toAgentId + "]");
+        }
+
+        // now call the transfer method
+        transferCall(acdCall, toAgent, false);
+    }
+
+    public void transferCall(AcdCall thisCall, User agent, Boolean sendIvrRequest) throws ListenAcdException
+    {
+        log.debug("transferCall - [${thisCall.ani}] to connect to: [${agent.realName}] send ivr request [${sendIvrRequest}]");
 
         if(agent.acdUserStatus && agent.acdUserStatus.AcdQueueStatus == AcdQueueStatus.VoicemailBox)
         {
             //Connecting to voicemail, use the voicemail logic
             acdCallVoicemailPrivate(thisCall, agent.acdUserStatus.contactNumber.number);
         }
-        else
-        {
+        else {
             boolean sessionExistsOnIvr = true;
 
             //Determine Phone Number to which to send
             String theNumber = null;
             String type = "unknown";
 
-            if(agent.acdUserStatus != null && agent.acdUserStatus.contactNumber != null)
-            {
+            if (agent.acdUserStatus != null && agent.acdUserStatus.contactNumber != null) {
                 def contactNumber = agent.acdUserStatus.contactNumber;
-                if(contactNumber instanceof Extension)
-                {
-                    Extension extension = (Extension)contactNumber;
+                if (contactNumber instanceof Extension) {
+                    Extension extension = (Extension) contactNumber;
                     theNumber = extension.sipPhone.phoneUserId;
                     log.debug("1-Transferring to phone user id[" + theNumber + "]");
                     type = "extension";
-                }
-                else
-                {
+                } else {
                     theNumber = agent.acdUserStatus.contactNumber.number;
                     log.debug("1-Transferring to external phone number[" + theNumber + "]");
                     type = "external";
                 }
-            }
-            else
-            {
+            } else {
                 Set<PhoneNumber> numbers = agent.phoneNumbers;
-                if(numbers != null && !numbers.isEmpty())
-                {
-                    for(PhoneNumber number : numbers)
-                    {
-                        if(number != null && number instanceof Extension)
-                        {
-                            Extension extension = (Extension)number;
+                if (numbers != null && !numbers.isEmpty()) {
+                    for (PhoneNumber number : numbers) {
+                        if (number != null && number instanceof Extension) {
+                            Extension extension = (Extension) number;
                             theNumber = extension.sipPhone.phoneUserId;
                             log.debug("2-Transferring to user id[" + theNumber + "]");
                             type = "extension";
@@ -454,24 +471,23 @@ class AcdService
                 }
             }
 
-            if(theNumber == null)
-            {
+            if (theNumber == null) {
                 throw new ListenAcdException("Unable to determine phone number for transfer");
             }
 
-            //Send request to ivr
-            try
-            {
-                spotCommunicationService.sendAcdTransferEvent(thisCall.sessionId,
-                        theNumber, type);
-            }
-            catch(SpotCommunicationException sce)
-            {
-                //for now, we are going to assume this means that this session does not exist any longer
-                sessionExistsOnIvr = false;
+            if (sendIvrRequest) {
+                //Send request to ivr
+                try {
+                    spotCommunicationService.sendAcdTransferEvent(thisCall.sessionId,
+                            theNumber, type);
+                }
+                catch (SpotCommunicationException sce) {
+                    //for now, we are going to assume this means that this session does not exist any longer
+                    sessionExistsOnIvr = false;
+                }
             }
 
-            if(sessionExistsOnIvr)
+            if((sessionExistsOnIvr) || (sendIvrRequest == false))
             {
                 //Free up the agent
                 freeAgent(thisCall.user);

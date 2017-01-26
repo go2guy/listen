@@ -6,6 +6,7 @@ import com.interact.listen.MobilePhone
 import com.interact.listen.PhoneNumber
 import com.interact.listen.TranscriptionConfiguration
 import com.interact.listen.WildcardNumberMatcher
+import com.interact.listen.acd.AcdCall
 import com.interact.listen.acd.AcdCallStatus
 import com.interact.listen.android.DeviceRegistration
 import com.interact.listen.attendant.*
@@ -84,7 +85,8 @@ class SpotApiController {
         updateFindMeNumber: 'PUT',
         updatePhoneNumber: 'PUT',
         updateUser: 'PUT',
-        updateVoicemail: 'PUT'
+        updateVoicemail: 'PUT',
+        transferAcdCall: 'PUT'
     ]
 
     def acdService
@@ -147,6 +149,48 @@ class SpotApiController {
             log.error("Exception adding ACD Call: " + e.getMessage(), e);
             response.sendError(HSR.SC_BAD_REQUEST, e.getMessage());
         }
+    }
+
+    /**
+     * Request from IVR to tranfer ACD call
+     */
+    def transferAcdCall =
+    {
+        log.debug "transferAcdCall request[${request}] with params[${params}]"
+
+        try
+        {
+            def json = JSON.parse(request)
+            response.status = HSR.SC_CREATED
+
+            log.debug("transferAcdCall JSON: " + json);
+
+            if(json.sessionId && json.toAgentId) {
+                acdService.transferCallFromIVR(json.sessionId, json.toAgentId);
+            }
+            else {
+                throw new InvalidParameterException("Missing required parameter for ACD Queue Update for transfer.")
+            }
+
+            response.flushBuffer();
+        }
+        catch(ConverterException ce)
+        {
+            log.error("Exception parsing transfer Acd Call request : " + ce.getMessage());
+            response.sendError(HSR.SC_BAD_REQUEST, ce.getMessage());
+        }
+        catch(ListenAcdException lae)
+        {
+            log.error("Listen ACD Exception: " + lae.getMessage());
+            response.sendError(HSR.SC_BAD_REQUEST, lae.getMessage());
+        }
+        catch(Exception e)
+        {
+            log.error("Exception transfering ACD Call: " + e.getMessage(), e);
+            response.sendError(HSR.SC_BAD_REQUEST, e.getMessage());
+        }
+
+        log.debug("Exiting transferAcdCall()");
     }
 
     /**

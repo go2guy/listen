@@ -798,7 +798,16 @@ class AcdController
 
             boolean success = false;
 
-            AcdCall thisCall = AcdCall.get(params.id);
+            AcdCall thisCall
+            if (params.id) {
+                thisCall = AcdCall.get(params.id);
+                if (thisCall)
+                    log.debug("Found acd call by id")
+            } else if (params.sessionId) {
+                thisCall = AcdCall.findBySessionId(params.sessionId)
+                if (thisCall)
+                    log.debug("Found acd call by session id")
+            }
 
             if(Integer.parseInt(params.userId) < 0)
             {
@@ -821,7 +830,10 @@ class AcdController
                 {
                     try
                     {
-                        acdService.transferCall(thisCall, transferTo);
+                        Boolean sendIvrRequest = true
+                        if (params?.noIvr == 'true')
+                            sendIvrRequest = false
+                        acdService.transferCall(thisCall, transferTo, sendIvrRequest);
                         success = true;
                     }
                     catch (Exception e)

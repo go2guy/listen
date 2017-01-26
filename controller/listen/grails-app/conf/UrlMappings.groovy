@@ -22,6 +22,13 @@ class UrlMappings {
             ]
         }
 
+        "/api/acdCallTransfer/$junk"(controller: 'spotApi')
+        {
+            action = [
+                    PUT: 'transferAcdCall'
+            ]
+        }
+
         "/api/acd/agent/$id"(controller: 'acdApi')
         {
             action = [
