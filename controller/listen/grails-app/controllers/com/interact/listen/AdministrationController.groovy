@@ -1333,7 +1333,7 @@ class AdministrationController {
       def userFields = []
       def fields = []
 
-      if (sipPhone.provisionerTemplate) {
+      if (sipPhone && sipPhone.provisionerTemplate) {
         fields = ProvisionerTemplateField.findAllByProvisionerTemplate(sipPhone.provisionerTemplate)
         userFields = ProvisionerTemplateFieldValue.findAllByProvisionerTemplateFieldInListAndSipPhone(fields, sipPhone)
       }
