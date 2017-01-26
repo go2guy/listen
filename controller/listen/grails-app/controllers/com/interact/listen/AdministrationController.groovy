@@ -1378,7 +1378,7 @@ class AdministrationController {
             return
         }
 
-        if (session.organization != route.organization) {
+        if (session.organization != route?.organization.toString()) {
             log.error "Authorization denied for user [${params}]"
             redirect(controller: 'login', action: 'denied')
             return
