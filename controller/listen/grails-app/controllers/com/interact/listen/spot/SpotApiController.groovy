@@ -1668,7 +1668,7 @@ class SpotApiController {
     // given an access number and an organization, looks up the user owning the number
     def lookupAccessNumber = {
         log.debug "lookupAccessNumber request with params [${params}]"
-        def number = params.number
+        String number = params.number
         if(!number) {
             response.sendError(HSR.SC_BAD_REQUEST, 'Missing required parameter [number]')
             return
@@ -1685,13 +1685,15 @@ class SpotApiController {
             return
         }
 
-        //KN (1/25/17) : Removed ability to dial the org and extension
-/*        if(number.size() == organization.extLength + organization.id.toString().size())
+        if(number.size() == organization.extLength + organization.id.toString().size())
         {
-            String numberBefore = number;
-            number = number.substring(organization.id.toString().size());
-            log.debug("Set number to " + number + " from " + numberBefore);
-        }*/
+            if(number.startsWith(organization.id.toString()))
+            {
+                String numberBefore = number;
+                number = number.substring(organization.id.toString().size());
+                log.debug("Set number to " + number + " from " + numberBefore);
+            }
+        }
 
         def phoneNumbers = PhoneNumber.withCriteria() {
             eq('number', number)
