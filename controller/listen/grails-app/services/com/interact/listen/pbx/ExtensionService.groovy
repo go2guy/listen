@@ -220,11 +220,6 @@ class ExtensionService {
 //
 //	        // Update the fields
 
-
-	        fields.each {
-				log.debug("huh...")
-	        }
-
             def originalNumber = extension.number
             def originalForwardedTo = extension.forwardedTo
             def originalOwner = extension.owner
