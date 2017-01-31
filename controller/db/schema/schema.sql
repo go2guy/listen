@@ -194,10 +194,10 @@ CREATE TABLE `call_history` (
   `cdr_post_count` int(1) NOT NULL default 0,
   `last_modified` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `session_unique` (`session_id`),
   KEY `FKC404C7B356D05B56` (`organization_id`),
   KEY `FKC404C7B388BFFA92` (`to_user_id`),
   KEY `FKC404C7B3F96764C1` (`from_user_id`),
+  KEY `call_history_session_indx` (`session_id`),
   CONSTRAINT `call_history_organizati_fk` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
@@ -759,7 +759,7 @@ CREATE TABLE `acd_call` (
   CONSTRAINT `acd_call_user_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-DROP TABLE IF EXISTS `acd_call_history`;
+DROP TABLE IF EXISTS `acd_ca`;
 CREATE TABLE `acd_call_history` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `version` bigint(20) NOT NULL,
