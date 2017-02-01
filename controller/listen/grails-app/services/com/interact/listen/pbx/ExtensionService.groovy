@@ -165,12 +165,17 @@ class ExtensionService {
                 result.sipPhone.dateRegistered = null
                 result.sipPhone.dateExpires = null
                 result.sipPhone.phoneUserId = organization.id.toString() + extension.number.toString()
-            } else {
-                if ((params?.password && params?.passwordConfirm) || (params?.password != result.sipPhone.password) ) {
+            }
+            else
+            {
+                if ((params?.password && params?.passwordConfirm) || (params?.password != result.sipPhone.password) )
+                {
                     log.debug("updateExtension, set password")
                     result.sipPhone.password = params.password
                     result.sipPhone.passwordConfirm = params.passwordConfirm
-                } else {
+                }
+                else
+                {
                     // user has not provided passwords, so lets set the password confirm to what we had in the db to pass validation
                     result.sipPhone.passwordConfirm = result.sipPhone.password
                 }
@@ -224,9 +229,12 @@ class ExtensionService {
             def originalForwardedTo = extension.forwardedTo
             def originalOwner = extension.owner
 
-            if(user.hasRole('ROLE_ORGANIZATION_ADMIN')) {
+            if(user.hasRole('ROLE_ORGANIZATION_ADMIN'))
+            {
                 result.extension.properties = params
-            } else {
+            }
+            else
+            {
                 result.extension.properties['forwardedTo', 'greeting'] = params
                 result.extension.forwardedTo = String.valueOf(params.forwardedTo).replaceAll("\\D+", "")
             }
@@ -249,21 +257,28 @@ class ExtensionService {
                 messageLightService.toggle(result.extension)
             }
 
-            if(originalNumber != result.extension.number || originalOwner != result.extension.owner) {
+            if(originalNumber != result.extension.number || originalOwner != result.extension.owner)
+            {
                 def fake = new Expando(number: originalNumber,
                         owner: originalOwner)
                 historyService.deletedExtension(fake)
                 historyService.createdExtension(result.extension)
             }
+            else
+            {
+                historyService.modifiedExtension(result.extension);
+            }
 
-            if(originalForwardedTo != result.extension.forwardedTo) {
+            if(originalForwardedTo != result.extension.forwardedTo)
+            {
                 if(result.extension.forwardedTo != null) {
                     historyService.forwardedExtension(result.extension)
                 } else {
                     historyService.unforwardedExtension(result.extension)
                 }
             }
-        } catch ( Exception e ) {
+        }
+        catch ( Exception e ) {
             log.error("Caught exception on extension update [${e}]")
         }
         return result

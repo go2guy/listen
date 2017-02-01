@@ -232,6 +232,13 @@ class HistoryService {
               onUser: extension.owner)
     }
 
+    void modifiedExtension(def extension)
+    {
+        write(action: Action.MODIFIED_EXTENSION,
+                description: "Modified extension [${extension.number}]",
+                onUser: extension.owner)
+    }
+
     void deletedFax(Fax fax) {
         write(action: Action.DELETED_FAX,
               description: "Deleted ${friendlyMessageSnippet(fax)}",

@@ -102,7 +102,8 @@ enum Action {
     UPDATED_ACD_SKILL_PRIORITY_USER,
     ADDED_USER_PERMISSION,
     DELETED_USER_PERMISSION,
-    API_UPDATED_AGENT_STATUS;
+    API_UPDATED_AGENT_STATUS,
+    MODIFIED_EXTENSION;
 
     String toString() {
         def name = name().toLowerCase().replaceAll(/_/, ' ')
