@@ -130,7 +130,7 @@ class SpotApiController {
 
             if(json.ani && json.dnis && json.selection && json.sessionId)
             {
-                acdService.acdCallAdd(json.ani, json.dnis, json.selection, json.sessionId, request.remoteAddr)
+                acdService.acdCallAdd(json.ani, json.dnis, null, null, json.selection, null, json.sessionId, request.remoteAddr)
             }
             else
             {
@@ -165,8 +165,12 @@ class SpotApiController {
 
             log.debug("transferAcdCall JSON: " + json);
 
-            if(json.sessionId && json.toAgentId) {
-                acdService.transferCallFromIVR(json.sessionId, json.toAgentId);
+            if(json.sessionId && json.xferDestination && json.organization) {
+                def targetSessionId = null
+                if(json.targetSessionId) {
+                    targetSessionId = json.targetSessionId
+                }
+                acdService.transferCallFromIVR(getIdFromHref(json.organization), json.sessionId, json.xferDestination, targetSessionId);
             }
             else {
                 throw new InvalidParameterException("Missing required parameter for ACD Queue Update for transfer.")

@@ -254,11 +254,14 @@ class AcdService
      *
      * @param ani The ani of the call.
      * @param dnis The dnis of the call.
+     * @param acdAgent This is the acd agent associated with this call, defaults to null
+     * @param acdStatus The acd call status to assign to record, defaults to WAITING
      * @param selection The callers skill selection.
+     * @param skill ACD skill to assign to acdCall
      * @param sessionId The sessionid of the call.
      * @throws ListenAcdException If an exception adding the call to the queue.
      */
-    void acdCallAdd(String ani, String dnis, String selection, String sessionId, String ivr) throws ListenAcdException
+    void acdCallAdd(String ani, String dnis, User acdAgent, AcdCallStatus acdStatus, String selection, Skill skill, String sessionId, String ivr) throws ListenAcdException
     {
         AcdCall acdCall = new AcdCall();
         String stringAni = ani;
@@ -270,14 +273,30 @@ class AcdService
 
         acdCall.setAni(stringAni);
         acdCall.setDnis(dnis);
-        Skill skill = menuSelectionToSkill(selection);
-        if(skill == null)
-        {
-            throw new InvalidParameterException("Invalid skill requested: " + selection);
+
+        if (acdAgent) {
+            acdCall.setUser(acdAgent);
+        }
+
+        if (selection) {
+            skill = menuSelectionToSkill(selection);
+            if (skill == null) {
+                throw new InvalidParameterException("Invalid skill requested: " + selection);
+            }
+        } else if (!skill) {
+            log.error("Skill or menu selection was not provided")
+            throw new InvalidParameterException("skill or menu selection was not provided");
         }
 
         acdCall.setSkill(skill);
         acdCall.setSessionId(sessionId);
+
+        if (acdStatus) {
+            acdCall.setCallStatus(acdStatus);
+        } else {
+            acdCall.setCallStatus(AcdCallStatus.WAITING);
+        }
+
         acdCall.setCallStatus(AcdCallStatus.WAITING);
         acdCall.setIvr(ivr);
 
@@ -404,9 +423,9 @@ class AcdService
         }
     }
 
-    public void transferCallFromIVR(String sessionId, String toAgentId) throws ListenAcdException
+    public void transferCallFromIVR(Long orgId, String sessionId, String xferDestination, String targetSessionId) throws ListenAcdException
     {
-        log.debug("transferCallFromIVR - session [${sessionId}] to agent id: [${toAgentId}]");
+        log.debug("transferCallFromIVR - session [${sessionId}] to destination: [${xferDestination}]");
 
         // find acd call record based upon session id
         AcdCall acdCall = AcdCall.findBySessionId(sessionId);
@@ -417,15 +436,51 @@ class AcdService
             throw new ListenAcdException("Unable to locate call sessionId[" + sessionId + "]");
         }
 
-        User toAgent = User.findById(toAgentId.toBigInteger())
-        if (toAgent != null) {
-            log.debug("transferCallFromIVR found toAgent [${toAgent.username}]")
-        } else {
-            throw new ListenAcdException("Unable to locate to agent[" + toAgentId + "]");
+        Organization organization = Organization.findById(orgId)
+        if (!organization) {
+            log.error("Can not find organization from [${orgId}]")
+            throw new ListenAcdException("Unable to locate to organization from [" + orgId + "]");
         }
 
-        // now call the transfer method
-        transferCall(acdCall, toAgent, false);
+        if (targetSessionId) {
+            // We have a targetSessionId, this means that we should create a new acd_call with this session id
+            // We should only receive targetSessionId for an attended call transfer
+            log.debug("We have a transfer target session id [${targetSessionId}]")
+            acdCallAdd(acdCall.ani, acdCall.dnis, acdCall.user, AcdCallStatus.TRANSFER_REQUESTED, null, acdCall.skill, targetSessionId, acdCall.ivr);
+        }
+
+        if (xferDestination.length() == organization.extLength) {
+            log.debug("request to transfer call to extension [${xferDestination}]")
+            Extension xferExtension = Extension.findByNumber(xferDestination)
+            if (xferExtension != null) {
+                log.debug("transferCallFromIVR found extension with owner [${xferExtension.ownerId}]")
+            } else {
+                throw new ListenAcdException("Unable to locate to extension [" + xferDestination + "]");
+            }
+
+            User toAgent = User.findById(xferExtension.ownerId)
+            if (toAgent != null) {
+                log.debug("transferCallFromIVR found toAgent [${toAgent.username}]")
+            } else {
+                throw new ListenAcdException("Unable to locate to agent id [" + xferExtension.ownerId + "]");
+            }
+
+            // now call the transfer method
+            transferCall(acdCall, toAgent, false);
+        } else if (xferDestination.length() > organization.extLength) {
+            log.debug("request to transfer call to external number [${xferDestination}]")
+            //Free up the agent
+            freeAgent(acdCall.user);
+
+            addAcdHistory(acdCall, AcdCallStatus.TRANSFER_REQUESTED)
+
+            // add acd history and remove acdcall
+            removeCall(acdCall, AcdCallStatus.COMPLETED);
+        } else {
+            log.error("request to transfer call to invalid number [${xferDestination}]")
+            throw new ListenAcdException("request to transfer call to invalid number [${xferDestination}]");
+        }
+
     }
 
     public void transferCall(AcdCall thisCall, User agent, Boolean sendIvrRequest) throws ListenAcdException
