@@ -22,7 +22,6 @@ class AcdApiController
 
     def updateAgent = {
 
-
         if(!params.id)
         {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing required parameter [id]")
@@ -96,7 +95,8 @@ class AcdApiController
         else
         {
             log.warn("Bad agent value: " + agentId);
-            response.sendError(HttpServletResponse.SC_NOT_FOUND)
+            render(status: HttpServletResponse.SC_NOT_FOUND, contentType: 'application/json',
+                    text: '{"message": "The agent requested could not be found"}');
         }
 
         response.flushBuffer()
@@ -120,7 +120,6 @@ class AcdApiController
         def agentId = params.get("id");
         String apiKey = params.get("apiKey");
 
-
         log.debug("agentId: " + agentId);
         log.debug("apiKey: " + apiKey);
 
@@ -137,8 +136,9 @@ class AcdApiController
         }
         else
         {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND)
             log.warn "Agent not found."
+            render(status: HttpServletResponse.SC_NOT_FOUND, contentType: 'application/json',
+                    text: '{"message": "The agent requested could not be found"}');
             return;
         }
 

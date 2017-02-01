@@ -24,6 +24,11 @@ beans = {
         authenticationManager = ref('authenticationManager')
     }
 
+    apiKeyFilter(com.interact.listen.authentication.ApiKeyFilter)
+    {
+        authenticationManager = ref('authenticationManager')
+    }
+
 	internalApiFilter(com.interact.listen.authentication.InternalApiFilter) {
 	}
 

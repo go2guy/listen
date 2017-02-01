@@ -60,24 +60,6 @@ class HeaderDetailsFilter extends GenericFilterBean
                 token = new UsernamePasswordAuthenticationToken((organization ? "${organization.id}:" : '') + username, password)
                 log.debug 'Attempting username/password header authentication'
             }
-            else if(apiKey != null && !apiKey.isEmpty())
-            {
-                log.debug("API KEY: " + apiKey);
-                Organization org = Organization.findByApiKey(apiKey);
-                if(org != null)
-                {
-                    log.debug("Organization: " + org);
-                    token = new ApiKeyAuthentication(name: '',
-                            credentials: [apiKey: apiKey],
-                            principal: [id: ''],
-                            authenticated: true);
-                    log.debug 'Attempting API key authentication';
-                }
-                else
-                {
-                    log.debug("Invalid API Key");
-                }
-            }
             else
             {
                 log.warn 'Not enough header information to perform authentication'

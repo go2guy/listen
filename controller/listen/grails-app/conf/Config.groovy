@@ -125,6 +125,7 @@ providers << 'anonymousAuthenticationProvider'
 grails.plugin.springsecurity.providerNames = providers
 
 grails.plugin.springsecurity.filterChain.chainMap = [
+        '/api/acd/**': 'authenticationProcessingFilter,apiKeyFilter,exceptionTranslationFilter,filterInvocationInterceptor',
         '/api/**': 'authenticationProcessingFilter,headerDetailsFilter,exceptionTranslationFilter,filterInvocationInterceptor',
         '/faxApi/**': 'authenticationProcessingFilter,headerDetailsFilter,exceptionTranslationFilter,filterInvocationInterceptor',
         '/spotApi/**': 'authenticationProcessingFilter,headerDetailsFilter,exceptionTranslationFilter,filterInvocationInterceptor',
