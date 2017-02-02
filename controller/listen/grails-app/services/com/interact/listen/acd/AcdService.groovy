@@ -302,7 +302,7 @@ class AcdService
 
         if(acdCall.validate() && acdCall.save(flush: true))
         {
-            log.debug("Successfully added call to queue.")
+            log.debug("Successfully added call to queue with session id [${acdCall.sessionId}][${acdCall.id}].")
         }
         else
         {
@@ -430,7 +430,7 @@ class AcdService
         // find acd call record based upon session id
         AcdCall acdCall = AcdCall.findBySessionId(sessionId);
         if(acdCall != null) {
-            log.debug("transferCallFromIVR found acd call record from session id")
+            log.debug("transferCallFromIVR found acd call record from session id [${acdCall.sessionId}]")
         }
         else {
             throw new ListenAcdException("Unable to locate call sessionId[" + sessionId + "]");
@@ -440,13 +440,6 @@ class AcdService
         if (!organization) {
             log.error("Can not find organization from [${orgId}]")
             throw new ListenAcdException("Unable to locate to organization from [" + orgId + "]");
-        }
-
-        if (targetSessionId) {
-            // We have a targetSessionId, this means that we should create a new acd_call with this session id
-            // We should only receive targetSessionId for an attended call transfer
-            log.debug("We have a transfer target session id [${targetSessionId}]")
-            acdCallAdd(acdCall.ani, acdCall.dnis, acdCall.user, AcdCallStatus.TRANSFER_REQUESTED, null, acdCall.skill, targetSessionId, acdCall.ivr);
         }
 
         if (xferDestination.length() == organization.extLength) {
@@ -465,6 +458,12 @@ class AcdService
                 throw new ListenAcdException("Unable to locate to agent id [" + xferExtension.ownerId + "]");
             }
 
+            if (targetSessionId) {
+                // We have a targetSessionId, this means that we should create a new acd_call with this session id
+                // We should only receive targetSessionId for an attended call transfer
+                log.debug("We have a transfer target session id [${targetSessionId}]")
+                acdCallAdd(acdCall.ani, acdCall.dnis, toAgent, AcdCallStatus.TRANSFER_REQUESTED, null, acdCall.skill, targetSessionId, acdCall.ivr);
+            }
             // now call the transfer method
             transferCall(acdCall, toAgent, false);
         } else if (xferDestination.length() > organization.extLength) {
@@ -474,8 +473,20 @@ class AcdService
 
             addAcdHistory(acdCall, AcdCallStatus.TRANSFER_REQUESTED)
 
-            // add acd history and remove acdcall
-            removeCall(acdCall, AcdCallStatus.COMPLETED);
+            if (targetSessionId) {
+                // We have a targetSessionId, this means that we should create a new acd_call with this session id
+                // We should only receive targetSessionId for an attended call transfer
+                // We do not call the removeCall function as with multiple sessions, the build app will send an update with COMPLETED status
+                log.debug("We have a transfer target session id [${targetSessionId}]")
+                acdCallAdd(acdCall.ani, acdCall.dnis, null, AcdCallStatus.TRANSFER_REQUESTED, null, acdCall.skill, targetSessionId, acdCall.ivr);
+            } else {
+                // If we don't have a target session id, then this means it is a blind transfer.  Blind transfers require us to remove
+                // the entry from the acd call table at the time of transfer
+                // add acd history and remove acd call
+                removeCall(acdCall, AcdCallStatus.COMPLETED);
+            }
+
+
         } else {
             log.error("request to transfer call to invalid number [${xferDestination}]")
             throw new ListenAcdException("request to transfer call to invalid number [${xferDestination}]");
@@ -799,11 +810,26 @@ class AcdService
      */
     private void acdCallCompleted(AcdCall acdCall, AcdCallStatus status) throws ListenAcdException
     {
-        //Free the user
-        freeAgent(acdCall.user);
+        try
+        {
+            //Free the user
+            freeAgent(acdCall.user);
+        }
+        catch(Exception e)
+        {
+            log.error("Exception freeing acd agent [${acdCall.user.username}]: " + e, e);
+        }
 
-        //Delete from queue.
-        removeCall(acdCall, status);
+
+        try
+        {
+            //Delete from queue.
+            removeCall(acdCall, status);        }
+        catch(Exception e)
+        {
+            log.error("Exception removing acd call [${acdCall.sessionId}]: " + e, e);
+        }
+
     }
 
     /**
@@ -939,6 +965,7 @@ class AcdService
         if(user != null)
         {
             //Free the user
+            LogFactory.getLog(this).debug("Attempted to free acd agent [${user.username}] current status [${user.acdUserStatus.onACall}]");
             user.acdUserStatus.onACall = false;
             user.save(flush: true);
         }
