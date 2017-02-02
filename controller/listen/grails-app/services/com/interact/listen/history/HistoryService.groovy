@@ -220,8 +220,25 @@ class HistoryService {
 
     void deletedAttendantHoliday(PromptOverride promptOverride)
     {
-        write(action: Action.DELETED_ATTENDANT_HOLIDAY,
-              description: "Deleted attendant holiday starting [${formatDateTime(promptOverride.startDate)}], ending [${formatDateTime(promptOverride.endDate)}] with prompt [${promptOverride.optionsPrompt}]")
+        if(promptOverride.getEventType() == EventType.SCHEDULED_EVENT)
+        {
+            write(action: Action.DELETED_SCHEDULED_EVENT,
+                    description: "Deleted scheduled event starting [${formatDateTime(promptOverride.startDate)}], " +
+                            "ending[${formatDateTime(promptOverride.endDate)} " +
+                            "with prompt [${promptOverride.optionsPrompt}]");
+        }
+        else if(promptOverride.getEventType() == EventType.UNSCHEDULED_EVENT)
+        {
+            write(action: Action.DELETED_UNSCHEDULED_EVENT,
+                    description: "Ended unscheduled event");
+        }
+        else
+        {
+            write(action: Action.DELETED_ATTENDANT_HOLIDAY,
+                    description: "Deleted attendant holiday starting [${formatDateTime(promptOverride.startDate)}], " +
+                            "ending [${formatDateTime(promptOverride.endDate)}] " +
+                            "with prompt [${promptOverride.optionsPrompt}]");
+        }
     }
 
     void deletedConferenceRecording(Recording recording) {

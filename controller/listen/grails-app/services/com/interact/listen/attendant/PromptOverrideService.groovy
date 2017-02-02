@@ -17,6 +17,11 @@ class PromptOverrideService
 
     PromptOverride create(PromptOverride promptOverride, MultipartFile file = null)
     {
+        return create(promptOverride, file, false);
+    }
+
+    PromptOverride create(PromptOverride promptOverride, MultipartFile file = null, boolean existed)
+    {
         promptOverride.validate(['startDate', 'endDate', 'useMenu'])
         if (promptOverride.hasErrors())
         {
@@ -43,7 +48,14 @@ class PromptOverrideService
 
         if (!promptOverride.hasErrors() && promptOverride.save())
         {
-            historyService.createdAttendantHoliday(promptOverride)
+            if(!existed)
+            {
+                historyService.createdAttendantHoliday(promptOverride);
+            }
+            else
+            {
+                historyService.deletedAttendantHoliday(promptOverride);
+            }
         }
         else
         {

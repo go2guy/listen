@@ -164,7 +164,7 @@ class AttendantController {
 
                 promptOverride.startDate = startDate;
                 promptOverride.endDate = endDate;
-                promptOverrideService.create(promptOverride, request.getFile('uploadedPrompt'));
+                promptOverrideService.create(promptOverride, request.getFile('uploadedPrompt'), true);
                 redirect(action: 'unscheduledEvent');
             }
         }
