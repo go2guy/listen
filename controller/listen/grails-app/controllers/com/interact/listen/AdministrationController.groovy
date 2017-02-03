@@ -1379,7 +1379,7 @@ class AdministrationController {
         }
 
         // log.debug "session.organization[${session.organization}] == route.organization[${route.organization}]???"
-        if (session?.organization.toString() !== route?.organization.toString()) {
+        if (session?.organization.toString() != route?.organization.toString()) {
             log.error "Authorization denied for user [${params}]"
             redirect(controller: 'login', action: 'denied')
             return
