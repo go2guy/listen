@@ -19,6 +19,7 @@ class CallRoutingService
         Organization callerOrganization = null;
         String callerId = null;
         String routeType = null;
+        boolean internal = true;
 
         if(authorization == null || authorization.isEmpty())
         {
@@ -43,14 +44,23 @@ class CallRoutingService
             {
                 callerOrganization = sipPhone.getOrganization();
                 log.debug("Caller Organization: " + callerOrganization.getName());
+                internal = true;
+            }
+            else
+            {
+                internal = false;
             }
         }
 
-	    if (callerOrganization != null) {
-		    NumberRoute.findAllByTypeAndOrganization(NumberRoute.Type.EXTERNAL, callerOrganization).each {
+	    if (internal)
+        {
+            //First check for Internal routes
+		    NumberRoute.findAllByTypeAndOrganization(NumberRoute.Type.INTERNAL, callerOrganization).each {
 			    mappings.put(it.pattern, it)
 		    }
-	    } else {
+	    }
+        else
+        {
 		    NumberRoute.findAllByType(NumberRoute.Type.EXTERNAL).each {
 			    mappings.put(it.pattern, it)
 		    }
@@ -115,7 +125,7 @@ class CallRoutingService
                 callerId: callerId, routeType: routeType];
         }
 
-        if(callerOrganization == null)
+        if(!internal)
         {
             //Unknown ip dialed a non-external route.  We do not know what organization to use here, so fail
             log.error "call with unknown organization"
@@ -134,7 +144,7 @@ class CallRoutingService
         }
 
         mappings.clear()
-        NumberRoute.findAllByOrganizationAndType(callerOrganization, NumberRoute.Type.INTERNAL).each {
+        NumberRoute.findAllByOrganizationAndType(callerOrganization, NumberRoute.Type.EXTERNAL).each {
                 mappings.put(it.pattern, it)
         }
 

@@ -25,7 +25,9 @@ class NumberRoute {
         pattern blank: false, maxSize: 50, matches: '^[0-9]+\\*?|\\*$', unique: ['organization', 'type']
     }
 
-    static mapping = {
+/*    static mapping = {
         organization lazy: false
-    }
+    }*/
+
+    static fetchMode = [organization: 'eager']
 }
