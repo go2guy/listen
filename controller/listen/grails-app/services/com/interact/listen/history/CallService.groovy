@@ -3,6 +3,7 @@ package com.interact.listen.history
 import com.interact.listen.Organization
 import com.interact.listen.User
 import com.interact.listen.acd.AcdCallHistory
+import com.interact.listen.acd.AcdCallStatus
 import com.interact.listen.exceptions.ListenExportException
 import grails.validation.ValidationErrors
 import org.apache.commons.logging.LogFactory
@@ -95,7 +96,7 @@ class CallService {
             tmpFile << "\n";
 
             callHistory.each {
-                def acdCallHist = AcdCallHistory.findAllBySessionId(it?.sessionId)
+                def acdCallHist = AcdCallHistory.findAllBySessionIdAndCallStatusNotEqual(it?.sessionId, AcdCallStatus.TRANSFER_REQUESTED)
                 if (acdCallHist) {
                     log.debug("Found acd call history records for session id [${it.sessionId}]")
                     acdCallHist.each { acdCall ->

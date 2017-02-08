@@ -80,7 +80,7 @@ grails.project.dependency.resolution = {
                 'org.apache.tika:tika-core:0.9',
                 'net.sourceforge.jexcelapi:jxl:2.6.12'
 
-        runtime('mariadb-client:mariadb-java-client:1.1.5')
+        runtime('org.mariadb.jdbc:mariadb-java-client:1.1.5')
 
         compile('anet:anet-java-sdk:1.4.5')
         compile('prettytime:prettytime:2.1.3.Final')

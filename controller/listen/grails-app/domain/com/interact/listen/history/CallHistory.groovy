@@ -9,12 +9,15 @@ import org.joda.time.Duration
 class CallHistory {
     DateTime dateTime
     String ani
+    String outboundAni
     String dnis
+    String inboundDnis
     Duration duration
     Organization organization
     User fromUser
     User toUser
     String sessionId
+    String commonCallId
     String ivr
     String result
     DateTime lastModified;

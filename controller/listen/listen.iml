@@ -111,7 +111,6 @@
           <root url="jar://$USER_HOME$/.grails/ivy-cache/joda-time/joda-time-hibernate/jars/joda-time-hibernate-1.3.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.springframework.security/spring-security-core/jars/spring-security-core-3.2.3.RELEASE.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/c3p0/c3p0/jars/c3p0-0.9.1.1.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/mariadb-client/mariadb-java-client/jars/mariadb-java-client-1.1.5.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/net.sourceforge.jexcelapi/jxl/jars/jxl-2.6.12.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.tika/tika-core/bundles/tika-core-0.9.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/com.googlecode.json-simple/json-simple/jars/json-simple-1.1.jar!/" />
@@ -127,6 +126,7 @@
           <root url="jar://$USER_HOME$/.grails/ivy-cache/apacheds/apacheds-xdbm-base/jars/apacheds-xdbm-base-1.5.4.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/apacheds/apacheds-protocol-ldap/jars/apacheds-protocol-ldap-1.5.4.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/apacheds/apacheds-schema-registries/jars/apacheds-schema-registries-1.5.4.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.mariadb.jdbc/mariadb-java-client/jars/mariadb-java-client-1.1.5.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -147,6 +147,7 @@
         <jarDirectory url="file://$MODULE_DIR$/lib" recursive="false" />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="grails-2.3.3" level="application" />
   </component>
 </module>
 

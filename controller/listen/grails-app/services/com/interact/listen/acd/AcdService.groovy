@@ -1224,6 +1224,8 @@ class AcdService
                         eq("id", Long.parseLong(skillId))
                     }
                 }
+
+	            ne('callStatus', AcdCallStatus.TRANSFER_REQUESTED)
             }
 
         if (calls) {
