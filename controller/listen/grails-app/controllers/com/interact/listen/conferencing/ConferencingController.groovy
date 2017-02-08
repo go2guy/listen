@@ -423,7 +423,7 @@ class ConferencingController {
             return
         }
 
-        spotCommunicationService.stopRecording(conference)
+        spotCommunicationService.stopRecording(conference);
         flash.successMessage = 'Conference recording stopped'
         redirect(action: 'manage')
     }

@@ -294,6 +294,15 @@ class SpotApiController {
         response.status = HSR.SC_CREATED
         log.debug "addConferencingRecording request with params [${json}]"
 
+        File audioFile = new File(new URI(json.uri));
+        //See if recording already exists
+        Audio existing = Audio.findByFile(audioFile);
+        if(existing != null)
+        {
+            log.debug("Audio file[" + json.uri + "] already exists");
+            return;
+        }
+
         Recording.withTransaction { status ->
             def audio = new Audio()
             audio.duration = new Duration(json.duration as Long)
