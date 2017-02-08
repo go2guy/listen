@@ -43,8 +43,17 @@
                                                user="${callHistoryInstance.fromUser}" personalize="false"/></td>
             </tr>
             <tr>
+                <th><g:message code="callHistory.outboundAni.label"/></th>
+                <td>${fieldValue(bean: callHistoryInstance, field: 'outboundAni')}</td>
+            </tr>
+            <tr>
                 <th><g:message code="callHistory.dnis.label"/></th>
                 <td><listen:numberWithRealName number="${fieldValue(bean: callHistoryInstance, field: 'dnis')}"
+                                               user="${callHistoryInstance.toUser}" personalize="false"/></td>
+            </tr>
+            <tr>
+                <th><g:message code="callHistory.inboundDnis.label"/></th>
+                <td><listen:numberWithRealName number="${fieldValue(bean: callHistoryInstance, field: 'inboundDnis')}"
                                                user="${callHistoryInstance.toUser}" personalize="false"/></td>
             </tr>
             <tr>
@@ -62,6 +71,10 @@
             <tr>
                 <th><g:message code="callHistory.sessionId.label"/></th>
                 <td>${callHistoryInstance.sessionId}</td>
+            </tr>
+            <tr>
+                <th><g:message code="callHistory.commonCallId.label"/></th>
+                <td>${callHistoryInstance.commonCallId}</td>
             </tr>
         </tbody>
     </table>
