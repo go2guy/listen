@@ -677,6 +677,10 @@ class AdministrationController {
                 ilike('dnis', '%'+params.callee.replaceAll("\\D+", "")+'%')
             }
 
+            if (params.inboundDnis && params.searchButton) {
+                ilike('inboundDnis', '%'+params.inboundDnis.replaceAll("\\D+", "")+'%')
+            }
+
             if (selectedUsers && params.searchButton) {
                 or {
                     'in'('toUser', selectedUsers)

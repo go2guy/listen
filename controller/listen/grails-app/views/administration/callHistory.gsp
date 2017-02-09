@@ -15,15 +15,19 @@
     }
 
     .col-dateTime {
-        width: 20%;
+        width: 15%;
     }
 
     .col-ani {
-        width: 25%;
+        width: 20%;
     }
 
     .col-dnis {
-        width: 25%;
+        width: 20%;
+    }
+
+    .col-inboundDnis {
+        width: 15%;
     }
 
     .col-duration {
@@ -156,6 +160,15 @@
                   <td><g:textField name="callee" maxlength="14" onKeyPress="return numbersonly(this, event)"
                                    value="${params.callee}"/></td>
               </tr>
+              <tr>
+                  <th><label for="inboundDnis"><g:message
+                          code="callHistory.inboundDnis.label"/></label></th>
+                  <td><g:textField name="inboundDnis" maxlength="14" onKeyPress="return numbersonly(this, event)"
+                                   value="${params.inboundDnis}"/></td>
+                  <th><label for="callResult"><g:message code="callHistory.callResult.label"/></label>
+                  </th>
+                  <td style="vertical-align: top;"><g:textField name="callResult" id="callResult" maxlength="64" value="${params.callResult}"/></td>
+              </tr>
 
               <tr>
                   <th><label for="user"><g:message
@@ -170,9 +183,6 @@
                               noSelection="['': '-All-']"
                               value="${selectedUsers ? selectedUsers.collect {it.id} : ''}"
                               optionValue="realName"/></td>
-                  <th><label for="callResult"><g:message code="callHistory.callResult.label"/></label>
-                  </th>
-                  <td style="vertical-align: top;"><g:textField name="callResult" id="callResult" maxlength="64" value="${params.callResult}"/></td>
               </tr>
               </tbody>
           </table>
@@ -193,6 +203,7 @@
         <g:sortableColumn property="dateTime" title="Began" class="col-dateTime"/>
         <g:sortableColumn property="ani" title="Calling Party" class="col-ani"/>
         <g:sortableColumn property="dnis" title="Called Party" class="col-dnis"/>
+        <g:sortableColumn property="inboundDnis" title="${message(code: 'callHistory.inboundDnis.label')}" class="col-inboundDnis"/>
         <g:sortableColumn property="duration" title="Duration" class="col-duration"/>
         <g:sortableColumn property="result" title="Call Result" class="col-result"/>
         <g:sortableColumn property="acdCallHistory" title="ACD" class="col-acd"/>
@@ -206,6 +217,7 @@
                                                                user="${callHistory.fromUser}" personalize="false"/></td>
                 <td class="col-dnis"><listen:numberWithRealName number="${fieldValue(bean: callHistory, field: 'dnis')}"
                                                                 user="${callHistory.toUser}" personalize="false"/></td>
+                <td class="col-inboundDnis">${fieldValue(bean: callHistory, field: 'inboundDnis')}</td>
                 <td class="col-duration"><listen:formatduration duration="${callHistory.duration}" millis="false"/></td>
                 <td class="col-result">${fieldValue(bean: callHistory, field: 'result')}</td>
                 <td><listen:checkMark value="${callHistory?.acdCall}"/></td>
