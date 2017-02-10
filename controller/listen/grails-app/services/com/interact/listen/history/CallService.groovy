@@ -95,7 +95,7 @@ class CallService {
         // Build the data now
         try {
             //Create header row
-            tmpFile << "timestamp,began,calling party,called party,duration,organization,call result,sessionId,ivr,"
+            tmpFile << "timestamp,began,calling party,caller id,called party,dialed number,duration,organization,call result,sessionId,common call id,ivr,"
             tmpFile << AcdCallHistory.csvHeader();  // we are adding acd history to the export header
             tmpFile << "\n";
 
@@ -109,11 +109,14 @@ class CallService {
                         tmpFile << "${it.dateTime?.getMillis()},"
                         tmpFile << "${it.dateTime?.toString("yyyy-MM-dd HH:mm:ss")},"
                         tmpFile << "${listen.numberWithRealName(number: it.ani, user: it.fromUser, personalize: false)},"
+                        tmpFile << "${it.outboundAni},"
                         tmpFile << "${listen.numberWithRealName(number: it.dnis, user: it.toUser, personalize: false)},"
+                        tmpFile << "${it.inboundDnis}"
                         tmpFile << "${listen.formatduration(duration: it.duration, millis: false)},"
                         tmpFile << "${it.organization.name},"
                         tmpFile << "${it.result.replaceAll(",", " ")}," // This is to prevent anything weird...
                         tmpFile << "${it.sessionId},"
+                        tmpFile << "${it.commonCallId}"
                         tmpFile << "${it.ivr},"
                         // Now we'll add the acd call domain portion
                         tmpFile << "${acdCall.skill},"
