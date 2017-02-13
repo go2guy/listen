@@ -111,6 +111,9 @@ class CallHistoryPostJob {
 				json.callReceived = callRecord.dateTime?.toString("yyyy-MM-dd HH:mm:ss")
 				// json.timeStamp = callRecord.dateTime.getMillis().toString()
 				json.timeStamp = "${callRecord.dateTime.getMillis().toString()}"
+                json.commonCallId = callRecord.commonCallId
+                json.outboundAni = callRecord.outboundAni
+                json.inboundDnis = callRecord.inboundDnis
 				json.ani = callRecord.ani
 				json.dnis = callRecord.dnis
 				json.agent = record.agentNumber ?: null
@@ -124,6 +127,9 @@ class CallHistoryPostJob {
 			json.sessionId = callRecord.sessionId
 			json.callReceived = callRecord.dateTime?.toString("yyyy-MM-dd HH:mm:ss")
 			json.timeStamp = "${callRecord.dateTime.getMillis().toString()}"
+            json.commonCallId = callRecord.commonCallId
+            json.outboundAni = callRecord.outboundAni
+            json.inboundDnis = callRecord.inboundDnis
 			json.ani = callRecord.ani
 			json.dnis = callRecord.dnis
 			json.agent = null
