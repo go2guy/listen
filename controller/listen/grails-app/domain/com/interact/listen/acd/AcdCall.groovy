@@ -23,7 +23,7 @@ class AcdCall
     String dnis;
     Skill skill;
     String sessionId;
-    String commonCallId
+    String commonCallId;
     DateTime enqueueTime;
     AcdCallStatus callStatus;
     String ivr;
@@ -32,6 +32,7 @@ class AcdCall
     DateTime callEnd;
     DateTime lastModified;
     boolean onHold = false;
+
 
     /**
      * Executed prior to an update.

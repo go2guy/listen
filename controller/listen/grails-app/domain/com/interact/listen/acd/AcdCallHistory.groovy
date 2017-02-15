@@ -23,6 +23,7 @@ class AcdCallHistory
     String dnis;
     Skill skill;
     String sessionId;
+    String commonCallId;
     DateTime enqueueTime;
     AcdCallStatus callStatus;
     String ivr;
@@ -41,6 +42,7 @@ class AcdCallHistory
         this.dnis = callRecord.dnis;
         this.skill = callRecord.skill;
         this.sessionId = callRecord.sessionId;
+        this.commonCallId = callRecord.commonCallId;
         this.enqueueTime = callRecord.enqueueTime;
         if (callRecord.callStart != null) {
             this.dequeueTime = callRecord.callStart;

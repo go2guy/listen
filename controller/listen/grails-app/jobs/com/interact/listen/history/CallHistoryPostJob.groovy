@@ -1,11 +1,8 @@
 package com.interact.listen.history
 
-import com.google.gson.JsonNull
 import com.interact.listen.acd.AcdCall
 import com.interact.listen.acd.AcdCallStatus
 import org.apache.http.conn.HttpHostConnectException
-import org.joda.time.LocalDateTime
-import com.interact.listen.PrimaryNode
 import com.interact.listen.acd.AcdCallHistory
 
 import org.apache.http.client.HttpClient
@@ -40,7 +37,7 @@ class CallHistoryPostJob {
 		// callRecords = CallHistory.findByCdrPostResult(null)
 		// get all call history records that don't currently have a 200 result for cdr post
         log.debug("Running Call History Post Job");
-        def activeCommonCallIds = AcdCall.getAll().collect{it.commonCallId}
+        def activeCommonCallIds = AcdCall.getAll().collect { it.commonCallId }
         log.debug("activeCommonCallIds is ${activeCommonCallIds}");
 
 		def callRecords = CallHistory.createCriteria().list {
@@ -57,22 +54,22 @@ class CallHistoryPostJob {
         log.debug("Number of call Records: ${callRecords.size()}");
 
 		callRecords.each { callRecord ->
-			// set up our http client
-			HttpClient client = new DefaultHttpClient()
-			client.getParams().setParameter(HttpConnectionParams.CONNECTION_TIMEOUT, HTTP_CONNECTION_TIMEOUT)
-			client.getParams().setParameter(HttpConnectionParams.SO_TIMEOUT, HTTP_SOCKET_TIMEOUT)
-
 			// only do the post if it's configured for the organization
 			if (callRecord.organization.postCdr && callRecord.organization.cdrUrl) {
                 def recordList = []
-                recordList.addAll(generateList(callRecord))
+                def acdCallRecords = AcdCallHistory.createCriteria().list {
+                    eq('commonCallId', callRecord.commonCallId)
+                    ne('callStatus', AcdCallStatus.TRANSFER_REQUESTED)
+                }
+                recordList.addAll(generateList(callRecord, acdCallRecords))
 
                 // Find all CDR's with commonCallId the same and add them
                 def associatedCallRecords = getAssociatedCallRecords(callRecord, callRecords)
 
                 // Loop through and continue building the jsonArr
                 associatedCallRecords.each { associatedCallRecord ->
-                    recordList.addAll(generateList(associatedCallRecord))
+                    // Find all acd histories for this particular one
+                    recordList.addAll(generateList(associatedCallRecord, [])) // Assuming same common call id means everything will be pulled above
                 }
 
                 def statusCode = sendRequest(callRecord.organization.cdrUrl, associatedCallRecords)
@@ -85,16 +82,18 @@ class CallHistoryPostJob {
 
     def getAssociatedCallRecords(def currentCallRecord, def callRecords) {
         // Check if there are any other CDR's with the commonCallId
-        def associatedCallRecords = callRecords.findAll { it.commonCallId == currentCallRecord.commonCallId }
-
-        if (associatedCallRecords.size() > 1) {
-            return associatedCallRecords.collect { it.commonCallId != currentCallRecord.commonCallId }
+        return callRecords.findAll {
+            if (it.commonCallId == currentCallRecord.commonCallId && it != currentCallRecord) {
+                return it
+            }
         }
-
-        return []
     }
 
     def sendRequest(def url, def recordList) {
+        // set up our http client
+        HttpClient client = new DefaultHttpClient()
+        client.getParams().setParameter(HttpConnectionParams.CONNECTION_TIMEOUT, HTTP_CONNECTION_TIMEOUT)
+        client.getParams().setParameter(HttpConnectionParams.SO_TIMEOUT, HTTP_SOCKET_TIMEOUT)
         HttpPost post = new HttpPost(url)
         post.addHeader("content-type", "application/json; charset=utf-8")
         def json = (recordList as JSON)
@@ -153,13 +152,8 @@ class CallHistoryPostJob {
         return (success ? statusCode : 500)
     }
 
-	def generateList(def callRecord) {
+	def generateList(def callRecord, def acdCallRecords) {
 		def jsonArr = []
-
-        def acdCallRecords = AcdCallHistory.createCriteria().list() {
-            eq('sessionId', callRecord.sessionId)
-            ne('callStatus', AcdCallStatus.TRANSFER_REQUESTED)
-        }
 
 		if (acdCallRecords.size() > 0) {
 			acdCallRecords.each { record ->
