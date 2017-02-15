@@ -89,12 +89,62 @@ class CallHistoryPostJob {
         }
     }
 
-    def sendRequest(def url, def recordList) {
+    def sendRequest(def url, def recordList)
+    {
         // set up our http client
         HttpClient client = new DefaultHttpClient()
         client.getParams().setParameter(HttpConnectionParams.CONNECTION_TIMEOUT, HTTP_CONNECTION_TIMEOUT)
         client.getParams().setParameter(HttpConnectionParams.SO_TIMEOUT, HTTP_SOCKET_TIMEOUT)
-        HttpPost post = new HttpPost(url)
+
+        String postUrl = url;
+        log.debug("Post URL: " + postUrl);
+
+        String headerArgument = null;
+        String[] splits = postUrl.split(" ");
+        if(splits.size() > 1)
+        {
+            //We probably got a parameterized URL configuration
+            if(splits[1].equalsIgnoreCase("-H") && splits.size() > 2)
+            {
+                //the header params could be surrounded by " or spaces
+                if(splits[2].startsWith("\""))
+                {
+                    if(splits[2].endsWith("\""))
+                    {
+                        headerArgument = splits[2].replaceAll("\"", "");
+                    }
+                    else if(splits.size() > 3)
+                    {
+                        headerArgument = (splits[2] + " " + splits[3]).replaceAll("\"", "");
+                    }
+                    else
+                    {
+                        headerArgument = splits[2].replaceAll("\"", "");
+                    }
+                }
+                else
+                {
+                    headerArgument = splits[2].replaceAll("\"", "");
+                }
+
+                log.debug("Received URL header argument: " + headerArgument);
+            }
+
+            url = splits[0];
+        }
+
+        HttpPost post = new HttpPost(url);
+
+        if(headerArgument != null && !headerArgument.isEmpty())
+        {
+            //Split the arg and value on :
+            String[] headerArgs = headerArgument.split(":");
+            if(headerArgs.size() == 2)
+            {
+                post.addHeader(headerArgs[0], headerArgs[1]);
+            }
+        }
+
         post.addHeader("content-type", "application/json; charset=utf-8")
         def json = (recordList as JSON)
         post.setEntity(new StringEntity("${json}"))
