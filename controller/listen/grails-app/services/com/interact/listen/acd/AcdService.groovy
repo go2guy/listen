@@ -469,9 +469,18 @@ class AcdService
             transferCall(acdCall, toAgent, false);
         } else if (xferDestination.length() > organization.extLength) {
             log.debug("request to transfer call to external number [${xferDestination}]")
-            //Free up the agent
-            freeAgent(acdCall.user);
 
+            // Determine if the external number being transfered to is associated with any Listen user
+            User destUser = PhoneNumber.findByNumber(xferDestination)?.owner;
+            if (destUser) {
+                log.debug("External transfer destination [${xferDestination}] belongs to user [${destUser.username}]")
+            } else {
+                log.debug("External transfer destination [${xferDestination}] does not belong to any user.")
+            }
+
+            //Free up the agent who is performing the transfer
+            freeAgent(acdCall.user);
+            //Create an acd call history for this transfer request
             addAcdHistory(acdCall, AcdCallStatus.TRANSFER_REQUESTED)
 
             if (targetSessionId) {
@@ -479,14 +488,19 @@ class AcdService
                 // We should only receive targetSessionId for an attended call transfer
                 // We do not call the removeCall function as with multiple sessions, the build app will send an update with COMPLETED status
                 log.debug("We have a transfer target session id [${targetSessionId}]")
-                acdCallAdd(acdCall.ani, acdCall.dnis, null, AcdCallStatus.TRANSFER_REQUESTED, null, acdCall.skill, targetSessionId, acdCall.ivr);
-            } else {
-                // If we don't have a target session id, then this means it is a blind transfer.  Blind transfers require us to remove
+                acdCallAdd(acdCall.ani, acdCall.dnis, destUser, AcdCallStatus.TRANSFER_REQUESTED, null, acdCall.skill, targetSessionId, acdCall.ivr);
+            } else if (!targetSessionId && !destUser) {
+                // If we don't have a target session id, then this means it is a blind transfer.
+                // If we don't have a destUser, then we're transferring to a non-listen user. so we'll remove the acd call entry
                 // the entry from the acd call table at the time of transfer
                 // add acd history and remove acd call
+                log.debug("We are not transfering to a Listen user for session [${acdCall.sessionId}]")
                 removeCall(acdCall, AcdCallStatus.COMPLETED);
+            } else {
+                log.debug("We are performing a blind transfer to a Listen user[${destUser.username}]")
+                acdCall.setUser(destUser);
+                acdCall.save(flush: true);
             }
-
 
         } else {
             log.error("request to transfer call to invalid number [${xferDestination}]")
