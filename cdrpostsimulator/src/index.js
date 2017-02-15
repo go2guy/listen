@@ -87,7 +87,7 @@ else
 
     app.post('/post', function (req, res) {
         res.status(getStatusCode());
-        log.debug(`Got a /post request on worker [${cluster.worker.id}] with data [${JSON.stringify(req.body)}]. Returning status code [${res.statusCode}]`);
+        log.debug(`Got a /post request on worker [${cluster.worker.id}] with data [${JSON.stringify(req.body)}] and headers [${JSON.stringify(req.headers)}]. Returning status code [${res.statusCode}]`);
         res.send();
     });
 
