@@ -72,7 +72,7 @@ class CallHistoryPostJob {
                     recordList.addAll(generateList(associatedCallRecord, [])) // Assuming same common call id means everything will be pulled above
                 }
 
-                def statusCode = sendRequest(callRecord.organization.cdrUrl, associatedCallRecords)
+                def statusCode = sendRequest(callRecord.organization.cdrUrl, recordList)
                 def result = updateCallRecords(callRecord, associatedCallRecords, statusCode)
 
 				statWriterService.send(result.toString().charAt(0) == "2" ? Stat.SPOT_POST_CDR_SUCCESS : Stat.SPOT_POST_CDR_FAILURE)
