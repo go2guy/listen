@@ -128,9 +128,9 @@ class SpotApiController {
                 log.debug("Call from IVR: " + request.remoteAddr);
             }
 
-            if(json.ani && json.dnis && json.selection && json.sessionId)
+            if(json.ani && json.dnis && json.selection && json.sessionId && json.commonCallId)
             {
-                acdService.acdCallAdd(json.ani, json.dnis, null, null, json.selection, null, json.sessionId, request.remoteAddr)
+                acdService.acdCallAdd(json.ani, json.dnis, null, null, json.selection, null, json.sessionId, request.remoteAddr, json.commonCallId)
             }
             else
             {

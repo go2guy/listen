@@ -1,6 +1,7 @@
 package com.interact.listen.history
 
 import com.google.gson.JsonNull
+import com.interact.listen.acd.AcdCall
 import com.interact.listen.acd.AcdCallStatus
 import org.apache.http.conn.HttpHostConnectException
 import org.joda.time.LocalDateTime
@@ -38,11 +39,22 @@ class CallHistoryPostJob {
 		// get our call records
 		// callRecords = CallHistory.findByCdrPostResult(null)
 		// get all call history records that don't currently have a 200 result for cdr post
+        log.debug("Running Call History Post Job");
+        def activeCommonCallIds = AcdCall.getAll().collect{it.commonCallId}
+        log.debug("activeCommonCallIds is ${activeCommonCallIds}");
+
 		def callRecords = CallHistory.createCriteria().list {
 			ne('cdrPostResult', 200)
 			lt('cdrPostCount', 3)
 			gt('dateTime', new LocalDate().toDateTimeAtCurrentTime().minusDays(Integer.parseInt((String) Holders.config.com.interact.listen.history.postRange)))
+            if (activeCommonCallIds.size() > 0) {
+                not {
+                    'in'('commonCallId', activeCommonCallIds)
+                }
+            }
 		}
+
+        log.debug("Number of call Records: ${callRecords.size()}");
 
 		callRecords.each { callRecord ->
 			// set up our http client
@@ -50,59 +62,104 @@ class CallHistoryPostJob {
 			client.getParams().setParameter(HttpConnectionParams.CONNECTION_TIMEOUT, HTTP_CONNECTION_TIMEOUT)
 			client.getParams().setParameter(HttpConnectionParams.SO_TIMEOUT, HTTP_SOCKET_TIMEOUT)
 
-			def acdCallRecords = AcdCallHistory.findAllBySessionIdAndCallStatusNotEqual(callRecord.sessionId, AcdCallStatus.TRANSFER_REQUESTED)
-			def url = callRecord.organization.cdrUrl
 			// only do the post if it's configured for the organization
 			if (callRecord.organization.postCdr && callRecord.organization.cdrUrl) {
-				HttpPost post = new HttpPost(url)
-				// post.addHeader("content-type", "application/x-www-form-urlencoded")
-				post.addHeader("content-type", "application/json; charset=utf-8")
-				def json = generateJsonString(callRecord, acdCallRecords)
-				post.setEntity(new StringEntity("${json}"))
-				log.debug "body [${json}]"
+                def recordList = []
+                recordList.addAll(generateList(callRecord))
 
-				int statusCode = 0
+                // Find all CDR's with commonCallId the same and add them
+                def associatedCallRecords = getAssociatedCallRecords(callRecord, callRecords)
 
-				try {
-					HttpResponse response = client.execute(post)
-					statusCode = response.getStatusLine().getStatusCode()
-				}
-				catch (ConnectTimeoutException e) {
-					statusCode = 504
-					log.debug "Connection timeout occurred updating post result details for call record."
-				}
-				catch (SocketTimeoutException e) {
-					statusCode = 504
-					log.debug "Socket timeout occurred updating post result details for call record."
-				}
-				catch (HttpHostConnectException hhce) {
-					statusCode = 504;
-					log.warn("HttpHostConnectionException occurred updating post result details for call record : " + hhce);
-				}
-				catch (UnknownHostException uhe) {
-					statusCode = 504;
-					log.warn("UnknownHostException occurred updating post result details for call record : " + uhe);
-				}
-				catch (Exception e) {
-					statusCode = 500
-					log.warn("Internal Server Error [${e}] occurred updating  result details for call record.");
-				}
+                // Loop through and continue building the jsonArr
+                associatedCallRecords.each { associatedCallRecord ->
+                    recordList.addAll(generateList(associatedCallRecord))
+                }
 
-				callRecord.cdrPostResult = statusCode
-				callRecord.cdrPostCount++
+                def statusCode = sendRequest(callRecord.organization.cdrUrl, associatedCallRecords)
+                def result = updateCallRecords(callRecord, associatedCallRecords, statusCode)
 
-				if (!callRecord.save(flush: true)) {
-					log.debug "Failed to update call record post result details for call history [${callRecord.id}]"
-					statusCode = 500
-				}
-
-				statWriterService.send(statusCode.toString().charAt(0) == "2" ? Stat.SPOT_POST_CDR_SUCCESS : Stat.SPOT_POST_CDR_FAILURE)
+				statWriterService.send(result.toString().charAt(0) == "2" ? Stat.SPOT_POST_CDR_SUCCESS : Stat.SPOT_POST_CDR_FAILURE)
 			}
 		}
 	}
 
-	def generateJsonString(def callRecord, def acdCallRecords) {
+    def getAssociatedCallRecords(def currentCallRecord, def callRecords) {
+        // Check if there are any other CDR's with the commonCallId
+        def associatedCallRecords = callRecords.findAll { it.commonCallId == currentCallRecord.commonCallId }
+
+        if (associatedCallRecords.size() > 1) {
+            return associatedCallRecords.collect { it.commonCallId != currentCallRecord.commonCallId }
+        }
+
+        return []
+    }
+
+    def sendRequest(def url, def recordList) {
+        HttpPost post = new HttpPost(url)
+        post.addHeader("content-type", "application/json; charset=utf-8")
+        def json = (recordList as JSON)
+        post.setEntity(new StringEntity("${json}"))
+        log.debug "body [${json}]"
+
+        int statusCode = 0
+
+        try {
+            HttpResponse response = client.execute(post)
+            statusCode = response.getStatusLine().getStatusCode()
+        }
+        catch (ConnectTimeoutException e) {
+            statusCode = 504
+            log.debug "Connection timeout occurred updating post result details for call record."
+        }
+        catch (SocketTimeoutException e) {
+            statusCode = 504
+            log.debug "Socket timeout occurred updating post result details for call record."
+        }
+        catch (HttpHostConnectException hhce) {
+            statusCode = 504;
+            log.warn("HttpHostConnectionException occurred updating post result details for call record : " + hhce);
+        }
+        catch (UnknownHostException uhe) {
+            statusCode = 504;
+            log.warn("UnknownHostException occurred updating post result details for call record : " + uhe);
+        }
+        catch (Exception e) {
+            statusCode = 500
+            log.warn("Internal Server Error [${e}] occurred updating  result details for call record.");
+        }
+
+        return statusCode
+    }
+
+    def updateCallRecords(def callRecord, def associatedCallRecords, def statusCode) {
+        def success = true
+
+        callRecord.cdrPostResult = statusCode
+        callRecord.cdrPostCount++
+        if (!callRecord.save()) {
+            log.debug "Failed to update call record post result details for call history [${callRecord.id}]"
+            success = false
+        }
+
+        associatedCallRecords.each {
+            it.cdrPostResult = statusCode
+            it.cdrPostCount++
+            if (!it.save()) {
+                log.debug "Failed to update call record post result details for call history [${callRecord.id}]"
+                success = false
+            }
+        }
+
+        return (success ? statusCode : 500)
+    }
+
+	def generateList(def callRecord) {
 		def jsonArr = []
+
+        def acdCallRecords = AcdCallHistory.createCriteria().list() {
+            eq('sessionId', callRecord.sessionId)
+            ne('callStatus', AcdCallStatus.TRANSFER_REQUESTED)
+        }
 
 		if (acdCallRecords.size() > 0) {
 			acdCallRecords.each { record ->
@@ -112,8 +169,8 @@ class CallHistoryPostJob {
 				// json.timeStamp = callRecord.dateTime.getMillis().toString()
 				json.timeStamp = "${callRecord.dateTime.getMillis().toString()}"
                 json.commonCallId = callRecord.commonCallId
-                json.outboundAni = callRecord.outboundAni
-                json.inboundDnis = callRecord.inboundDnis
+                json.callerId = callRecord.outboundAni
+                json.dialedNumber = callRecord.inboundDnis
 				json.ani = callRecord.ani
 				json.dnis = callRecord.dnis
 				json.agent = record.agentNumber ?: null
@@ -128,8 +185,8 @@ class CallHistoryPostJob {
 			json.callReceived = callRecord.dateTime?.toString("yyyy-MM-dd HH:mm:ss")
 			json.timeStamp = "${callRecord.dateTime.getMillis().toString()}"
             json.commonCallId = callRecord.commonCallId
-            json.outboundAni = callRecord.outboundAni
-            json.inboundDnis = callRecord.inboundDnis
+            json.callerId = callRecord.outboundAni
+            json.dialedNumber = callRecord.inboundDnis
 			json.ani = callRecord.ani
 			json.dnis = callRecord.dnis
 			json.agent = null
@@ -140,6 +197,6 @@ class CallHistoryPostJob {
 			jsonArr.push(json)
 		}
 
-		return jsonArr as JSON
+		return jsonArr
 	}
 }

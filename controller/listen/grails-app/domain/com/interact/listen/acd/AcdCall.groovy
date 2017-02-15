@@ -23,6 +23,7 @@ class AcdCall
     String dnis;
     Skill skill;
     String sessionId;
+    String commonCallId
     DateTime enqueueTime;
     AcdCallStatus callStatus;
     String ivr;

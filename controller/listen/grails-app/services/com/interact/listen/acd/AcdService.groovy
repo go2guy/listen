@@ -261,7 +261,7 @@ class AcdService
      * @param sessionId The sessionid of the call.
      * @throws ListenAcdException If an exception adding the call to the queue.
      */
-    void acdCallAdd(String ani, String dnis, User acdAgent, AcdCallStatus acdStatus, String selection, Skill skill, String sessionId, String ivr) throws ListenAcdException
+    void acdCallAdd(String ani, String dnis, User acdAgent, AcdCallStatus acdStatus, String selection, Skill skill, String sessionId, String ivr, String commonCallId) throws ListenAcdException
     {
         AcdCall acdCall = new AcdCall();
         String stringAni = ani;
@@ -273,6 +273,7 @@ class AcdService
 
         acdCall.setAni(stringAni);
         acdCall.setDnis(dnis);
+        acdCall.setCommonCallId(commonCallId)
 
         if (acdAgent) {
             acdCall.setUser(acdAgent);
