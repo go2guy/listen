@@ -20,7 +20,7 @@ var getSipPhoneDataByMac = function(mac)
             {
                 if (rows.length !== 1)
                 {
-                    return reject(new Error(`Row [${id}] not found or more than one found.`));
+                    return reject(new Error(`Row [${mac}] not found or more than one found.`));
                 }
 
                 resolve(rows[0]);
