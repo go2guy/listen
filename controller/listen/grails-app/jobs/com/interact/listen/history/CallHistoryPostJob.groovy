@@ -205,11 +205,13 @@ class CallHistoryPostJob {
 	def generateList(def callRecord, def acdCallRecords) {
 		def jsonArr = []
 
-		if (acdCallRecords.size() > 0) {
+		if (acdCallRecords.size() > 0)
+        {
 			acdCallRecords.each { record ->
 				def json = [:]
 				json.sessionId = callRecord.sessionId
-				json.callReceived = callRecord.dateTime?.toString("yyyy-MM-dd HH:mm:ss")
+                DateTime callReceivedUtc = callRecord.dateTime?.withZone(DateTimeZone.UTC);
+				json.callReceived = callReceivedUtc?.toString("yyyy-MM-dd HH:mm:ss")
 				// json.timeStamp = callRecord.dateTime.getMillis().toString()
 				json.timeStamp = "${callRecord.dateTime.getMillis().toString()}"
                 json.commonCallId = callRecord.commonCallId
@@ -218,15 +220,21 @@ class CallHistoryPostJob {
 				json.ani = callRecord.ani
 				json.dnis = callRecord.dnis
 				json.agent = record.agentNumber ?: null
-				json.enqueueTime = record.enqueueTime?.toString("yyyy-MM-dd HH:mm:ss") ?: null
-				json.agentCallStart = record.agentCallStart?.toString("yyyy-MM-dd HH:mm:ss") ?: null
-				json.agentCallEnd = record.agentCallEnd?.toString("yyyy-MM-dd HH:mm:ss") ?: null
+                DateTime enqueueTimeUtc = record.enqueueTime?.withZone(DateTimeZone.UTC);
+				json.enqueueTime = enqueueTimeUtc?.toString("yyyy-MM-dd HH:mm:ss") ?: null;
+                DateTime agentCallStartUtc = record.agentCallStart?.withZone(DateTimeZone.UTC);
+				json.agentCallStart = agentCallStartUtc?.toString("yyyy-MM-dd HH:mm:ss") ?: null
+                DateTime agentCallEndUtc = record.agentCallEnd?.withZone(DateTimeZone.UTC);
+				json.agentCallEnd = agentCallEndUtc?.toString("yyyy-MM-dd HH:mm:ss") ?: null
 				jsonArr.push(json)
 			}
-		} else {
+		}
+        else
+        {
 			def json = [:]
 			json.sessionId = callRecord.sessionId
-			json.callReceived = callRecord.dateTime?.toString("yyyy-MM-dd HH:mm:ss")
+            DateTime callReceivedUtc = callRecord.dateTime?.withZone(DateTimeZone.UTC);
+            json.callReceived = callReceivedUtc?.toString("yyyy-MM-dd HH:mm:ss")
 			json.timeStamp = "${callRecord.dateTime.getMillis().toString()}"
             json.commonCallId = callRecord.commonCallId
             json.callerId = callRecord.outboundAni
