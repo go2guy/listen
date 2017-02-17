@@ -37,6 +37,8 @@ class UrlMappings {
             ]
         }
 
+        "/api/acd/call/active"(controller: 'acdApi', action: 'getActiveCall')
+
         "/api/accessNumbers"(controller: 'spotApi') {
             action = [
                     GET: 'listPhoneNumbers'

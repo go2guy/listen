@@ -15,7 +15,8 @@ import javax.servlet.http.HttpServletResponse
 class AcdApiController
 {
     static allowedMethods = [
-        updateAgent: 'PUT'
+        updateAgent: 'PUT',
+        getActiveCall: 'GET'
     ]
 
     def historyService;
@@ -143,5 +144,54 @@ class AcdApiController
         }
 
         response.flushBuffer()
+    }
+
+    def getActiveCall = {
+        log.debug "getActiveCall request with params ${params}"
+        if(!params.apiKey)
+        {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing required parameter [apiKey]")
+            log.warn 'Missing required parameter [apiKey]'
+            return
+        }
+
+        if(!params.username)
+        {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing required parameter [username]")
+            log.warn 'Missing required parameter [username]'
+            return
+        }
+
+        Organization org = Organization.findByApiKey(params.apiKey);
+
+        if (!org) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Bad Api Key")
+            log.warn "Organization for apiKey [${params.apiKey}] not found."
+            return
+        }
+
+        User user = User.findByOrganizationAndUsername(org, params.username)
+
+        if (!user) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Username not found")
+            log.warn "Username [${params.username}] for org [${org.name}] not found."
+            return
+        }
+
+        // Otherwise lets get the active acd calls
+        def acdCall = AcdCall.findByUser(user)
+
+        if (acdCall) {
+            render(contentType: 'application/json') {
+                callId = acdCall.getCommonCallId()
+                availability = user.getAcdUserStatus()?.getAcdQueueStatus()?.name()
+                callStatus = "IN_PROGRESS"
+                callStartTime = acdCall.getInitTime()?.getMillis() / 1000
+            }
+            return
+        }
+
+        log.warn "No Active ACD Calls found for user ${params.username}"
+        response.sendError(HttpServletResponse.SC_NOT_FOUND, "No Active Acd Record Found")
     }
 }
