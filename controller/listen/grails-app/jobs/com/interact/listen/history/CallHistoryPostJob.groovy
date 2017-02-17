@@ -52,10 +52,11 @@ class CallHistoryPostJob {
 		}
 
         log.debug("Number of call Records: ${callRecords.size()}");
+        def processedCallRecordCommonCallIds = []
 
 		callRecords.each { callRecord ->
 			// only do the post if it's configured for the organization
-			if (callRecord.organization.postCdr && callRecord.organization.cdrUrl) {
+			if (callRecord.organization.postCdr && callRecord.organization.cdrUrl && !(callRecord.commonCallId in processedCallRecordCommonCallIds)) {
                 def recordList = []
                 def acdCallRecords = AcdCallHistory.createCriteria().list {
                     eq('commonCallId', callRecord.commonCallId)
@@ -68,9 +69,12 @@ class CallHistoryPostJob {
 
                 // Loop through and continue building the jsonArr
                 associatedCallRecords.each { associatedCallRecord ->
-                    // Find all acd histories for this particular one
-                    recordList.addAll(generateList(associatedCallRecord, [])) // Assuming same common call id means everything will be pulled above
+                    // Assuming same common call id means all ACD call records are pulled for the original call
+                    // So we just add this call record to the list and call it good
+                    recordList.addAll(generateList(associatedCallRecord, []))
                 }
+
+                processedCallRecordCommonCallIds.add(callRecord.commonCallId)
 
                 def statusCode = sendRequest(callRecord.organization.cdrUrl, recordList)
                 def result = updateCallRecords(callRecord, associatedCallRecords, statusCode)
