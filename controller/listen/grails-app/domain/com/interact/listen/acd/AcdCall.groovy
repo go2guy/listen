@@ -31,6 +31,7 @@ class AcdCall
     DateTime callStart;
     DateTime callEnd;
     DateTime lastModified;
+    DateTime initTime; // This is stored as UTC!!!!
     boolean onHold = false;
 
 

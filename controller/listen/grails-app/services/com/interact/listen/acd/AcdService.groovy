@@ -261,9 +261,10 @@ class AcdService
      * @param sessionId The sessionid of the call.
      * @param ivr The address of the ivr where the call is located
      * @param commonCallId A unique id that identifies this call
+     * @param initTime A UTC ISO time
      * @throws ListenAcdException If an exception adding the call to the queue.
      */
-    void acdCallAdd(String ani, String dnis, User acdAgent, AcdCallStatus acdStatus, String selection, Skill skill, String sessionId, String ivr, String commonCallId) throws ListenAcdException
+    void acdCallAdd(String ani, String dnis, User acdAgent, AcdCallStatus acdStatus, String selection, Skill skill, String sessionId, String ivr, String commonCallId, String initTime) throws ListenAcdException
     {
         AcdCall acdCall = new AcdCall();
         String stringAni = ani;
@@ -275,7 +276,8 @@ class AcdService
 
         acdCall.setAni(stringAni);
         acdCall.setDnis(dnis);
-        acdCall.setCommonCallId(commonCallId)
+        acdCall.setCommonCallId(commonCallId);
+        acdCall.setInitTime(initTime);
 
         if (acdAgent) {
             acdCall.setUser(acdAgent);
