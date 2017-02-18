@@ -1085,7 +1085,6 @@ class AcdService
         {
             call.callStatus = lastStatus;
             call.callEnd = DateTime.now();
-            call.save(flush: true);
         }
 
         try
@@ -1096,6 +1095,17 @@ class AcdService
         catch(Exception e)
         {
             log.error("Exception writing AcdCallHistory record: " + e, e);
+        }
+
+        try {
+            if (call.callStatus == AcdCallStatus.TRANSFER_REQUESTED) {
+                // if we're transferring the call, we want to wipe out the enqueue times
+                // Since we're doing this after writing the history, we should be OK
+                call.enqueueTime = null;
+            }
+            call.save(flush: true);
+        } catch (Exception e) {
+            log.error("Exception writing acd call record: " + e, e);
         }
     }
 
@@ -1222,8 +1232,14 @@ class AcdService
         def calls = AcdCallHistory.createCriteria().list(
             sort: sort, order: order, max: max, offset: offset)
             {
-                ge("enqueueTime", theStart)
-                le("enqueueTime", theEnd)
+                or {
+                    ge("agentCallStart", theStart)
+                    ge("enqueueTime", theStart)
+                }
+                or {
+                    le("agentCallStart", theEnd)
+                    le("enqueueTime", theEnd)
+                }
 
                 skill
                 {
@@ -1243,8 +1259,6 @@ class AcdService
                         eq("id", Long.parseLong(skillId))
                     }
                 }
-
-	            ne('callStatus', AcdCallStatus.TRANSFER_REQUESTED)
             }
 
         if (calls) {

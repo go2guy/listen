@@ -100,7 +100,7 @@ class CallService {
             tmpFile << "\n";
 
             callHistory.each {
-                def acdCallHist = AcdCallHistory.findAllBySessionIdAndCallStatusNotEqual(it?.sessionId, AcdCallStatus.TRANSFER_REQUESTED)
+                def acdCallHist = AcdCallHistory.findAllBySessionIdAndUser(it?.sessionId, it.toUser)
                 if (acdCallHist) {
                     log.debug("Found acd call history records for session id [${it.sessionId}]")
                     acdCallHist.each { acdCall ->

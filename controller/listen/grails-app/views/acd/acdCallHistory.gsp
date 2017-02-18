@@ -228,16 +228,33 @@
           <g:set var="row_count" value="${0}"/>
           <g:each in="${calls}" var="call">
             <tr class="${++row_count % 2 == 0 ? 'even' : 'odd'}">
-              <td>${call.enqueueTime.toString("MM'/'dd'/'yyyy' 'HH':'mm':'ss")}</td>
+              <g:if test="${call.enqueueTime}">
+                  <td>${call.enqueueTime?.toString("MM'/'dd'/'yyyy' 'HH':'mm':'ss")}</td>
+              </g:if>
+              <g:elseif test="${call.agentCallStart}">
+                  <td>${call.agentCallStart?.toString("MM'/'dd'/'yyyy' 'HH':'mm':'ss")}</td>
+              </g:elseif>
+              <g:else>
+                  <td>N/A</td>
+              </g:else>
               <td>${call.ani}</td>
               <td>${call.skill}</td>
               <td>${call.user != null ? call.user : ''}</td>
-              <script type="text/javascript">
-                  var callDuration = getDifference('${call.agentCallStart}','${call.agentCallEnd}');
-                  document.write('<td>' + callDuration + '</td>');
-                  document.write('<td>' + getDifference('${call.enqueueTime.toString("yyyy'-'MM'-'dd HH':'mm':'ss")}',
-                          '${call.dequeueTime.toString("yyyy'-'MM'-'dd HH':'mm':'ss")}') + '</td>');
-              </script>
+              <g:if test="${call.enqueueTime}">
+                  <script type="text/javascript">
+                      var callDuration = getDifference('${call.agentCallStart}','${call.agentCallEnd}');
+                      document.write('<td>' + callDuration + '</td>');
+                      document.write('<td>' + getDifference('${call.enqueueTime.toString("yyyy'-'MM'-'dd HH':'mm':'ss")}',
+                              '${call.dequeueTime.toString("yyyy'-'MM'-'dd HH':'mm':'ss")}') + '</td>');
+                  </script>
+              </g:if>
+              <g:else>
+                  <script type="text/javascript">
+                      var callDuration = getDifference('${call.agentCallStart}','${call.agentCallEnd}');
+                      document.write('<td>' + callDuration + '</td>');
+                      document.write('<td>' + "N/A" + '</td>');
+                  </script>
+              </g:else>
             </tr>
           </g:each>
         </tbody>

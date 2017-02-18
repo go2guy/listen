@@ -749,7 +749,7 @@ CREATE TABLE `acd_call` (
   `dnis` varchar(255) NOT NULL,
   `skill_id` bigint(20) NOT NULL,
   `session_id` varchar(255) NOT NULL,
-  `enqueue_time` datetime NOT NULL,
+  `enqueue_time` datetime NULL,
   `call_status` varchar(50) NOT NULL,
   `ivr` varchar(255),
   `last_modified` datetime,
@@ -762,7 +762,7 @@ CREATE TABLE `acd_call` (
   CONSTRAINT `acd_call_user_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-DROP TABLE IF EXISTS `acd_ca`;
+DROP TABLE IF EXISTS `acd_call_history`;
 CREATE TABLE `acd_call_history` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `version` bigint(20) NOT NULL,
@@ -770,14 +770,14 @@ CREATE TABLE `acd_call_history` (
   `dnis` varchar(255) NOT NULL,
   `skill_id` bigint(20) NOT NULL,
   `session_id` varchar(255) NOT NULL,
-  `enqueue_time` datetime NOT NULL,
+  `enqueue_time` datetime NULL,
   `call_status` varchar(50) NOT NULL,
   `ivr` varchar(255),
   `last_modified` datetime,
   `user_id` bigint(20),
   `agent_call_start` datetime,
   `agent_call_end` datetime,
-  `dequeue_time` datetime NOT NULL,
+  `dequeue_time` datetime NULL,
   `agent_number` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

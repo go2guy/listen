@@ -9,4 +9,8 @@ alter table acd_call add column common_call_id varchar(36) default null after se
 alter table acd_call_history add column common_call_id varchar(36) default null after session_id;
 alter table acd_call add column init_time datetime default null after common_call_id;
 
+ALTER TABLE acd_call MODIFY COLUMN enqueue_time DATETIME NULL;
+ALTER TABLE acd_call_history MODIFY COLUMN enqueue_time DATETIME NULL;
+ALTER TABLE acd_call_history MODIFY COLUMN dequeue_time DATETIME NULL;
+
 commit work;

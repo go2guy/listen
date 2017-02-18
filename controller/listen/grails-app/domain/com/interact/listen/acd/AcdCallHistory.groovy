@@ -43,11 +43,16 @@ class AcdCallHistory
         this.skill = callRecord.skill;
         this.sessionId = callRecord.sessionId;
         this.commonCallId = callRecord.commonCallId;
-        this.enqueueTime = callRecord.enqueueTime;
-        if (callRecord.callStart != null) {
-            this.dequeueTime = callRecord.callStart;
+        if (callRecord.enqueueTime) {
+            this.enqueueTime = callRecord.enqueueTime;
+            if (callRecord.callStart != null) {
+                this.dequeueTime = callRecord.callStart;
+            } else {
+                this.dequeueTime = DateTime.now();
+            }
         } else {
-            this.dequeueTime = DateTime.now();
+            this.enqueueTime = null;
+            this.dequeueTime = null;
         }
 
         this.callStatus = callRecord.callStatus;

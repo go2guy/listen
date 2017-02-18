@@ -91,11 +91,21 @@
                         </tr>
                         <tr>
                             <th><g:message code="acdCallHistory.enqueueTime.label"/></th>
-                            <td><joda:format value="${acdCallHistory.enqueueTime}"/></td>
+                            <g:if test="${acdCallHistory.enqueueTime}">
+                                <td><joda:format value="${acdCallHistory.enqueueTime}"/></td>
+                            </g:if>
+                            <g:else>
+                                <td>N/A</td>
+                            </g:else>
                         </tr>
                         <tr>
                             <th><g:message code="acdCallHistory.dequeueTime.label"/></th>
-                            <td><joda:format value="${acdCallHistory.dequeueTime}"/></td>
+                            <g:if test="${acdCallHistory.dequeueTime}">
+                                <td><joda:format value="${acdCallHistory.dequeueTime}"/></td>
+                            </g:if>
+                            <g:else>
+                                <td>N/A</td>
+                            </g:else>
                         </tr>
                         <tr>
                             <th><g:message code="acdCallHistory.totalQueueTime.label"/></th>

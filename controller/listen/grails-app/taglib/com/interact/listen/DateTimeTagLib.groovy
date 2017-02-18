@@ -28,8 +28,12 @@ class DateTimeTagLib {
     }
 
     def computeDuration = { attrs ->
-        if(!attrs.start) throwTagError 'Tag [computeduration] is missing required attribute [start]'
-        if(!attrs.end) throwTagError 'Tag [computeduration] is missing required attribute [end]'
+        if((!attrs.start) && (!attrs.end)) {
+            out << "0.00:00"
+            return
+        }
+        if(!attrs.start)throwTagError 'Tag [computeduration] is missing required attribute [start]'
+        if(!attrs.end)  throwTagError 'Tag [computeduration] is missing required attribute [end]'
 
         PeriodFormatter fmt = new PeriodFormatterBuilder()
                 .printZeroAlways()

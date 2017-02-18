@@ -226,7 +226,11 @@ class AcdController
               skill {
                   eq('organization', organization)
               }
-              ge("enqueueTime", today.toDateTimeAtStartOfDay())
+              or {
+                  ge("agentCallStart", today.toDateTimeAtStartOfDay())
+                  ge("enqueueTime", today.toDateTimeAtStartOfDay())
+              }
+
           }
 
       }
@@ -242,7 +246,10 @@ class AcdController
                   eq('organization', organization)
               }
               eq("user",user)
-              ge("enqueueTime",today.toDateTimeAtStartOfDay())
+              or {
+                  ge("agentCallStart", today.toDateTimeAtStartOfDay())
+                  ge("enqueueTime", today.toDateTimeAtStartOfDay())
+              }
           }
       }
 
@@ -464,7 +471,10 @@ class AcdController
               skill {
                   eq('organization', organization)
               }
-              ge("enqueueTime",today.toDateTimeAtStartOfDay())
+              or {
+                  ge("agentCallStart", today.toDateTimeAtStartOfDay())
+                  ge("enqueueTime", today.toDateTimeAtStartOfDay())
+              }
           }
       } else { // get call history for current user
           log.debug("Find acdCallHistory for organization [${organization}] and user [${user}]")
@@ -474,7 +484,10 @@ class AcdController
                   eq('organization', organization)
               }
               eq("user",user)
-              ge("enqueueTime",today.toDateTimeAtStartOfDay())
+              or {
+                  ge("agentCallStart", today.toDateTimeAtStartOfDay())
+                  ge("enqueueTime", today.toDateTimeAtStartOfDay())
+              }
           }
       }
 
@@ -998,7 +1011,7 @@ class AcdController
         //Write each row
         for(AcdCallHistory thisHistory : calls)
         {
-            def callHist = CallHistory.findBySessionId(thisHistory.sessionId)
+            def callHist = CallHistory.findBySessionIdAndToUser(thisHistory.sessionId, thisHistory.user)
             if (callHist) {
                 // We start with the rows from the call history table
                 tmpfile << "${callHist.dateTime?.getMillis()},"
@@ -1023,6 +1036,7 @@ class AcdController
                 tmpfile << ","                                                  // ivr
             }
 
+            // We only want to associate acd histories that match the call histories toUser
             // Now we'll add the rows from the acd history record
             tmpfile << "${thisHistory.skill},"
             tmpfile << "${thisHistory.enqueueTime?.toString("yyyy-MM-dd HH:mm:ss")},"
@@ -1048,6 +1062,7 @@ class AcdController
                 DateTime now = DateTime.now();
                 tmpfile << "${listen.computeDuration(start: now, end: now)},"
             }
+
             tmpfile << "\n";
         }
 
