@@ -264,7 +264,7 @@ class AcdService
      * @param initTime A UTC ISO time
      * @throws ListenAcdException If an exception adding the call to the queue.
      */
-    void acdCallAdd(String ani, String dnis, User acdAgent, AcdCallStatus acdStatus, String selection, Skill skill, String sessionId, String ivr, String commonCallId, String initTime) throws ListenAcdException
+    void acdCallAdd(String ani, String dnis, User acdAgent, AcdCallStatus acdStatus, String selection, Skill skill, String sessionId, String ivr, String commonCallId, DateTime initTime) throws ListenAcdException
     {
         AcdCall acdCall = new AcdCall();
         String stringAni = ani;
@@ -467,7 +467,7 @@ class AcdService
                 // We have a targetSessionId, this means that we should create a new acd_call with this session id
                 // We should only receive targetSessionId for an attended call transfer
                 log.debug("We have a transfer target session id [${targetSessionId}]")
-                acdCallAdd(acdCall.ani, acdCall.dnis, toAgent, AcdCallStatus.TRANSFER_REQUESTED, null, acdCall.skill, targetSessionId, acdCall.commonCallId);
+                acdCallAdd(acdCall.ani, acdCall.dnis, toAgent, AcdCallStatus.TRANSFER_REQUESTED, null, acdCall.skill, targetSessionId, acdCall.commonCallId, DateTime.now());
             }
             // now call the transfer method
             transferCall(acdCall, toAgent, false);
@@ -492,7 +492,7 @@ class AcdService
                 // We should only receive targetSessionId for an attended call transfer
                 // We do not call the removeCall function as with multiple sessions, the build app will send an update with COMPLETED status
                 log.debug("We have a transfer target session id [${targetSessionId}]")
-                acdCallAdd(acdCall.ani, acdCall.dnis, destUser, AcdCallStatus.TRANSFER_REQUESTED, null, acdCall.skill, targetSessionId, acdCall.ivr, acdCall.commonCallId);
+                acdCallAdd(acdCall.ani, acdCall.dnis, destUser, AcdCallStatus.TRANSFER_REQUESTED, null, acdCall.skill, targetSessionId, acdCall.ivr, acdCall.commonCallId, DateTime.now());
             } else if (!targetSessionId && !destUser) {
                 // If we don't have a target session id, then this means it is a blind transfer.
                 // If we don't have a destUser, then we're transferring to a non-listen user. so we'll remove the acd call entry

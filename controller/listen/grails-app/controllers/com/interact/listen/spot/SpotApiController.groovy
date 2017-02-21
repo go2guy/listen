@@ -28,6 +28,7 @@ import com.interact.listen.voicemail.afterhours.AfterHoursConfiguration
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.web.converters.exceptions.ConverterException
+import org.joda.time.format.DateTimeFormatter
 
 import javax.validation.constraints.Null
 import java.security.InvalidParameterException
@@ -130,7 +131,9 @@ class SpotApiController {
 
             if(json.ani && json.dnis && json.selection && json.sessionId && json.commonCallId && json.initTime)
             {
-                acdService.acdCallAdd(json.ani, json.dnis, null, null, json.selection, null, json.sessionId, request.remoteAddr, json.commonCallId, json.initTime)
+                def formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS")
+                DateTime initDTime = formatter.parseDateTime(json.initTime)
+                acdService.acdCallAdd(json.ani, json.dnis, null, null, json.selection, null, json.sessionId, request.remoteAddr, json.commonCallId, initDTime)
             }
             else
             {
