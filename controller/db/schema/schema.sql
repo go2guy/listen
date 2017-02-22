@@ -221,6 +221,17 @@ CREATE TABLE `conference` (
   CONSTRAINT `conference_owner_id_fk` FOREIGN KEY (`owner_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `pbx_conference`;
+CREATE TABLE `pbx_conference` (
+  `id` bigint(20) NOT NULL auto_increment,
+  `version` bigint(20) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `ani` varchar(255) NOT NULL,
+  `dnis` varchar(255) NOT NULL,
+  `monitoringSession` varchar(255),
+  `monitoredExtension` varchar(255),
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `conferencing_configuration`;
 CREATE TABLE `conferencing_configuration` (

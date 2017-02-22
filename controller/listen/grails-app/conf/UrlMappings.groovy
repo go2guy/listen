@@ -98,6 +98,21 @@ class UrlMappings {
                     PUT: 'updateVoicemail'
             ]
         }
+
+        "/api/pbxConference"(controller: 'pbxConference') {
+            action = [
+                    POST: 'registerPbxConference',
+                    GET: 'getPbxConference'
+            ]
+        }
+
+        "/api/pbxConference/$id"(controller: 'pbxConference') {
+            action = [
+                    DELETE: 'removePbxConference',
+                    PUT: 'updatePbxConference'
+            ]
+        }
+
         "/api/routeCall"(controller: 'callRouting', action: 'routeCall')
         "/api/getBroadcastList"(controller: 'extension', action: 'getExtensionsByOrganization')
 
@@ -126,10 +141,10 @@ class UrlMappings {
         "/$organizationContext/$controller?/$action?/$id?"{
             controller = { controller ?: 'login' }
         }
-	    name internalApi: "/i/$controller/$action?/$id?"{
-		    constraints {
-		    }
-	    }
+      name internalApi: "/i/$controller/$action?/$id?"{
+        constraints {
+        }
+      }
         "/$controller/$action?/$id?"{
             constraints {
             }
