@@ -1,0 +1,84 @@
+########################################################################
+#                   Statistics Configuration File                      #
+########################################################################
+# Each line contains the following information:                        #
+# statID,aggregation,storage,description,trap                          #
+#                                                                      #
+# statID:      (string) I.D. of the statistic.                         #
+# aggregation: (int)    Aggregation interval in minutes.               #
+# storage:     (int)    Storage interval in days.                      #
+# description: (string) Description of statistic.                      #
+# trap:        (bool)   0 for off, 1 for on. If on, incoming statistic #
+#                       will result in SNMP trap if SNMP is enabled.   #
+########################################################################
+# NOTE: You may alter the description, aggregation storage time, and   #
+#       trap for the default statistic. Do NOT alter the DEFAULT name. #
+########################################################################
+
+# Listen Controller - General
+
+LSTNCTL_2012,1,7,"Controller startup"
+LSTNCTL_1004,1,7,"Listen GUI Login"
+LSTNCTL_1005,1,7,"Listen GUI Logout"
+
+# Listen Controller - Conferencing
+
+LSTNCTL_2001,1,7,"Admin Participant Joined Conference"
+LSTNCTL_2002,1,7,"Active Participant Joined Conference"
+LSTNCTL_2003,1,7,"Passive Participant Joined Conference"
+LSTNCTL_2004,1,7,"Conference Started"
+LSTNCTL_2005,1,7,"Conference Length"
+LSTNCTL_2006,1,7,"Conference Recording Started"
+LSTNCTL_2007,1,7,"Conference Recording Stopped"
+
+# Listen Controller - Email and SMS
+
+LSTNCTL_2008,1,7,"New Voicemail Email"
+LSTNCTL_2009,1,7,"New Voicemail SMS"
+LSTNCTL_2013,1,7,"New Voicemail Alternate Number SMS"
+LSTNCTL_2010,1,7,"New Voicemail Recurring SMS"
+LSTNCTL_2011,1,7,"New Voicemail Recurring Alternate Number SMS"
+LSTNCTL_2016,1,7,"Test Voicemail SMS"
+LSTNCTL_2017,1,7,"Test Voicemail Email"
+LSTNCTL_2014,1,7,"Conferece Invitation Email"
+LSTNCTL_2015,1,7,"Conference Cancellation Email"
+LSTNCTL_2018,1,7,"Sent Fax"
+LSTNCTL_2019,1,7,"Transcription Failed"
+LSTNCTL_2020,1,7,"New Fax Email"
+LSTNCTL_2021,1,7,"New Fax SMS"
+LSTNCTL_2022,1,7,"Unread After Hours Message Present"
+
+# Listen Controller - SPOT communication
+
+LSTNCTL_5000,1,7,"SPOT Non-Interactive Conference Outdial"
+LSTNCTL_5001,1,7,"SPOT Interactive Conference Outdial"
+LSTNCTL_5002,1,7,"SPOT Unmute Conference Caller"
+LSTNCTL_5003,1,7,"SPOT Mute Conference Caller"
+LSTNCTL_5004,1,7,"SPOT Drop Conference Caller"
+LSTNCTL_5005,1,7,"SPOT Delete File Artifact"
+LSTNCTL_5006,1,7,"SPOT Delete All Subscriber Artifacts"
+LSTNCTL_5007,1,7,"SPOT Start Recording Conference"
+LSTNCTL_5008,1,7,"SPOT Stop Recording Conference"
+LSTNCTL_5009,1,7,"SPOT Message Light On"
+LSTNCTL_5010,1,7,"SPOT Message Light Off"
+LSTNCTL_5011,1,7,"SPOT Post CDR Success"
+LSTNCTL 5012,1,7,"SPOT Post CDR Failure"
+
+# Listen Controller - C2DM (Android)
+
+LSTNCTL_3100,1,7,"C2DM Discard due to retries"
+LSTNCTL_3101,1,7,"C2DM Quota exceeded"
+LSTNCTL_3102,1,7,"C2DM Device quota exceeded"
+LSTNCTL_3103,1,7,"C2DM Service unavailable"
+LSTNCTL_3104,1,7,"C2DM Invalid device registration"
+LSTNCTL_3105,1,7,"C2DM Device not registered"
+LSTNCTL_3106,1,7,"C2DM Invalid auth token"
+LSTNCTL_3107,1,7,"C2DM Unknown error"
+LSTNCTL_3110,1,7,"C2DM Queued message"
+LSTNCTL_3111,1,7,"C2DM Queued retry"
+LSTNCTL_3112,1,7,"C2DM Sent successfully"
+LSTNCTL_3113,1,7,"C2DM Registered device"
+LSTNCTL_3114,1,7,"C2DM Unregistered device"
+
+LISTEN_SERVICE_ERROR,1,7,"Listen Service Error - Failed Communication With Controller"
+

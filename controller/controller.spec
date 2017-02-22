@@ -56,7 +56,8 @@ Requires: xmlsecurity, iijava, iitomcat, installCoordinator
 # on the build machine
 #######################################################################
 %install
-
+    # Copy files that will be packaged
+    cp -v conf/listen.stats /interact/collector/conf
 #######################################################################
 # The files section lists all files included in the RPM
 #######################################################################
@@ -69,6 +70,7 @@ Requires: xmlsecurity, iijava, iitomcat, installCoordinator
     /interact/tomcat/webapps/listen-controller.war
     %config(noreplace) /interact/tomcat/lib/listen-controller.properties
     %config(noreplace) /interact/tomcat/lib/log4j.listen.properties
+    %config(noreplace) /interact/collector/conf/listen.stats
 
 #######################################################################
 # clean is a script that gets run at the end of the RPM building,
