@@ -7,6 +7,7 @@ import com.interact.listen.fax.OutgoingFax
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.joda.time.DateTime
+import org.joda.time.DateTimeZone
 
 import javax.servlet.http.HttpServletResponse
 
@@ -132,7 +133,7 @@ class AcdApiController
             render(contentType: 'application/json') {
                 id = agent.id;
                 status = agent.getAcdUserStatus().getAcdQueueStatus().toString();
-                statusModified = agent.getAcdUserStatus().getStatusModified();
+                statusModified = agent.getAcdUserStatus().getStatusModified()?.withZone(DateTimeZone.UTC)?.toString("yyyy-MM-dd HH:mm:ss");
             }
         }
         else
