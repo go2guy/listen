@@ -37,16 +37,16 @@ class CallHistoryPostJob {
 		// callRecords = CallHistory.findByCdrPostResult(null)
 		// get all call history records that don't currently have a 200 result for cdr post
         log.debug("Running Call History Post Job");
-        def activeCommonCallIds = AcdCall.getAll().collect { it.commonCallId }
-        log.debug("activeCommonCallIds is ${activeCommonCallIds}");
+        def activeAcdCommonCallIds = AcdCall.getAll().collect { it.commonCallId }
+        log.debug("activeAcdCommonCallIds is ${activeAcdCommonCallIds}");
 
 		def callRecords = CallHistory.createCriteria().list {
 			ne('cdrPostResult', 200)
 			lt('cdrPostCount', 3)
 			gt('dateTime', new LocalDate().toDateTimeAtCurrentTime().minusDays(Integer.parseInt((String) Holders.config.com.interact.listen.history.postRange)))
-            if (activeCommonCallIds.size() > 0) {
+            if (activeAcdCommonCallIds.size() > 0) {
                 not {
-                    'in'('commonCallId', activeCommonCallIds)
+                    'in'('commonCallId', activeAcdCommonCallIds)
                 }
             }
 		}
@@ -60,7 +60,6 @@ class CallHistoryPostJob {
                 def recordList = []
                 def acdCallRecords = AcdCallHistory.createCriteria().list {
                     eq('commonCallId', callRecord.commonCallId)
-                    ne('callStatus', AcdCallStatus.TRANSFER_REQUESTED)
                 }
                 recordList.addAll(generateList(callRecord, acdCallRecords))
 
@@ -71,7 +70,7 @@ class CallHistoryPostJob {
                 associatedCallRecords.each { associatedCallRecord ->
                     // Assuming same common call id means all ACD call records are pulled for the original call
                     // So we just add this call record to the list and call it good
-                    recordList.addAll(generateList(associatedCallRecord, []))
+                    recordList.addAll(generateList(associatedCallRecord, null))
                 }
 
                 processedCallRecordCommonCallIds.add(callRecord.commonCallId)
@@ -209,14 +208,18 @@ class CallHistoryPostJob {
 	def generateList(def callRecord, def acdCallRecords) {
 		def jsonArr = []
 
-		if (acdCallRecords.size() > 0)
+		if (acdCallRecords != null && acdCallRecords.size() > 0)
         {
 			acdCallRecords.each { record ->
+                if (record.callStatus == AcdCallStatus) {
+                    log.debug("Ignoring TRANSFER_REQUESTED acd history entry");
+                    return
+                }
+
 				def json = [:]
 				json.sessionId = callRecord.sessionId
                 DateTime callReceivedUtc = callRecord.dateTime?.withZone(DateTimeZone.UTC);
 				json.callReceived = callReceivedUtc?.toString("yyyy-MM-dd HH:mm:ss")
-				// json.timeStamp = callRecord.dateTime.getMillis().toString()
 				json.timeStamp = "${callRecord.dateTime.getMillis().toString()}"
                 json.commonCallId = callRecord.commonCallId
                 json.callerId = callRecord.outboundAni
