@@ -58,19 +58,33 @@ class CallHistoryPostJob {
 			// only do the post if it's configured for the organization
 			if (callRecord.organization.postCdr && callRecord.organization.cdrUrl && !(callRecord.commonCallId in processedCallRecordCommonCallIds)) {
                 def recordList = []
+
+                // Add all acd call records for this common call id into memory
                 def acdCallRecords = AcdCallHistory.createCriteria().list {
                     eq('commonCallId', callRecord.commonCallId)
                 }
-                recordList.addAll(generateList(callRecord, acdCallRecords))
+
+                // Get acd call record(s) that are associated with this DNIS only
+                def acdCallRecordsForCurrent = acdCallRecords.findAll {
+                    if (it.agentNumber == callRecord.dnis) {
+                        return it
+                    }
+                }
+
+                recordList.addAll(generateList(callRecord, acdCallRecordsForCurrent))
 
                 // Find all CDR's with commonCallId the same and add them
                 def associatedCallRecords = getAssociatedCallRecords(callRecord, callRecords)
 
                 // Loop through and continue building the jsonArr
                 associatedCallRecords.each { associatedCallRecord ->
-                    // Assuming same common call id means all ACD call records are pulled for the original call
-                    // So we just add this call record to the list and call it good
-                    recordList.addAll(generateList(associatedCallRecord, null))
+                    // Get ACD Record possibly associated with this
+                    def acdCallRecordsForAssociated = acdCallRecords.findAll {
+                        if (it.agentNumber == associatedCallRecord.dnis) {
+                            return it
+                        }
+                    }
+                    recordList.addAll(generateList(associatedCallRecord, acdCallRecordsForAssociated))
                 }
 
                 processedCallRecordCommonCallIds.add(callRecord.commonCallId)
@@ -211,11 +225,6 @@ class CallHistoryPostJob {
 		if (acdCallRecords != null && acdCallRecords.size() > 0)
         {
 			acdCallRecords.each { record ->
-                if (record.callStatus == AcdCallStatus) {
-                    log.debug("Ignoring TRANSFER_REQUESTED acd history entry");
-                    return
-                }
-
 				def json = [:]
 				json.sessionId = callRecord.sessionId
                 DateTime callReceivedUtc = callRecord.dateTime?.withZone(DateTimeZone.UTC);
