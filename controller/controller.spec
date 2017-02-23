@@ -56,8 +56,7 @@ Requires: xmlsecurity, iijava, iitomcat, installCoordinator
 # on the build machine
 #######################################################################
 %install
-    # Copy files that will be packaged
-    cp -v controller/listen/src/properties/listen.stats /interact/collector/conf
+
 #######################################################################
 # The files section lists all files included in the RPM
 #######################################################################

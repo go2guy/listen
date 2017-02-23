@@ -3,6 +3,7 @@
   <property name="deploy.dir"      value="/interact/listen"/>
   <property name="listen.deploy.dir"      value="/interact/listen"/>
   <property name="tomcat.deploy.dir"      value="/interact/tomcat"/>
+  <property name="collector.deploy.dir"      value="/interact/collector"/>
   <property name="war.staging.dir" value="${target.dir}/staging/war"/>
   <property name="rpm.staging.dir" value="${target.dir}/staging/rpm"/>
   <include file="${basedir}/listen/build.xml" as="grails-app"/>
@@ -52,6 +53,8 @@
           verbose="true"/>
     <copy file="${basedir}/listen/src/properties/log4j.properties"
           tofile="${deploy.dir}/../../${tomcat.deploy.dir}/lib/log4j.listen.properties" overwrite="true" verbose="true"/>
+    <copy file="${basedir}/listen/src/properties/listen.stats"
+            tofile="${deploy.dir}/../../${collector.deploy.dir}/conf/listen.stats" overwrite="true" verbose="true"/>
 
     <copy todir="${deploy.dir}/db" verbose="true">
       <fileset dir="${basedir}/db" includes="*/*"/>

@@ -135,7 +135,6 @@
         <jarDirectory url="file://$MODULE_DIR$/lib" recursive="false" />
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="listen-grailsPlugins" />
     <orderEntry type="library" name="grails-2.3.3" level="application" />
     <orderEntry type="module-library">
       <library>
@@ -148,6 +147,7 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="grails-2.3.3" level="application" />
+    <orderEntry type="module" module-name="controller-grailsPlugins" />
   </component>
 </module>
 
