@@ -22,41 +22,41 @@ import org.joda.time.*
 import java.io.IOException
 
 class CallHistoryPostJob {
-	private static final Integer HTTP_CONNECTION_TIMEOUT = 5000
-	private static final Integer HTTP_SOCKET_TIMEOUT = 5000
+    private static final Integer HTTP_CONNECTION_TIMEOUT = 5000
+    private static final Integer HTTP_SOCKET_TIMEOUT = 5000
 
-	static triggers = {
-		cron name: 'CallHistoryPostTrigger', cronExpression: '0 0/1 * * * ?'
-	}
+    static triggers = {
+        cron name: 'CallHistoryPostTrigger', cronExpression: '0 0/1 * * * ?'
+    }
 
-	def concurrent = false;
-	def statWriterService
+    def concurrent = false;
+    def statWriterService
 
-	def execute() {
-		// get our call records
-		// callRecords = CallHistory.findByCdrPostResult(null)
-		// get all call history records that don't currently have a 200 result for cdr post
+    def execute() {
+        // get our call records
+        // callRecords = CallHistory.findByCdrPostResult(null)
+        // get all call history records that don't currently have a 200 result for cdr post
         log.debug("Running Call History Post Job");
         def activeAcdCommonCallIds = AcdCall.getAll().collect { it.commonCallId }
         log.debug("activeAcdCommonCallIds is ${activeAcdCommonCallIds}");
 
-		def callRecords = CallHistory.createCriteria().list {
-			ne('cdrPostResult', 200)
-			lt('cdrPostCount', 3)
-			gt('dateTime', new LocalDate().toDateTimeAtCurrentTime().minusDays(Integer.parseInt((String) Holders.config.com.interact.listen.history.postRange)))
+        def callRecords = CallHistory.createCriteria().list {
+            ne('cdrPostResult', 200)
+            lt('cdrPostCount', 3)
+            gt('dateTime', new LocalDate().toDateTimeAtCurrentTime().minusDays(Integer.parseInt((String) Holders.config.com.interact.listen.history.postRange)))
             if (activeAcdCommonCallIds.size() > 0) {
                 not {
                     'in'('commonCallId', activeAcdCommonCallIds)
                 }
             }
-		}
+        }
 
         log.debug("Number of call Records: ${callRecords.size()}");
         def processedCallRecordCommonCallIds = []
 
-		callRecords.each { callRecord ->
-			// only do the post if it's configured for the organization
-			if (callRecord.organization.postCdr && callRecord.organization.cdrUrl && !(callRecord.commonCallId in processedCallRecordCommonCallIds)) {
+        callRecords.each { callRecord ->
+            // only do the post if it's configured for the organization
+            if (callRecord.organization.postCdr && callRecord.organization.cdrUrl && !(callRecord.commonCallId in processedCallRecordCommonCallIds)) {
                 def recordList = []
 
                 // Add all acd call records for this common call id into memory
@@ -92,10 +92,10 @@ class CallHistoryPostJob {
                 def statusCode = sendRequest(callRecord.organization.cdrUrl, recordList)
                 def result = updateCallRecords(callRecord, associatedCallRecords, statusCode)
 
-				statWriterService.send(result.toString().charAt(0) == "2" ? Stat.SPOT_POST_CDR_SUCCESS : Stat.SPOT_POST_CDR_FAILURE)
-			}
-		}
-	}
+                statWriterService.send(result.toString().charAt(0) == "2" ? Stat.SPOT_POST_CDR_SUCCESS : Stat.SPOT_POST_CDR_FAILURE)
+            }
+        }
+    }
 
     def getAssociatedCallRecords(def currentCallRecord, def callRecords) {
         // Check if there are any other CDR's with the commonCallId
@@ -219,52 +219,71 @@ class CallHistoryPostJob {
         return (success ? statusCode : 500)
     }
 
-	def generateList(def callRecord, def acdCallRecords) {
-		def jsonArr = []
+    def generateList(def callRecord, def acdCallRecords) {
+        def jsonArr = []
 
-		if (acdCallRecords != null && acdCallRecords.size() > 0)
+        if (acdCallRecords != null && acdCallRecords.size() > 0)
         {
-			acdCallRecords.each { record ->
-				def json = [:]
-				json.sessionId = callRecord.sessionId
+            acdCallRecords.each { record ->
+                def json = [:]
+                json.timestamp = "${callRecord.dateTime.getMillis().toString()}"
                 DateTime callReceivedUtc = callRecord.dateTime?.withZone(DateTimeZone.UTC);
-				json.callReceived = callReceivedUtc?.toString("yyyy-MM-dd HH:mm:ss")
-				json.timeStamp = "${callRecord.dateTime.getMillis().toString()}"
-                json.commonCallId = callRecord.commonCallId
+                json.callStart = callReceivedUtc?.toString("yyyy-MM-dd HH:mm:ss")
+                // do we need callingParty?
                 json.callerId = callRecord.outboundAni
+                // do we need calledParty?
                 json.dialedNumber = callRecord.inboundDnis
-				json.ani = callRecord.ani
-				json.dnis = callRecord.dnis
-				json.agent = record.agentNumber ?: null
+                // do we need duration?
+                // do we need organization?
+                // do we need callResult?
+                json.sessionId = callRecord.sessionId
+                json.commonCallId = callRecord.commonCallId
+                // do we need ivr?
+                // do we need skill?
                 DateTime enqueueTimeUtc = record.enqueueTime?.withZone(DateTimeZone.UTC);
-				json.enqueueTime = enqueueTimeUtc?.toString("yyyy-MM-dd HH:mm:ss") ?: null;
+                json.enqueueTime = enqueueTimeUtc?.toString("yyyy-MM-dd HH:mm:ss") ?: null;
+                // do we need dequeueTime?
+                // do we need totalQueueTime?
+                // do we need callStatus?
+                json.agent = record.user?.username ?: null
                 DateTime agentCallStartUtc = record.agentCallStart?.withZone(DateTimeZone.UTC);
-				json.agentCallStart = agentCallStartUtc?.toString("yyyy-MM-dd HH:mm:ss") ?: null
+                json.agentCallStart = agentCallStartUtc?.toString("yyyy-MM-dd HH:mm:ss") ?: null
                 DateTime agentCallEndUtc = record.agentCallEnd?.withZone(DateTimeZone.UTC);
-				json.agentCallEnd = agentCallEndUtc?.toString("yyyy-MM-dd HH:mm:ss") ?: null
-				jsonArr.push(json)
-			}
-		}
+                json.agentCallEnd = agentCallEndUtc?.toString("yyyy-MM-dd HH:mm:ss") ?: null
+                // do we need agentTime?
+
+                jsonArr.push(json)
+            }
+        }
         else
         {
-			def json = [:]
-			json.sessionId = callRecord.sessionId
+            def json = [:]
+            json.timestamp = "${callRecord.dateTime.getMillis().toString()}"
             DateTime callReceivedUtc = callRecord.dateTime?.withZone(DateTimeZone.UTC);
-            json.callReceived = callReceivedUtc?.toString("yyyy-MM-dd HH:mm:ss")
-			json.timeStamp = "${callRecord.dateTime.getMillis().toString()}"
-            json.commonCallId = callRecord.commonCallId
+            json.callStart = callReceivedUtc?.toString("yyyy-MM-dd HH:mm:ss")
+            // do we need callingParty?
             json.callerId = callRecord.outboundAni
+            // do we need calledParty
             json.dialedNumber = callRecord.inboundDnis
-			json.ani = callRecord.ani
-			json.dnis = callRecord.dnis
-			json.agent = null
-			json.enqueueTime = null
-			json.agentCallStart = null
-			json.agentCallEnd = null
+            // do we need duration?
+            // do we need organization?
+            // do we need callResult?
+            json.sessionId = callRecord.sessionId
+            json.commonCallId = callRecord.commonCallId
+            // do we need ivr?
+            // do we need skill?
+            json.enqueueTime = null
+            // do we need dequeueTime?
+            // do we need totalQueueTime?
+            // do we need callStatus?
+            json.agent = null
+            json.agentCallStart = null
+            json.agentCallEnd = null
+            // do we need agentTime?
 
-			jsonArr.push(json)
-		}
+            jsonArr.push(json)
+        }
 
-		return jsonArr
-	}
+        return jsonArr
+    }
 }

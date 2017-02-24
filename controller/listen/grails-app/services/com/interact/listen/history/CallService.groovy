@@ -12,9 +12,11 @@ import org.joda.time.LocalDateTime
 import org.codehaus.groovy.grails.web.util.WebUtils
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.format.DateTimeFormatter
+import org.springframework.context.MessageSource
 
 class CallService {
     def grailsApplication
+    MessageSource messageSource
 
     public void exportCallHistoryToCSV(Organization organization, org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap params) throws ListenExportException
     {
@@ -92,11 +94,35 @@ class CallService {
             eq('organization', organization)
         }
 
+
         // Build the data now
         try {
-            //Create header row
-            tmpFile << "timestamp,began,calling party,caller id,called party,dialed number,duration,organization,call result,sessionId,common call id,ivr,"
-            tmpFile << AcdCallHistory.csvHeader();  // we are adding acd history to the export header
+            //Create header row for the call history information
+            //tmpFile << "timestamp,began,calling party,caller id,called party,dialed number,duration,organization,call result,sessionId,common call id,ivr,"
+            tmpFile.append(messageSource.getMessage('callHistory.timeStamp.label', null, null) + ",");
+            tmpFile.append(messageSource.getMessage('callHistory.dateTime.label', null, null) + ",");
+            tmpFile.append(messageSource.getMessage('callHistory.ani.label', null, null) + ",");
+            tmpFile.append(messageSource.getMessage('callHistory.outboundAni.label', null, null) + ",");
+            tmpFile.append(messageSource.getMessage('callHistory.dnis.label', null, null) + ",");
+            tmpFile.append(messageSource.getMessage('callHistory.inboundDnis.label', null, null) + ",");
+            tmpFile.append(messageSource.getMessage('callHistory.duration.label', null, null) + ",");
+            tmpFile.append(messageSource.getMessage('callHistory.organization.label', null, null) + ",");
+            tmpFile.append(messageSource.getMessage('callHistory.callResult.label', null, null) + ",");
+            tmpFile.append(messageSource.getMessage('callHistory.sessionId.label', null, null) + ",");
+            tmpFile.append(messageSource.getMessage('callHistory.commonCallId.label', null, null) + ",");
+            tmpFile.append(messageSource.getMessage('callHistory.ivr.label', null, null) + ",");
+
+            // now append the header for the acd call histories
+            tmpFile.append(messageSource.getMessage('acdCallHistory.skill.label', null, null) + ",");
+            tmpFile.append(messageSource.getMessage('acdCallHistory.enqueueTime.label', null, null) + ",");
+            tmpFile.append(messageSource.getMessage('acdCallHistory.dequeueTime.label', null, null) + ",");
+            tmpFile.append(messageSource.getMessage('acdCallHistory.totalQueueTime.label', null, null) + ",");
+            tmpFile.append(messageSource.getMessage('acdCallHistory.callStatus.label', null, null) + ",");
+            tmpFile.append(messageSource.getMessage('acdCallHistory.user.label', null, null) + ",");
+            tmpFile.append(messageSource.getMessage('acdCallHistory.agentCallStart.label', null, null) + ",");
+            tmpFile.append(messageSource.getMessage('acdCallHistory.agentCallEnd.label', null, null) + ",");
+            tmpFile.append(messageSource.getMessage('acdCallHistory.totalAgentTime.label', null, null) + ",");
+
             tmpFile << "\n";
 
             callHistory.each {

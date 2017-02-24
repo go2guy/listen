@@ -17,6 +17,7 @@ import org.joda.time.LocalDateTime
 import org.joda.time.LocalDate
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.format.DateTimeFormatter
+import org.springframework.context.MessageSource
 
 import javax.servlet.AsyncContext
 import javax.servlet.http.HttpServletRequest
@@ -43,6 +44,7 @@ class AcdController
     def spotCommunicationService
     def acdService
     def springSecurityService
+    MessageSource messageSource
 
     private static final String storageLocation = "acd";
 
@@ -980,18 +982,18 @@ class AcdController
 
         String filename = "listen-acdcallhistory-${new LocalDateTime().toString('yyyyMMddHHmmss')}.csv";
 
-        File tmpfile
+        File tmpFile
         try
         {
             if(log.isDebugEnabled())
             {
                 log.debug("Creating temp file to extract ACD Call History Records")
             }
-            tmpfile = File.createTempFile("./" + filename,".tmp");
-            tmpfile.deleteOnExit();
+            tmpFile = File.createTempFile("./" + filename,".tmp");
+            tmpFile.deleteOnExit();
             if(log.isDebugEnabled())
             {
-                log.debug("Created tmp file [${tmpfile.getName()}] to extract ACD Call History Records");
+                log.debug("Created tmp file [${tmpFile.getName()}] to extract ACD Call History Records");
             }
         }
         catch (IOException e)
@@ -1003,10 +1005,32 @@ class AcdController
             return
         }
 
-        //Create header row
-        tmpfile << "timestamp,began,calling party,called party,duration,organization,call result,sessionId,ivr,"
-        tmpfile << AcdCallHistory.csvHeader();
-        tmpfile << "\n";
+        //Create header row for the call history information
+        tmpFile.append(messageSource.getMessage('callHistory.timeStamp.label', null, null) + ",");
+        tmpFile.append(messageSource.getMessage('callHistory.dateTime.label', null, null) + ",");
+        tmpFile.append(messageSource.getMessage('callHistory.ani.label', null, null) + ",");
+        tmpFile.append(messageSource.getMessage('callHistory.outboundAni.label', null, null) + ",");
+        tmpFile.append(messageSource.getMessage('callHistory.dnis.label', null, null) + ",");
+        tmpFile.append(messageSource.getMessage('callHistory.inboundDnis.label', null, null) + ",");
+        tmpFile.append(messageSource.getMessage('callHistory.duration.label', null, null) + ",");
+        tmpFile.append(messageSource.getMessage('callHistory.organization.label', null, null) + ",");
+        tmpFile.append(messageSource.getMessage('callHistory.callResult.label', null, null) + ",");
+        tmpFile.append(messageSource.getMessage('callHistory.sessionId.label', null, null) + ",");
+        tmpFile.append(messageSource.getMessage('callHistory.commonCallId.label', null, null) + ",");
+        tmpFile.append(messageSource.getMessage('callHistory.ivr.label', null, null) + ",");
+
+        // now append the header for the acd call histories
+        tmpFile.append(messageSource.getMessage('acdCallHistory.skill.label', null, null) + ",");
+        tmpFile.append(messageSource.getMessage('acdCallHistory.enqueueTime.label', null, null) + ",");
+        tmpFile.append(messageSource.getMessage('acdCallHistory.dequeueTime.label', null, null) + ",");
+        tmpFile.append(messageSource.getMessage('acdCallHistory.totalQueueTime.label', null, null) + ",");
+        tmpFile.append(messageSource.getMessage('acdCallHistory.callStatus.label', null, null) + ",");
+        tmpFile.append(messageSource.getMessage('acdCallHistory.user.label', null, null) + ",");
+        tmpFile.append(messageSource.getMessage('acdCallHistory.agentCallStart.label', null, null) + ",");
+        tmpFile.append(messageSource.getMessage('acdCallHistory.agentCallEnd.label', null, null) + ",");
+        tmpFile.append(messageSource.getMessage('acdCallHistory.totalAgentTime.label', null, null) + ",");
+
+        tmpFile << "\n";
 
         //Write each row
         for(AcdCallHistory thisHistory : calls)
@@ -1014,70 +1038,76 @@ class AcdController
             def callHist = CallHistory.findBySessionIdAndToUser(thisHistory.sessionId, thisHistory.user)
             if (callHist) {
                 // We start with the rows from the call history table
-                tmpfile << "${callHist.dateTime?.getMillis()},"
-                tmpfile << "${callHist.dateTime?.toString("yyyy-MM-dd HH:mm:ss")},"
-                tmpfile << "${listen.numberWithRealName(number: callHist.ani, user: callHist.fromUser, personalize: false)},"
-                tmpfile << "${listen.numberWithRealName(number: callHist.dnis, user: callHist.toUser, personalize: false)},"
-                tmpfile << "${listen.formatduration(duration: callHist.duration, millis: false)},"
-                tmpfile << "${callHist.organization.name},"
-                tmpfile << "${callHist.result.replaceAll(",", " ")}," // This is to prevent anything weird...
-                tmpfile << "${callHist.sessionId},"
-                tmpfile << "${callHist.ivr},"
+                tmpFile << "${callHist.dateTime?.getMillis()},"
+                tmpFile << "${callHist.dateTime?.toString("yyyy-MM-dd HH:mm:ss")},"
+                tmpFile << "${listen.numberWithRealName(number: callHist.ani, user: callHist.fromUser, personalize: false)},"
+                tmpFile << "${callHist.outboundAni},"
+                tmpFile << "${listen.numberWithRealName(number: callHist.dnis, user: callHist.toUser, personalize: false)},"
+                tmpFile << "${callHist.inboundDnis},"
+                tmpFile << "${listen.formatduration(duration: callHist.duration, millis: false)},"
+                tmpFile << "${callHist.organization.name},"
+                tmpFile << "${callHist.result.replaceAll(",", " ")}," // This is to prevent anything weird...
+                tmpFile << "${callHist.sessionId},"
+                tmpFile << "${callHist.commonCallId},"
+                tmpFile << "${callHist.ivr},"
             } else {
                 // We start with the rows from the call history table, but in this case we didn't find an entry, so fill in what we can
-                tmpfile << ","                                                  // timestamp
-                tmpfile << ","                                                  // began
-                tmpfile << "${listen.numberWithRealName(number: thisHistory.ani, user: '', personalize: false)},"   // calling party
-                tmpfile << "${listen.numberWithRealName(number: thisHistory.dnis, user: '', personalize: false)},"  // called party
-                tmpfile << ","                                                  // duration
-                tmpfile << "${thisHistory?.user?.organization?.name},"          // organization
-                tmpfile << ","                                                  // result
-                tmpfile << ","                                                  // sessionid
-                tmpfile << ","                                                  // ivr
+                tmpFile << ","                                                  // timestamp
+                tmpFile << ","                                                  // began
+                tmpFile << "${listen.numberWithRealName(number: thisHistory.ani, user: '', personalize: false)},"   // calling party
+                tmpFile << ","                                                  // outbound ani
+                tmpFile << "${listen.numberWithRealName(number: thisHistory.dnis, user: '', personalize: false)},"  // called party
+                tmpFile << ","                                                  // inbound dnis
+                tmpFile << ","                                                  // duration
+                tmpFile << "${thisHistory?.user?.organization?.name},"          // organization
+                tmpFile << ","                                                  // result
+                tmpFile << ","                                                  // sessionid
+                tmpFile << ","                                                  // common call id
+                tmpFile << ","                                                  // ivr
             }
 
             // We only want to associate acd histories that match the call histories toUser
             // Now we'll add the rows from the acd history record
-            tmpfile << "${thisHistory.skill},"
-            tmpfile << "${thisHistory.enqueueTime?.toString("yyyy-MM-dd HH:mm:ss")},"
-            tmpfile << "${thisHistory.dequeueTime?.toString("yyyy-MM-dd HH:mm:ss")},"
-            tmpfile << "${listen.computeDuration(start: thisHistory.enqueueTime, end:thisHistory.dequeueTime)},"
-            tmpfile << "${thisHistory.callStatus.name()},"
+            tmpFile << "${thisHistory.skill},"
+            tmpFile << "${thisHistory.enqueueTime?.toString("yyyy-MM-dd HH:mm:ss")},"
+            tmpFile << "${thisHistory.dequeueTime?.toString("yyyy-MM-dd HH:mm:ss")},"
+            tmpFile << "${listen.computeDuration(start: thisHistory.enqueueTime, end:thisHistory.dequeueTime)},"
+            tmpFile << "${thisHistory.callStatus.name()},"
             if(thisHistory.user != null)
             {
-                tmpfile << "${thisHistory.user.username},";
+                tmpFile << "${thisHistory.user.username},";
             }
             else
             {
-                tmpfile << ",";
+                tmpFile << ",";
             }
-            tmpfile << "${thisHistory.agentCallStart?.toString("yyyy-MM-dd HH:mm:ss")},"
-            tmpfile << "${thisHistory.agentCallEnd?.toString("yyyy-MM-dd HH:mm:ss")},"
+            tmpFile << "${thisHistory.agentCallStart?.toString("yyyy-MM-dd HH:mm:ss")},"
+            tmpFile << "${thisHistory.agentCallEnd?.toString("yyyy-MM-dd HH:mm:ss")},"
             if(thisHistory.agentCallEnd != null && thisHistory.agentCallEnd != null)
             {
-                tmpfile << "${listen.computeDuration(start: thisHistory.agentCallStart, end:thisHistory.agentCallEnd)},"
+                tmpFile << "${listen.computeDuration(start: thisHistory.agentCallStart, end:thisHistory.agentCallEnd)},"
             }
             else
             {
                 DateTime now = DateTime.now();
-                tmpfile << "${listen.computeDuration(start: now, end: now)},"
+                tmpFile << "${listen.computeDuration(start: now, end: now)},"
             }
 
-            tmpfile << "\n";
+            tmpFile << "\n";
         }
 
         if(log.isDebugEnabled())
         {
-            log.debug "Generated ACD Call History Records report of size [${tmpfile.length()}]"
+            log.debug "Generated ACD Call History Records report of size [${tmpFile.length()}]"
         }
 
         //Now write the outputfile
         response.contentType = 'text/csv';
         response.setHeader('Content-disposition', "attachment;filename=" + filename);
-        response.setHeader('Content-length', "${tmpfile.length()}")
+        response.setHeader('Content-length', "${tmpFile.length()}")
 
         OutputStream outStream = new BufferedOutputStream(response.outputStream)
-        InputStream inStream = tmpfile.newInputStream()
+        InputStream inStream = tmpFile.newInputStream()
 
         byte[] bytes = new byte[4096]
         int bytesRead;
@@ -1092,13 +1122,13 @@ class AcdController
         outStream.flush()
         outStream.close()
 
-        if (!tmpfile.delete())
+        if (!tmpFile.delete())
         {
-            log.error("Failed to delete temporary file [${tmpfile.getName()}]")
+            log.error("Failed to delete temporary file [${tmpFile.getName()}]")
         }
         else if(log.isDebugEnabled())
         {
-            log.debug("Succeeded in deleting temporary file [${tmpfile.getName()}]")
+            log.debug("Succeeded in deleting temporary file [${tmpFile.getName()}]")
         }
     }
 
