@@ -1,0 +1,1 @@
+insert into acd_call (version, ani, dnis, skill_id, session_id, common_call_id, init_time, call_status, ivr, last_modified, user_id, call_start, on_hold) values (6,'5555','994',5,'session.06F77FE599DF9288454132507914877925644727','ab02555a-3c86-4e55-a06b-c255d3651ee2', '2017-02-23 05:47:13', 'CONNECTED', '50.23.255.203', '2017-02-22 23:47:57', 41, '2017-02-22 23:47:57', 0);

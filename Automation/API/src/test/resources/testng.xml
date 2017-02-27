@@ -1,17 +1,14 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 <suite name="Nimblevox Api testing" verbose="2">
 
-   
     <parameter name="baseURI" value ="http://listenmt-newnet.newnet.local"></parameter>
     <parameter name="basePath" value ="/listen-controller/api"></parameter>
     <parameter name="apiKey" value ="ca311dc868c24e3da647f05828aaf8fb"></parameter>
-    <parameter name="authToken" value ="Bearer eyJ6aXAiOiJERUYiLCJjdHkiOiJKV1QiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..9bciUVwaeL2dMbi9xfxTrw.xCWqaqy6SOZfbDQ8HYIYLRDWNyGu8WoFOAnLaE_XczUQB8jValQBEn9Rw-6ez4DTXd5Bmd6T-IWe-tJKbFk2ki384FCcKWTLV4e8oD71ozx2WlTX92KQPKJWHwaRbcyothUAjhJGFwt3W0S0pFIIx0VqFtkBfInRXbxmrRXi1dmpN7SBAPItZFSVJ424uK59fp3yHH0G4D0A2koakQRvPozQHnPuGGRfyhzT28iEMQlDlez9WD3keQsK2DCcK7oP4ckEkNSDbFwQVQZbOY_g5lcYwf96gCDy5T5r1xu-J1AsCoEFBHwEP1JpCO1qFOkyo1zW9KguZueFuqxgk0drkMzB6gWds3Z3R0ncRhTGxvEmNcTlyoxYZiR1T_VIlVKtU_NhDGVJcb6kZNr2-9Y33lEWadxMWidu8VQ-9gA5TRU_NP5gAELpmbc3xpP4yyPwGn8TH8FF_mGgK2_M6RN9kvPsWlJQZ2MU30Ogbx6RniGRP42KED8YhINbh4NvlhNANNMfDjbpJTDgxltiLa2M6b5enlDslVmvZdOm3-lAnFo.f_bX_svbGUk3DsoBiGC2cQ"></parameter>
     
    <test name = "ApiTest" preserve-order="true">
   		<classes>
-  	 <!-- 	     <class name="com.newnet.test.ACDAgent"></class> 
-  	 	     <class name="com.newnet.test.ActiveACDCall"></class> -->
-  	 	     <class name="com.newnet.test.TestArea"></class>
+  	  	     <class name="com.newnet.test.ACDAgent"></class> 
+  	 	     <class name="com.newnet.test.ActiveACDCall"></class> 
   	    </classes>
       </test>
 </suite>
