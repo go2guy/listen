@@ -7,17 +7,22 @@ import io.restassured.specification.RequestSpecification;
 
 public class Header {
 
-    private final static String authToken = TestngContext.getParam("authToken");
+    //private final static String authToken = TestngContext.getParam("authToken");
+
+    //    RequestSpecification requestSpecification = new RequestSpecBuilder().addHeader("Content-Type", "application/json")
+    //        .addHeader("Accept", "application/json").addHeader("Authorization", authToken).build();
 
     RequestSpecification requestSpecification = new RequestSpecBuilder().addHeader("Content-Type", "application/json")
-        .addHeader("Accept", "application/json").addHeader("Authorization", authToken).build();
+        .addHeader("Accept", "application/json").build();
 
     public static void setHeader() {
         RestAssured.baseURI = TestngContext.getParam("baseURI");
         RestAssured.basePath = TestngContext.getParam("basePath");
         RestAssured.config = RestAssured.config().sslConfig(new SSLConfig().allowAllHostnames());
+        //        RestAssured.requestSpecification = new RequestSpecBuilder().addHeader("Content-Type", "application/json")
+        //            .addHeader("Accept", "application/json").addHeader("Authorization", authToken).build();
         RestAssured.requestSpecification = new RequestSpecBuilder().addHeader("Content-Type", "application/json")
-            .addHeader("Accept", "application/json").addHeader("Authorization", authToken).build();
+            .addHeader("Accept", "application/json").build();
     }
 
 }
