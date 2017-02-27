@@ -43,13 +43,16 @@ class AcdCleanupJob
             try
             {
                 //Find calls enqueued too long
-                int enqueueTime = Seconds.secondsBetween(thisCall.enqueueTime, DateTime.now()).getSeconds();
-                if(enqueueTime > enqueueMax)
+                if (thisCall.enqueueTime != null)
                 {
-                    log.error("AcdCall[" + thisCall.id + "] queued beyond the maximum allowed time!");
-                    //Send them to voicemail
-//                    acdService.acdCallVoicemail(thisCall);
-                    //Not doing this now, need to revisit when we have a status transaction with ivr
+                    int enqueueTime = Seconds.secondsBetween(thisCall.enqueueTime, DateTime.now()).getSeconds();
+                    if (enqueueTime > enqueueMax)
+                    {
+                        log.error("AcdCall[" + thisCall.id + "] queued beyond the maximum allowed time!");
+                        //Send them to voicemail
+                        //                    acdService.acdCallVoicemail(thisCall);
+                        //Not doing this now, need to revisit when we have a status transaction with ivr
+                    }
                 }
 
                 switch(thisCall.callStatus)
