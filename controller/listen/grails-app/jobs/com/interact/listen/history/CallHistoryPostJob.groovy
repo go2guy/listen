@@ -66,7 +66,7 @@ class CallHistoryPostJob {
 
                 // Get acd call record(s) that are associated with this DNIS only
                 def acdCallRecordsForCurrent = acdCallRecords.findAll {
-                    if (it.agentNumber == callRecord.dnis) {
+                    if (it.sessionId == callRecord.sessionId && it.user == callRecord.toUser) {
                         return it
                     }
                 }
@@ -80,7 +80,7 @@ class CallHistoryPostJob {
                 associatedCallRecords.each { associatedCallRecord ->
                     // Get ACD Record possibly associated with this
                     def acdCallRecordsForAssociated = acdCallRecords.findAll {
-                        if (it.agentNumber == associatedCallRecord.dnis) {
+                        if (it.sessionId == associatedCallRecord.sessionId && it.user == associatedCallRecord.toUser) {
                             return it
                         }
                     }
