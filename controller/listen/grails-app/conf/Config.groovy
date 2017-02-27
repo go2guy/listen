@@ -202,6 +202,7 @@ com.interact.listen.authorizenet.transactionKey = '6s6Z7U5z2WnyA2Xz'
 
 com.interact.listen.acd.callProcessor.repeatInterval = 0
 com.interact.listen.acd.cleanup.repeatInterval = 0
+com.interact.listen.callHistory.postJob.repeatInterval = 0
 com.interact.listen.acd.agent.waitTime = 15
 com.interact.listen.acd.waiting.max = 300
 com.interact.listen.acd.connect_request.max = 20

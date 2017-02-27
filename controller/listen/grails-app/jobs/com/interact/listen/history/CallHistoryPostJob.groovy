@@ -26,10 +26,10 @@ class CallHistoryPostJob {
     private static final Integer HTTP_SOCKET_TIMEOUT = 5000
 
     static triggers = {
-        cron name: 'CallHistoryPostTrigger', cronExpression: '0 0/1 * * * ?'
     }
 
     def concurrent = false;
+    def group = "callHistory"
     def statWriterService
 
     def execute() {

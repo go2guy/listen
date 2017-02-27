@@ -1,5 +1,6 @@
 import com.interact.listen.acd.AcdCallProcessorJob
 import com.interact.listen.acd.AcdCleanupJob
+import com.interact.listen.history.CallHistoryPostJob
 import com.interact.listen.license.LicenseService
 import com.interact.listen.license.ListenFeature
 import grails.util.Holders
@@ -34,6 +35,18 @@ class BootStrap
         else
         {
             log.debug("Listen ACD Feature is not licensed.");
+        }
+
+        // Start up Call History Post Job
+        int callHistoryPostInterval =
+                Integer.parseInt((String)Holders.config.com.interact.listen.callHistory.postJob.repeatInterval);
+
+        log.debug("CallHistoryPostJob repeat interval is ${callHistoryPostInterval}");
+
+        if (callHistoryPostInterval > 0)
+        {
+            log.debug("Scheduling CallHistoryPostJob with interval [${callHistoryPostInterval}]");
+            CallHistoryPostJob.schedule(callHistoryPostInterval);
         }
 
         mailService.mailMessageBuilderFactory = customMailMessageBuilderFactory
