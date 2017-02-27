@@ -1,5 +1,6 @@
 package com.interact.listen.history
 
+import com.interact.listen.PrimaryNode
 import com.interact.listen.acd.AcdCall
 import com.interact.listen.acd.AcdCallStatus
 import org.apache.http.conn.HttpHostConnectException
@@ -36,7 +37,28 @@ class CallHistoryPostJob {
         // get our call records
         // callRecords = CallHistory.findByCdrPostResult(null)
         // get all call history records that don't currently have a 200 result for cdr post
-        log.debug("Running Call History Post Job");
+        log.debug("Starting Call History Post Job");
+
+        String primary = null;
+        List<PrimaryNode> primarys = PrimaryNode.list();
+        if(primarys != null && primarys.size() > 0)
+        {
+            primary = primarys.get(0).nodeName;
+        }
+
+        String myHostName = InetAddress.getLocalHost().getHostName();
+        log.debug("My Hostname[" + myHostName + "], primary host[" + primary + "]");
+
+        if(myHostName.equalsIgnoreCase(primary))
+        {
+            log.debug("I am the primary, continuing.");
+        }
+        else
+        {
+            log.debug("I am not the primary, ending.");
+            return;
+        }
+
         def activeAcdCommonCallIds = AcdCall.getAll().collect { it.commonCallId }
         log.debug("activeAcdCommonCallIds is ${activeAcdCommonCallIds}");
 
