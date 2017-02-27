@@ -228,8 +228,8 @@ CREATE TABLE `pbx_conference` (
   `name` varchar(255) NOT NULL,
   `ani` varchar(255) NOT NULL,
   `dnis` varchar(255) NOT NULL,
-  `monitoringSession` varchar(255),
-  `monitoredExtension` varchar(255),
+  `monitoring_session` varchar(255),
+  `monitored_extension` varchar(255),
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
