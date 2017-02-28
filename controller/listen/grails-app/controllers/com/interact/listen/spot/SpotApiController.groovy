@@ -767,7 +767,7 @@ class SpotApiController {
         String outboundCallerId = "";
 
         def user = User.get(getIdFromHref(params.subscriber))
-        if(!user.enabled()) {
+        if(!user?.enabled()) {
             response.sendError(HSR.SC_FORBIDDEN)
             return
         }

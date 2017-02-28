@@ -8,18 +8,21 @@ import com.interact.listen.exceptions.ListenExportException
 import grails.validation.ValidationErrors
 import org.apache.commons.logging.LogFactory
 import org.joda.time.DateTime
+import org.joda.time.Duration
 import org.joda.time.LocalDateTime
 import org.codehaus.groovy.grails.web.util.WebUtils
+import org.joda.time.Period
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.format.DateTimeFormatter
+import org.joda.time.format.PeriodFormatter
+import org.joda.time.format.PeriodFormatterBuilder
 import org.springframework.context.MessageSource
 
 class CallService {
     def grailsApplication
     MessageSource messageSource
 
-    public void exportCallHistoryToCSV(Organization organization, org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap params) throws ListenExportException
-    {
+    public void exportCallHistoryToCSV(Organization organization, org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap params) throws ListenExportException {
         def users = User.findAllByOrganization(organization)
         def listen = grailsApplication.mainContext.getBean('com.interact.listen.DateTimeTagLib');
 
@@ -38,7 +41,9 @@ class CallService {
 
         def selectedUsers
         if (params.user) {
-            selectedUsers = User.findAllByIdInListAndOrganization([params.user].flatten().collect{ Long.valueOf(it)}, organization)
+            selectedUsers = User.findAllByIdInListAndOrganization([params.user].flatten().collect {
+                Long.valueOf(it)
+            }, organization)
         }
 
         File tmpFile
@@ -69,15 +74,15 @@ class CallService {
             }
 
             if (params.caller) {
-                ilike('ani', '%'+params.caller.replaceAll("\\D+", "")+'%')
+                ilike('ani', '%' + params.caller.replaceAll("\\D+", "") + '%')
             }
 
             if (params.callee) {
-                ilike('dnis', '%'+params.callee.replaceAll("\\D+", "")+'%')
+                ilike('dnis', '%' + params.callee.replaceAll("\\D+", "") + '%')
             }
 
             if (params.inboundDnis && params.searchButton) {
-                ilike('inboundDnis', '%'+params.inboundDnis.replaceAll("\\D+", "")+'%')
+                ilike('inboundDnis', '%' + params.inboundDnis.replaceAll("\\D+", "") + '%')
             }
 
             if (selectedUsers) {
@@ -88,12 +93,11 @@ class CallService {
             }
 
             if (params.callResult) {
-                ilike('result', '%'+params.callResult+'%')
+                ilike('result', '%' + params.callResult + '%')
             }
 
             eq('organization', organization)
         }
-
 
         // Build the data now
         try {
@@ -134,11 +138,11 @@ class CallService {
                         // first we'll add the call history domain
                         tmpFile << "${it.dateTime?.getMillis()},"
                         tmpFile << "${it.dateTime?.toString("yyyy-MM-dd HH:mm:ss")},"
-                        tmpFile << "${listen.numberWithRealName(number: it.ani, user: it.fromUser, personalize: false)},"
+                        tmpFile << "${numberWithRealName(number: it.ani, user: it.fromUser)},"
                         tmpFile << "${it.outboundAni},"
-                        tmpFile << "${listen.numberWithRealName(number: it.dnis, user: it.toUser, personalize: false)},"
+                        tmpFile << "${numberWithRealName(number: it.dnis, user: it.toUser)},"
                         tmpFile << "${it.inboundDnis},"
-                        tmpFile << "${listen.formatduration(duration: it.duration, millis: false)},"
+                        tmpFile << "${formatduration(duration: it.duration, millis: false)},"
                         tmpFile << "${it.organization.name},"
                         tmpFile << "${it.result.replaceAll(",", " ")}," // This is to prevent anything weird...
                         tmpFile << "${it.sessionId},"
@@ -148,27 +152,21 @@ class CallService {
                         tmpFile << "${acdCall.skill},"
                         tmpFile << "${acdCall.enqueueTime?.toString("yyyy-MM-dd HH:mm:ss")},"
                         tmpFile << "${acdCall.dequeueTime?.toString("yyyy-MM-dd HH:mm:ss")},"
-                        tmpFile << "${listen.computeDuration(start: acdCall.enqueueTime, end: acdCall.dequeueTime)},"
+                        tmpFile << "${computeDuration(start: acdCall.enqueueTime, end: acdCall.dequeueTime)},"
                         tmpFile << "${acdCall.callStatus.name()},"
-                        if(acdCall.user != null)
-                        {
+                        if (acdCall.user != null) {
                             tmpFile << "${acdCall.user.username},"
-                        }
-                        else
-                        {
+                        } else {
                             tmpFile << ","
                         }
                         tmpFile << "${acdCall.agentCallStart?.toString("yyyy-MM-dd HH:mm:ss")},"
                         tmpFile << "${acdCall.agentCallEnd?.toString("yyyy-MM-dd HH:mm:ss")},"
-                        if(acdCall.agentCallEnd != null && acdCall.agentCallEnd != null)
-                        {
-                            tmpFile << "${listen.computeDuration(start: acdCall.agentCallStart, end: acdCall.agentCallEnd)},"
-                        }
-                        else
-                        {
+                        if (acdCall.agentCallEnd != null && acdCall.agentCallEnd != null) {
+                            tmpFile << "${computeDuration(start: acdCall.agentCallStart, end: acdCall.agentCallEnd)},"
+                        } else {
                             //need a zero duration then
                             DateTime now = DateTime.now();
-                            tmpFile << "${listen.computeDuration(start: now, end: now)},"
+                            tmpFile << "${computeDuration(start: now, end: now)},"
                         }
 
                         tmpFile << "\n"
@@ -178,11 +176,11 @@ class CallService {
                     log.debug("Exporting call history for session id [${it.sessionId}]")
                     tmpFile << "${it.dateTime?.getMillis()},"
                     tmpFile << "${it.dateTime?.toString("yyyy-MM-dd HH:mm:ss")},"
-                    tmpFile << "${listen.numberWithRealName(number: it.ani, user: it.fromUser, personalize: false)},"
+                    tmpFile << "${numberWithRealName(number: it.ani, user: it.fromUser)},"
                     tmpFile << "${it.outboundAni},"
-                    tmpFile << "${listen.numberWithRealName(number: it.dnis, user: it.toUser, personalize: false)},"
+                    tmpFile << "${numberWithRealName(number: it.dnis, user: it.toUser)},"
                     tmpFile << "${it.inboundDnis},"
-                    tmpFile << "${listen.formatduration(duration: it.duration, millis: false)},"
+                    tmpFile << "${formatduration(duration: it.duration, millis: false)},"
                     tmpFile << "${it.organization.name},"
                     tmpFile << "${it.result.replaceAll(",", " ")}," // This is to prevent anything weird...
                     tmpFile << "${it.sessionId},"
@@ -232,30 +230,24 @@ class CallService {
      * Return the ivr for this controller
      * @return The Ivr.
      */
-    public String getIvr()
-    {
+    public String getIvr() {
         String returnVal = null;
 
-        if(grailsApplication.config.com.interact.listen.ivr != null &&
-                !grailsApplication.config.com.interact.listen.ivr.isEmpty())
-        {
+        if (grailsApplication.config.com.interact.listen.ivr != null &&
+                !grailsApplication.config.com.interact.listen.ivr.isEmpty()) {
             returnVal = grailsApplication.config.com.interact.listen.ivr;
         }
 
         return returnVal;
     }
 
-    private def getStartDate(String inputStart)
-    {
+    private def getStartDate(String inputStart) {
         DateTimeFormatter dtf = DateTimeFormat.forPattern("MM/dd/yyyy");
         DateTime theStart;
 
-        if(inputStart && !inputStart.isEmpty())
-        {
+        if (inputStart && !inputStart.isEmpty()) {
             theStart = DateTime.parse(inputStart, dtf);
-        }
-        else
-        {
+        } else {
             theStart = DateTime.now().minusDays(1);
         }
 
@@ -266,17 +258,13 @@ class CallService {
         return theStart;
     }
 
-    private def getEndDate(String inputEnd)
-    {
+    private def getEndDate(String inputEnd) {
         DateTimeFormatter dtf = DateTimeFormat.forPattern("MM/dd/yyyy");
         DateTime theEnd;
 
-        if(inputEnd && !inputEnd.isEmpty())
-        {
+        if (inputEnd && !inputEnd.isEmpty()) {
             theEnd = DateTime.parse(inputEnd, dtf);
-        }
-        else
-        {
+        } else {
             theEnd = DateTime.now();
         }
 
@@ -287,4 +275,122 @@ class CallService {
         return theEnd;
     }
 
+    public def computeDuration = { attrs ->
+        if((!attrs.start) && (!attrs.end)) {
+            return "0.00:00"
+        }
+        if(!attrs.start) {
+            log.error('computeduration is missing required attribute [start]')
+            return "0.00:00"
+        }
+
+        if(!attrs.end) {
+            log.error('computeduration is missing required attribute [end]')
+            return "0.00:00"
+        }
+
+        PeriodFormatter fmt = new PeriodFormatterBuilder()
+                .printZeroAlways()
+                .minimumPrintedDigits(1)
+                .appendHours()
+                .appendSeparator(":")
+                .printZeroAlways()
+                .minimumPrintedDigits(2)
+                .appendMinutes()
+                .appendSeparator(":")
+                .printZeroAlways()
+                .minimumPrintedDigits(2)
+                .appendSeconds()
+                .toFormatter();
+
+        return fmt.print(new Period(attrs.start, attrs.end))
+    }
+
+    public def formatduration = { attrs ->
+        if (!attrs.duration) {
+            log.error('formatduration is missing required attribute [duration]')
+            return '0.0';
+        }
+
+        boolean millis = attrs.containsKey('millis') ? Boolean.valueOf(attrs.millis) : false
+
+        Duration tmpDuration = attrs.duration
+        def milliSecs = tmpDuration.millis % 1000
+
+        if ((!millis) && (milliSecs > 500)) {
+            // If we don't want to display milliseconds, we'll round if necessary
+            tmpDuration = tmpDuration.plus(1000 - milliSecs)   // This should round up to the nearest second
+        }
+
+        def builder = builderFor(tmpDuration.millis)
+
+        if (millis) {
+            builder.appendSeparator('.')
+                    .printZeroAlways()
+                    .minimumPrintedDigits(2)
+                    .appendMillis3Digit()
+        }
+
+        return builder.toFormatter().print(tmpDuration.toPeriod())
+    }
+
+    private def builderFor(long millis) {
+        final long MILLIS_PER_MINUTE = 1000 * 60
+        final long MILLIS_PER_TEN_MINUTES = MILLIS_PER_MINUTE * 10
+        final long MILLIS_PER_HOUR = MILLIS_PER_MINUTE * 60
+
+        if (millis < MILLIS_PER_MINUTE) {
+            // '0:00' to '0:59'
+            return new PeriodFormatterBuilder()
+                    .appendLiteral('0:00:')
+                    .printZeroAlways()
+                    .minimumPrintedDigits(2)
+                    .appendSeconds()
+        } else if (millis < MILLIS_PER_TEN_MINUTES) {
+            // '1:00' to '9:59'
+            return new PeriodFormatterBuilder()
+                    .printZeroNever()
+                    .minimumPrintedDigits(2)
+                    .appendMinutes()
+                    .appendSeparator(':')
+                    .printZeroAlways()
+                    .minimumPrintedDigits(2)
+                    .appendSeconds()
+        } else if (millis < MILLIS_PER_HOUR) {
+            // '10:00' to '59:59'
+            return new PeriodFormatterBuilder()
+                    .printZeroNever()
+                    .minimumPrintedDigits(2)
+                    .appendMinutes()
+                    .appendSeparator(':')
+                    .printZeroAlways()
+                    .minimumPrintedDigits(2)
+                    .appendSeconds()
+        } else {
+            // '1:00:00' and above, e.g. '12:34:56', '123:45:54'
+            return new PeriodFormatterBuilder()
+                    .printZeroAlways()
+                    .minimumPrintedDigits(1)
+                    .appendHours()
+                    .appendSuffix(':')
+                    .printZeroAlways()
+                    .minimumPrintedDigits(2)
+                    .appendMinutes()
+                    .appendSuffix(':')
+                    .printZeroAlways()
+                    .minimumPrintedDigits(2)
+                    .appendSeconds()
+        }
+    }
+
+    public def numberWithRealName = { attrs ->
+
+        def number = attrs.number?.encodeAsHTML() ?: 'Unknown'
+
+        if(attrs.user != null ) {
+            return "${attrs.user.realName} (${number})"
+        } else {
+            return "${number}"
+        }
+    }
 }

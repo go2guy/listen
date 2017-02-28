@@ -32,6 +32,7 @@ class CallHistoryPostJob {
     def concurrent = false;
     def group = "callHistory"
     def statWriterService
+    def callService
 
     def execute() {
         // get our call records
@@ -251,22 +252,23 @@ class CallHistoryPostJob {
                 json.timestamp = "${callRecord.dateTime.getMillis().toString()}"
                 DateTime callReceivedUtc = callRecord.dateTime?.withZone(DateTimeZone.UTC);
                 json.callStart = callReceivedUtc?.toString("yyyy-MM-dd HH:mm:ss")
-                // do we need callingParty?
+                json.callingParty = callService.numberWithRealName(number: callRecord.ani, user: callRecord.fromUser, personalize: false)
                 json.callerId = callRecord.outboundAni
-                // do we need calledParty?
+                json.calledParty = callService.numberWithRealName(number: callRecord.dnis, user: callRecord.toUser, personalize: false)
                 json.dialedNumber = callRecord.inboundDnis
-                // do we need duration?
+                json.duration = callService.formatduration(duration: callRecord.duration, millis: false)
                 // do we need organization?
-                // do we need callResult?
+                json.callResult = callRecord.result
                 json.sessionId = callRecord.sessionId
                 json.commonCallId = callRecord.commonCallId
                 // do we need ivr?
-                // do we need skill?
+                json.skill = record.skill.skillname
                 DateTime enqueueTimeUtc = record.enqueueTime?.withZone(DateTimeZone.UTC);
                 json.enqueueTime = enqueueTimeUtc?.toString("yyyy-MM-dd HH:mm:ss") ?: null;
-                // do we need dequeueTime?
+                DateTime dequeueTimeUtc = record.dequeueTime?.withZone(DateTimeZone.UTC);
+                json.dequeueTime = dequeueTimeUtc?.toString("yyyy-MM-dd HH:mm:ss") ?: null;
                 // do we need totalQueueTime?
-                // do we need callStatus?
+                json.callStatus = record.callStatus.name()
                 json.agent = record.user?.username ?: null
                 DateTime agentCallStartUtc = record.agentCallStart?.withZone(DateTimeZone.UTC);
                 json.agentCallStart = agentCallStartUtc?.toString("yyyy-MM-dd HH:mm:ss") ?: null
@@ -283,21 +285,21 @@ class CallHistoryPostJob {
             json.timestamp = "${callRecord.dateTime.getMillis().toString()}"
             DateTime callReceivedUtc = callRecord.dateTime?.withZone(DateTimeZone.UTC);
             json.callStart = callReceivedUtc?.toString("yyyy-MM-dd HH:mm:ss")
-            // do we need callingParty?
+            json.callingParty = callService.numberWithRealName(number: callRecord.ani, user: callRecord.fromUser, personalize: false)
             json.callerId = callRecord.outboundAni
-            // do we need calledParty
+            json.calledParty = callService.numberWithRealName(number: callRecord.dnis, user: callRecord.toUser, personalize: false)
             json.dialedNumber = callRecord.inboundDnis
-            // do we need duration?
+            json.duration = callService.formatduration(duration: callRecord.duration, millis: false)
             // do we need organization?
-            // do we need callResult?
+            json.callResult = callRecord.result
             json.sessionId = callRecord.sessionId
             json.commonCallId = callRecord.commonCallId
             // do we need ivr?
-            // do we need skill?
+            json.skill = null
             json.enqueueTime = null
-            // do we need dequeueTime?
+            json.dequeueTime = null
             // do we need totalQueueTime?
-            // do we need callStatus?
+            json.callStatus = null
             json.agent = null
             json.agentCallStart = null
             json.agentCallEnd = null
